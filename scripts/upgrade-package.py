@@ -18,7 +18,7 @@ RELEASE_CODE = 'FIXED AND IMPROVED'
 PROTECTED = {
     'configs/storage.json', 'configs/layout.json', 'configs/portable-backup.json',
     'configs/storage-autostart.json', 'configs/storage-review-required.json',
-    'configs/storage-paused.json', 'enabled-apps.txt', 'server.env',
+    'configs/storage-paused.json', 'enabled-apps.txt', 'installed-apps.txt', 'server.env',
 }
 RUNTIME_PARTS = {'appdata', 'databases', 'backups', 'logs', '__pycache__', '.git'}
 
@@ -260,3 +260,4 @@ if __name__ == '__main__':
     except (RuntimeError, OSError, ValueError, KeyError, subprocess.SubprocessError, BlockingIOError) as exc:
         print('ERROR: ' + str(exc), file=__import__('sys').stderr)
         raise SystemExit(1)
+
