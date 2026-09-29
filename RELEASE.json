@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "release_id": 5,
+  "release_id": 6,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 5 adds selective Docker app installation, requested boot startup defaults, and balanced hardware guidance while preserving storage and upgrade state."
+  "notes": "Release 6 stops removed app containers immediately when app selection changes, while preserving all app data and storage state."
 }
 
