@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh verified storage dashboard data every thirty seconds
+
+[Timer]
+OnBootSec=15s
+OnUnitActiveSec=30s
+AccuracySec=2s
+Unit=pi-storage-metrics.service
+
+[Install]
+WantedBy=timers.target

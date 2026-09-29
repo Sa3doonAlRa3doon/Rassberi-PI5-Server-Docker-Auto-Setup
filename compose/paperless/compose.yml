@@ -1,0 +1,223 @@
+{
+  "name": "pi-paperless",
+  "services": {
+    "db": {
+      "image": "postgres:17.11-bookworm",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.6,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "POSTGRES_DB": "paperless",
+        "POSTGRES_USER": "paperless",
+        "POSTGRES_PASSWORD": "${DB_PASSWORD:?DB_PASSWORD missing}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/databases/paperless",
+          "target": "/var/lib/postgresql/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": [
+        "backend"
+      ],
+      "command": [
+        "postgres",
+        "-c",
+        "shared_buffers=64MB",
+        "-c",
+        "max_connections=50",
+        "-c",
+        "timezone=Asia/Dubai",
+        "-c",
+        "log_timezone=Asia/Dubai"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" && PGPASSWORD=\"$$POSTGRES_PASSWORD\" psql -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -tAc \"SELECT 1\" >/dev/null"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "60s"
+      },
+      "stop_grace_period": "60s"
+    },
+    "redis": {
+      "image": "redis:8.6.7-alpine",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "96m",
+      "cpus": 0.3,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "REDIS_PASSWORD": "${REDIS_PASSWORD:?REDIS_PASSWORD missing}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/paperless/redis",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": [
+        "backend"
+      ],
+      "command": [
+        "/bin/sh",
+        "-c",
+        "exec redis-server --appendonly yes --maxmemory 48mb --maxmemory-policy noeviction --requirepass \"$$REDIS_PASSWORD\""
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "60s"
+      }
+    },
+    "app": {
+      "image": "ghcr.io/paperless-ngx/paperless-ngx:3.2.1",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "1024m",
+      "cpus": 1.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PAPERLESS_DBHOST": "db",
+        "PAPERLESS_DBPORT": "5432",
+        "PAPERLESS_DBENGINE": "postgresql",
+        "PAPERLESS_DBNAME": "paperless",
+        "PAPERLESS_DBUSER": "paperless",
+        "PAPERLESS_DBPASS": "${DB_PASSWORD:?DB_PASSWORD missing}",
+        "PAPERLESS_REDIS": "redis://:${REDIS_PASSWORD:?REDIS_PASSWORD missing}@redis:6379",
+        "PAPERLESS_SECRET_KEY": "${PAPERLESS_SECRET_KEY:?PAPERLESS_SECRET_KEY missing}",
+        "PAPERLESS_TIME_ZONE": "${TZ:-Asia/Dubai}",
+        "PAPERLESS_URL": "http://${SERVER_IP:?Set SERVER_IP}:8087",
+        "PAPERLESS_ADMIN_USER": "${ADMIN_USER:-saeed}",
+        "PAPERLESS_ADMIN_PASSWORD": "${ADMIN_PASSWORD:?ADMIN_PASSWORD missing}",
+        "USERMAP_UID": "${PUID:-1000}",
+        "USERMAP_GID": "${PGID:-1000}",
+        "PAPERLESS_OCR_LANGUAGE": "eng",
+        "PAPERLESS_TASK_WORKERS": "1",
+        "PAPERLESS_THREADS_PER_WORKER": "1",
+        "PAPERLESS_WEBSERVER_WORKERS": "1"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/paperless/data",
+          "target": "/usr/src/paperless/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Paperless/media",
+          "target": "/usr/src/paperless/media",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Paperless/consume",
+          "target": "/usr/src/paperless/consume",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Paperless/export",
+          "target": "/usr/src/paperless/export",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": [
+        "frontend",
+        "backend"
+      ],
+      "ports": [
+        {
+          "target": 8000,
+          "published": "8087",
+          "host_ip": "${BIND_IP:?Set BIND_IP to a LAN or Tailscale address}",
+          "protocol": "tcp"
+        }
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "curl",
+          "-fs",
+          "-S",
+          "-L",
+          "--max-time",
+          "5",
+          "http://localhost:8000"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "300s"
+      }
+    }
+  },
+  "networks": {
+    "frontend": {},
+    "backend": {
+      "internal": true
+    }
+  }
+}

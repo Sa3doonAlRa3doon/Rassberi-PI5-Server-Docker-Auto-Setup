@@ -1,0 +1,67 @@
+{
+  "name": "pi-freshrss",
+  "services": {
+    "freshrss": {
+      "image": "freshrss/freshrss@sha256:258b8edfc8a76a61f60d2d6a14d8f8d12495d78abf38646a2137612dfa264a21",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "128m",
+      "cpus": 0.35,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "CRON_MIN": "7,37",
+        "FRESHRSS_INSTALL": "--base-url http://${SERVER_IP}:8095 --default-user ${ADMIN_USER:-saeed} --language en",
+        "FRESHRSS_USER": "--user ${ADMIN_USER:-saeed} --password ${FRESHRSS_PASSWORD:?Run installer} --language en"
+      },
+      "ports": [
+        {
+          "target": 80,
+          "published": "8095",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/freshrss/data",
+          "target": "/var/www/FreshRSS/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/freshrss/extensions",
+          "target": "/var/www/FreshRSS/extensions",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "cli/health.php"
+        ],
+        "interval": "75s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "90s"
+      },
+      "labels": {
+        "pi.autoheal.nvme": "true"
+      }
+    }
+  }
+}

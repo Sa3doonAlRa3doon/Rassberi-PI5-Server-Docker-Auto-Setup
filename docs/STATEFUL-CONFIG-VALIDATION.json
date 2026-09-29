@@ -1,0 +1,58 @@
+[
+  {
+    "application": "nextcloud",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "onlyoffice",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "paperless",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "gitea",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "wikijs",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "n8n",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "vaultwarden",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  },
+  {
+    "application": "moodle",
+    "compose_config": "PASS",
+    "storage_network_resource_checks": "PASS",
+    "issues": [],
+    "warnings": ""
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "name": "pi-dozzle",
+  "services": {
+    "dozzle": {
+      "image": "amir20/dozzle@sha256:c90494cbc3a9ca959634b89fdb3fdecbcbae1f690d7a567d0d356c6fda1d957c",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "96m",
+      "cpus": 0.25,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "DOZZLE_AUTH_PROVIDER": "simple",
+        "DOZZLE_ENABLE_ACTIONS": "false",
+        "DOZZLE_ENABLE_SHELL": "false",
+        "DOCKER_HOST": "tcp://docker-socket-proxy:2375"
+      },
+      "ports": [
+        {
+          "target": 8080,
+          "published": "8088",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/dozzle",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "/dozzle",
+          "healthcheck"
+        ],
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 3,
+        "start_period": "30s"
+      },
+      "networks": [
+        "docker-read"
+      ]
+    }
+  },
+  "networks": {
+    "docker-read": {
+      "external": true,
+      "name": "pi-docker-read"
+    }
+  }
+}

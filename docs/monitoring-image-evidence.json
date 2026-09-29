@@ -1,0 +1,237 @@
+[
+  {
+    "requested": "lscr.io/linuxserver/socket-proxy:latest",
+    "image": "lscr.io/linuxserver/socket-proxy@sha256:ca6c0301a652232d02cb0ff9f1c5d20d9b339f391e1c1dffaae6ef3bfc59d009",
+    "digest": "sha256:ca6c0301a652232d02cb0ff9f1c5d20d9b339f391e1c1dffaae6ef3bfc59d009",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://lscr.io/v2/linuxserver/socket-proxy/manifests/latest",
+    "checked_at": "2026-09-29T04:42:02.906786+00:00"
+  },
+  {
+    "requested": "ghcr.io/journeydocker/docker-autoheal:latest",
+    "image": "ghcr.io/journeydocker/docker-autoheal@sha256:d35179b414d05a1d787700c2ae37bfff9d0a61a91eed6233a89b15f982a42c65",
+    "digest": "sha256:d35179b414d05a1d787700c2ae37bfff9d0a61a91eed6233a89b15f982a42c65",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/journeydocker/docker-autoheal/manifests/latest",
+    "checked_at": "2026-09-29T04:42:01.850996+00:00"
+  },
+  {
+    "requested": "henrygd/beszel:latest",
+    "image": "henrygd/beszel@sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc",
+    "digest": "sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/henrygd/beszel/manifests/latest",
+    "checked_at": "2026-09-29T04:42:03.622361+00:00"
+  },
+  {
+    "requested": "henrygd/beszel-agent:alpine",
+    "image": "henrygd/beszel-agent@sha256:2a01a5600f780d264682b5f71108d72fa67f50c57e27b52b4184d3d0d01d115c",
+    "digest": "sha256:2a01a5600f780d264682b5f71108d72fa67f50c57e27b52b4184d3d0d01d115c",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/henrygd/beszel-agent/manifests/alpine",
+    "checked_at": "2026-09-29T04:42:04.370259+00:00"
+  },
+  {
+    "requested": "crazymax/diun:latest",
+    "image": "crazymax/diun@sha256:e324b793eb32dfb7f74d3a39421ebf090141caaadee69b8f78da63112408ee25",
+    "digest": "sha256:e324b793eb32dfb7f74d3a39421ebf090141caaadee69b8f78da63112408ee25",
+    "platforms": [
+      {
+        "architecture": "386",
+        "os": "linux"
+      },
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "ppc64le",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/crazymax/diun/manifests/latest",
+    "checked_at": "2026-09-29T04:42:06.867067+00:00"
+  },
+  {
+    "requested": "ghcr.io/analogj/scrutiny:v0.9.4-omnibus",
+    "image": "ghcr.io/analogj/scrutiny@sha256:dbb1f255db48b7903dca111e81ed22b266cce212f034e1581f290c8e8efa8be6",
+    "digest": "sha256:dbb1f255db48b7903dca111e81ed22b266cce212f034e1581f290c8e8efa8be6",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/analogj/scrutiny/manifests/v0.9.4-omnibus",
+    "checked_at": "2026-09-29T04:55:59.542345+00:00"
+  }
+]

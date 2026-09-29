@@ -1,0 +1,134 @@
+{
+  "name": "pi-homepage",
+  "services": {
+    "homepage": {
+      "image": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "192m",
+      "cpus": 0.25,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "HOMEPAGE_ALLOWED_HOSTS": "${SERVER_IP:?Set SERVER_IP}:3000,localhost:3000,127.0.0.1:3000",
+        "HOMEPAGE_VAR_SERVER_IP": "${SERVER_IP}"
+      },
+      "ports": [
+        {
+          "target": 3000,
+          "published": "3000",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/homepage",
+          "target": "/app/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      },
+      "networks": [
+        "default",
+        "storage_metrics"
+      ],
+      "labels": {
+        "pi.autoheal.nvme": "true"
+      }
+    },
+    "storage-metrics": {
+      "image": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "64m",
+      "cpus": 0.1,
+      "pids_limit": 32,
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=16",
+        "/opt/storage-metrics/server.cjs"
+      ],
+      "user": "1000:1000",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "networks": [
+        "storage_metrics"
+      ],
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/storage-metrics",
+          "target": "/opt/storage-metrics",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/storage-metrics",
+          "target": "/metrics",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:9079/healthz',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+        ],
+        "interval": "60s",
+        "timeout": "5s",
+        "retries": 3,
+        "start_period": "20s"
+      },
+      "labels": {
+        "pi.autoheal.nvme": "true"
+      }
+    }
+  },
+  "networks": {
+    "default": {},
+    "storage_metrics": {
+      "internal": true
+    }
+  }
+}

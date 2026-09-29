@@ -1,0 +1,31 @@
+{
+  "name": "pi-it-tools",
+  "services": {
+    "it-tools": {
+      "image": "ghcr.io/corentinth/it-tools@sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "64m",
+      "cpus": 0.2,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "ports": [
+        {
+          "target": 80,
+          "published": "8085",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s"
+    }
+  }
+}

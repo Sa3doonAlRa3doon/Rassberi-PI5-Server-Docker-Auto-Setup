@@ -1,0 +1,71 @@
+{
+  "name": "pi-diun",
+  "services": {
+    "diun": {
+      "image": "crazymax/diun@sha256:e324b793eb32dfb7f74d3a39421ebf090141caaadee69b8f78da63112408ee25",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "128m",
+      "cpus": 0.3,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "stop_grace_period": "45s",
+      "command": [
+        "serve",
+        "--config",
+        "/config/diun.yml"
+      ],
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "LOG_LEVEL": "info",
+        "LOG_JSON": "false"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/diun",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/diun",
+          "target": "/config",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "read_only": true,
+      "tmpfs": [
+        "/tmp"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "diun",
+          "--version"
+        ],
+        "interval": "60s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "45s"
+      }
+    }
+  }
+}

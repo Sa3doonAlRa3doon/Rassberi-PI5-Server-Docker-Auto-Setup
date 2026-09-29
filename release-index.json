@@ -1,0 +1,859 @@
+{
+  "format": 1,
+  "from": "28-app-storage-package",
+  "to": "41-app-customizable-package",
+  "files": {
+    "apply-storage-update.sh": {
+      "sha256": "ab8eb6d551acfa2af05362062c2ddd8ff4140095c01280c775502f262dbd349f",
+      "previous_sha256": "ab8eb6d551acfa2af05362062c2ddd8ff4140095c01280c775502f262dbd349f"
+    },
+    "backup.sh": {
+      "sha256": "e22e2e92bfaed935b9ddd0ba145dc8cc5e0ec379a6f618249a7d351d7dfb0770",
+      "previous_sha256": "e22e2e92bfaed935b9ddd0ba145dc8cc5e0ec379a6f618249a7d351d7dfb0770"
+    },
+    "BACKUPS.md": {
+      "sha256": "23a0ab900bb12fb6656f8de83199ffe8a3b490747f174937e1d9c27af48f3991",
+      "previous_sha256": "23a0ab900bb12fb6656f8de83199ffe8a3b490747f174937e1d9c27af48f3991"
+    },
+    "compose/actual/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/actual/compose.yml": {
+      "sha256": "f71695634a48e857130c86a0b9c25029aa7a3e074f29e28f58ed930e79702894",
+      "previous_sha256": "1d8be3913d3df86165fbd401700f9be83a952fd09ab3d44df09c58bb676d8638"
+    },
+    "compose/autoheal/.env.example": {
+      "sha256": "10625f6f5fd1b4c9a09f93a5e21b0568c1417645283517298ba792829846530f",
+      "previous_sha256": null
+    },
+    "compose/autoheal/compose.yml": {
+      "sha256": "db73d75b0a0ff7711c2e6463a2436e199387174893cf3152269d308e905c0d63",
+      "previous_sha256": null
+    },
+    "compose/beszel/.env.example": {
+      "sha256": "14c93b4dacf2eead0a72eea98725f5b90fc714306ce5d636c1e00ee7e50ddb0d",
+      "previous_sha256": null
+    },
+    "compose/beszel/compose.yml": {
+      "sha256": "2d101c71633bb1fdcb3afa6627db904ad2cb64d0533919c41d51ce2dec8f6886",
+      "previous_sha256": null
+    },
+    "compose/beszel/post-start.py": {
+      "sha256": "18c2a37c1867428d3d7a06936c197ed47a69f1dd6f9ab76b2bd6c7566b0b83a1",
+      "previous_sha256": null
+    },
+    "compose/beszel/post-start.sh": {
+      "sha256": "ca045d06934156d042d1e02f157baab336096abe429515ce63eaee992ca891d1",
+      "previous_sha256": null
+    },
+    "compose/beszel/prepare.py": {
+      "sha256": "e28e2127476d58009ad964f23116e50aad7aaf125fc90425581203a14a5fbe95",
+      "previous_sha256": null
+    },
+    "compose/beszel/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": null
+    },
+    "compose/calibre-web/.env.example": {
+      "sha256": "7f36aca9e7d1f0179fba3c91b52dcbe4ae1dd850faeaa274af3fbe00e7c3db27",
+      "previous_sha256": "7f36aca9e7d1f0179fba3c91b52dcbe4ae1dd850faeaa274af3fbe00e7c3db27"
+    },
+    "compose/calibre-web/compose.yml": {
+      "sha256": "fb741128ef1b2550592482651cc88972c676010ba00e133e442b75af5be1197e",
+      "previous_sha256": "6addc822b9fcc2c7f685ddb97c4abad7da237209882ae7769063fec800cd1a77"
+    },
+    "compose/calibre-web/prepare.py": {
+      "sha256": "b490a032cdcf2e5b067e3b2a3b64482e1e6f9f718d485e9f553565378a6c4a17",
+      "previous_sha256": "b490a032cdcf2e5b067e3b2a3b64482e1e6f9f718d485e9f553565378a6c4a17"
+    },
+    "compose/calibre-web/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1"
+    },
+    "compose/changedetection/.env.example": {
+      "sha256": "3001723344368b606777d265c74a5830c32902ad47f40a912a0c05c9e32b1a50",
+      "previous_sha256": null
+    },
+    "compose/changedetection/compose.yml": {
+      "sha256": "c9d952ae75c8854a2a8f048d3477f5e276e56f29c6eb019ba78939b3e782691d",
+      "previous_sha256": null
+    },
+    "compose/code-server/.env.example": {
+      "sha256": "9e6c93aa631d87611a1253446dd834fd4d5c066fe560967be83f6ed845ecf99a",
+      "previous_sha256": "9e6c93aa631d87611a1253446dd834fd4d5c066fe560967be83f6ed845ecf99a"
+    },
+    "compose/code-server/compose.yml": {
+      "sha256": "d16449810e1739059b5dac4fef3542b102d69b000e86db3f1837d4afaad0ee3e",
+      "previous_sha256": "0a1e69c89f235b00807a82b791a44f7e4b19f67c9ac9800824927bbc9998dd27"
+    },
+    "compose/cyberchef/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/cyberchef/compose.yml": {
+      "sha256": "5d6f277e67fd6b3ef12066807a1f3211384ccb8186f35493151c9ba3c163497b",
+      "previous_sha256": "24b13d2e515feea2a78694e52beb39ce984d4b7270d1cd120b3e2a165c96bc48"
+    },
+    "compose/diun/.env.example": {
+      "sha256": "10625f6f5fd1b4c9a09f93a5e21b0568c1417645283517298ba792829846530f",
+      "previous_sha256": null
+    },
+    "compose/diun/compose.yml": {
+      "sha256": "c04c38d4939f7e827ad68a15f3b951dcf264d89962cf75ba1b6a3bc530f54cda",
+      "previous_sha256": null
+    },
+    "compose/diun/prepare.py": {
+      "sha256": "f6de19e341eaac4725233a547425512913098c618a776be22e72786e86b67189",
+      "previous_sha256": null
+    },
+    "compose/diun/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": null
+    },
+    "compose/docker-socket-proxy/.env.example": {
+      "sha256": "10625f6f5fd1b4c9a09f93a5e21b0568c1417645283517298ba792829846530f",
+      "previous_sha256": null
+    },
+    "compose/docker-socket-proxy/compose.yml": {
+      "sha256": "08b48ab68ed61a6bcdd8ad256b9be1751f48acf530c10eb3123bb71f973abafa",
+      "previous_sha256": null
+    },
+    "compose/dozzle/.env.example": {
+      "sha256": "70e523418886e571fc9aab5d37494296f253d8074e1b84e4e90a481fb91b2cf0",
+      "previous_sha256": "70e523418886e571fc9aab5d37494296f253d8074e1b84e4e90a481fb91b2cf0"
+    },
+    "compose/dozzle/compose.yml": {
+      "sha256": "e3ea79a7a00fcdc158b780ebc44a4f70778c0fc8c9cab2b9db2bbafe4c591ecb",
+      "previous_sha256": "18289d53ef6d8eb3429ed959ad2ebdc7c9b9bf365505d98a536e453e6f0da851"
+    },
+    "compose/dozzle/prepare.py": {
+      "sha256": "9b20b16cbf936b0629f740d8dfaeeeadfb53b85681bbe1280dbfa7dd633c9101",
+      "previous_sha256": "9b20b16cbf936b0629f740d8dfaeeeadfb53b85681bbe1280dbfa7dd633c9101"
+    },
+    "compose/dozzle/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1"
+    },
+    "compose/excalidraw/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/excalidraw/compose.yml": {
+      "sha256": "f77c2082d6f672f9c35bf8a77d37c4bfe6df755c359707d776f4e98018505955",
+      "previous_sha256": "306512805863f5b2b613adfe86a152ca9c21a711f1090a8e779646a53929f7ff"
+    },
+    "compose/filebrowser/.env.example": {
+      "sha256": "533e61e354c7eb23e1f7e5b8ccfc932b7c8fd532a7c863730c5f2e4b73e62c8e",
+      "previous_sha256": "533e61e354c7eb23e1f7e5b8ccfc932b7c8fd532a7c863730c5f2e4b73e62c8e"
+    },
+    "compose/filebrowser/compose.yml": {
+      "sha256": "f3806d1843ebdf89c2fd7206a89faaf71dcec021cc4bab293383fa0cb6c118e6",
+      "previous_sha256": "bac636be31d5902704dc3b0f6aeb258558ee2fba1e15f005c50a304dbe0723b3"
+    },
+    "compose/filebrowser/prepare.py": {
+      "sha256": "ee41be9b0988b8a46121b784f46296a316e63aa2937cb91b4f23359d4a723153",
+      "previous_sha256": "ee41be9b0988b8a46121b784f46296a316e63aa2937cb91b4f23359d4a723153"
+    },
+    "compose/filebrowser/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1"
+    },
+    "compose/freshrss/.env.example": {
+      "sha256": "01c2ef42f7cba0a12484bac7483cd917ed3934d542b08a3a88ec579a92923266",
+      "previous_sha256": "01c2ef42f7cba0a12484bac7483cd917ed3934d542b08a3a88ec579a92923266"
+    },
+    "compose/freshrss/compose.yml": {
+      "sha256": "7ff45f346b4c31b7b0777f2de51e6a174169cd620b619e85b4c0be221b686b87",
+      "previous_sha256": "507a2c595e2c2a2c22bbb5a79b991937bcca618459d0bfc9af61d083064ef9c7"
+    },
+    "compose/gitea/.env.example": {
+      "sha256": "c1363ad33ae667366f05f8ca6e64d8ccb6dbf57e80310ee14e998edd11b59cf7",
+      "previous_sha256": "c1363ad33ae667366f05f8ca6e64d8ccb6dbf57e80310ee14e998edd11b59cf7"
+    },
+    "compose/gitea/compose.yml": {
+      "sha256": "02fe6d031448441eb26fa78f08f090a1ad1a916094bb75df9111425d9fb6f7bc",
+      "previous_sha256": "06347bdaad922a3a6f6367a02463db04cb81ebd2126117744ae301d3a516ae04"
+    },
+    "compose/home-assistant/.env.example": {
+      "sha256": "2dc794508c78dbe8922a3476c43e2bfab3343439e1934b32f0a22ba0e6c3998c",
+      "previous_sha256": null
+    },
+    "compose/home-assistant/compose.yml": {
+      "sha256": "2a7dd28491d9bed3a6996f2fde9eca636929d12953ba0a1cd04dff8176abaeef",
+      "previous_sha256": null
+    },
+    "compose/home-assistant/prepare.sh": {
+      "sha256": "8e6fa513b22c7ab4e0025b403dade66f270028d8cddd8c3a07e59429c16b763d",
+      "previous_sha256": null
+    },
+    "compose/home-assistant/utility-prepare.py": {
+      "sha256": "d2405b82adb212ff695cb6d7e6a0d358634177596a7df5d3ef1b7db963666d90",
+      "previous_sha256": null
+    },
+    "compose/homebox/.env.example": {
+      "sha256": "3fa1f3a11a1b54e62f3995bfe765b1374bc0c8eb819773cb411b20da314540ed",
+      "previous_sha256": null
+    },
+    "compose/homebox/compose.yml": {
+      "sha256": "dc117a3cba89881eee2fc3322c9dede51f51c7e180415ff5a414d25ad82583a2",
+      "previous_sha256": null
+    },
+    "compose/homepage/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/homepage/compose.yml": {
+      "sha256": "899a80ed5a549821be790f02b0a81f1a7d0ff1651bce1a3ce0cad6a7971b2f13",
+      "previous_sha256": "01b906b334b3f315161d245a097568fd312cae9c45c79dfbe54c7ce6553f00b8"
+    },
+    "compose/homepage-tailscale/.env.example": {
+      "sha256": "253d1ad1e58444fc9a71d2c30b5b1e434dfd75a541f85767c0e06f45c98f6bde",
+      "previous_sha256": null
+    },
+    "compose/homepage-tailscale/compose.yml": {
+      "sha256": "5a602cb4e8ed86efecac71e3c9040a2d6c94428c76b584f02d2139f7feff55e5",
+      "previous_sha256": null
+    },
+    "compose/it-tools/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/it-tools/compose.yml": {
+      "sha256": "86e2537d430ff30eb4b33a2af352704bb26a2d2c3eae8440037788864cd37805",
+      "previous_sha256": "cca2e61d2fe2f78786bede3dcfa8912c521dd71a8110cd1c57af345d4c9914d5"
+    },
+    "compose/jellyfin/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/jellyfin/compose.yml": {
+      "sha256": "b23e9093f0bcd3385c794bd65282476db2a6b38f57298ee31874ea9e6fda4e4f",
+      "previous_sha256": "ada2e418c23f42d4cc5245a40593fbc589d11377730b4f842c347b8f90d5c683"
+    },
+    "compose/jupyter/.env.example": {
+      "sha256": "2e2d32b878626b029198ae45954b3fbefaeb9074d957170ef4956dc8505e0011",
+      "previous_sha256": "2e2d32b878626b029198ae45954b3fbefaeb9074d957170ef4956dc8505e0011"
+    },
+    "compose/jupyter/compose.yml": {
+      "sha256": "289db2b92d2efb146cdce9abbe8a720ceaf0a0b01a91507926616466f96c3406",
+      "previous_sha256": "62eb5e85e363346fd847c0cdae5352a26c20daa86954937f9023e3babd587613"
+    },
+    "compose/kiwix/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/kiwix/compose.yml": {
+      "sha256": "7baf26bbfa1fb488e08a2a4fcbe0f7d7fa1f4582e99866fe27d019016c940d7d",
+      "previous_sha256": "009db7dc9f39feeac043a061c43dc9dc760b4b3dcb58453a24c4f8142a2256e3"
+    },
+    "compose/linkding/.env.example": {
+      "sha256": "c2ff399fa2ee6d47b0d8226a9d172f7ce3fba8adcf4097fa01d9060d25baacdc",
+      "previous_sha256": null
+    },
+    "compose/linkding/compose.yml": {
+      "sha256": "a32a06ac41ba27b6606007bcbeccf6d3241bb5668e410b74ce0af2609dbd7476",
+      "previous_sha256": null
+    },
+    "compose/localsendy/.env.example": {
+      "sha256": "88299b4ef81bbc06252c7c1c1c23dc9edb8cfb94717ecda3f2e1e5baf56f7349",
+      "previous_sha256": null
+    },
+    "compose/localsendy/compose.yml": {
+      "sha256": "25284f967056e37ee472c4ada4d7bd2bf89371281ca5d9bbbd61a1d0858ad8bb",
+      "previous_sha256": null
+    },
+    "compose/moodle/.dockerignore": {
+      "sha256": "3b67601bab8766c4559175a59b06532b3988ee09353e5daa911e965c54ffffe2",
+      "previous_sha256": "3b67601bab8766c4559175a59b06532b3988ee09353e5daa911e965c54ffffe2"
+    },
+    "compose/moodle/.env.example": {
+      "sha256": "b3af9d80424dbe751dcc47100ae8dfd1b4cdb96d29fded40d1d0b6155a62eafc",
+      "previous_sha256": "b3af9d80424dbe751dcc47100ae8dfd1b4cdb96d29fded40d1d0b6155a62eafc"
+    },
+    "compose/moodle/apache.conf": {
+      "sha256": "5a6b6a154c97d926743018fdd5908c8bc0b29c8bd6f8b5db0270420e6973e4c1",
+      "previous_sha256": "5a6b6a154c97d926743018fdd5908c8bc0b29c8bd6f8b5db0270420e6973e4c1"
+    },
+    "compose/moodle/compose.yml": {
+      "sha256": "1176234a7b63b3005d0e737d6674542af5fd548f10ba322b580f499c087c01c6",
+      "previous_sha256": "975893a25d056e6de4aadf77d93cd94455c9ccce369dc01bf3c1dbc8671b210e"
+    },
+    "compose/moodle/config.php": {
+      "sha256": "e9cead42b5521c83bf3ca03da88bd97aba692be66bb6d6ac456039c71b6015ee",
+      "previous_sha256": "e9cead42b5521c83bf3ca03da88bd97aba692be66bb6d6ac456039c71b6015ee"
+    },
+    "compose/moodle/db-state.php": {
+      "sha256": "156959ea5628785e2ced5dedc47c8b20e077c4beacfffaaf2104ae879c036926",
+      "previous_sha256": "156959ea5628785e2ced5dedc47c8b20e077c4beacfffaaf2104ae879c036926"
+    },
+    "compose/moodle/Dockerfile": {
+      "sha256": "ba9166234bb1c06477bccdb75f9f7aa9b009cfb83c20fc1e8ef0f6ce57dfa4d0",
+      "previous_sha256": "ba9166234bb1c06477bccdb75f9f7aa9b009cfb83c20fc1e8ef0f6ce57dfa4d0"
+    },
+    "compose/moodle/entrypoint.sh": {
+      "sha256": "9054a29f94cc7516569785d180dbf1307b5544d83fd524efc86ec2b1dbc01f12",
+      "previous_sha256": "9054a29f94cc7516569785d180dbf1307b5544d83fd524efc86ec2b1dbc01f12"
+    },
+    "compose/moodle/health.php": {
+      "sha256": "10a491b328fa02cd14515f346cfff7a2ed91938127402842369edbd2681335cb",
+      "previous_sha256": "10a491b328fa02cd14515f346cfff7a2ed91938127402842369edbd2681335cb"
+    },
+    "compose/moodle/install.php": {
+      "sha256": "25d6b9b6e65f09d1c0d2b85e7a8e2d9268b4e83a7a3d3f2c688150eeca676127",
+      "previous_sha256": "25d6b9b6e65f09d1c0d2b85e7a8e2d9268b4e83a7a3d3f2c688150eeca676127"
+    },
+    "compose/moodle/php.ini": {
+      "sha256": "88aef0c798d999427aa4fd35780b1e662c8482541f37eecf63a5a39e18170b25",
+      "previous_sha256": "88aef0c798d999427aa4fd35780b1e662c8482541f37eecf63a5a39e18170b25"
+    },
+    "compose/n8n/.env.example": {
+      "sha256": "2bbcde95438f6845f65c880b7c9f3bfe902f9b8b2eec7b48b8a61a3694cd8d84",
+      "previous_sha256": "2bbcde95438f6845f65c880b7c9f3bfe902f9b8b2eec7b48b8a61a3694cd8d84"
+    },
+    "compose/n8n/compose.yml": {
+      "sha256": "e81a5e7abeae9eba3bd6b9e0f5499196e65874fcc62095c6a607850164b6c14b",
+      "previous_sha256": "2deff71939f0bd90d7c9167687d11e1e33415f24e850ddaef3da161961bb0f6d"
+    },
+    "compose/navidrome/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/navidrome/compose.yml": {
+      "sha256": "ca66f65adac1c64241c498c41c622bf6c0a2a2fdb75938e034d398b283fb524b",
+      "previous_sha256": "b44810dff147b634e0a72b847e735ab5220f8fe7f5f2c0f60deeb088fbbfe852"
+    },
+    "compose/netalertx/.env.example": {
+      "sha256": "8fb63b0ed563a3684d8bcbe14561fa840db2afe33c4056e89d906e98b67d29a9",
+      "previous_sha256": null
+    },
+    "compose/netalertx/compose.yml": {
+      "sha256": "d30720ffeab5dbdb3454c84cbc1b4073b8fa768b6d8196fb07650e6d744a0a9d",
+      "previous_sha256": null
+    },
+    "compose/netalertx/prepare.sh": {
+      "sha256": "95edf726f89b15400298ca032f98472974847c296cc028d2a9a9472d8aa3ac8d",
+      "previous_sha256": null
+    },
+    "compose/netalertx/utility-prepare.py": {
+      "sha256": "17753c988f46ae653f0c098a1679df4a811587cf4cf6cd7ad9d679e4068d951a",
+      "previous_sha256": null
+    },
+    "compose/nextcloud/.env.example": {
+      "sha256": "6074b62423decc508c611a5ffda672d31dacd33a251a6a637c97ce55705f233c",
+      "previous_sha256": "6074b62423decc508c611a5ffda672d31dacd33a251a6a637c97ce55705f233c"
+    },
+    "compose/nextcloud/compose.yml": {
+      "sha256": "add5f0fd4cf81d6c57d84c2664711db3f0af25aa223e13c16f41ead0e364578a",
+      "previous_sha256": "cfbd0e27b148f0e4003576ae3280cc63fe4c8b62cbc1e0400c628c492ff5c726"
+    },
+    "compose/onlyoffice/.env.example": {
+      "sha256": "42d15c7df2400ac7380e81d953cb40ce204aa691a4f011aeb91328e0eb77a334",
+      "previous_sha256": "42d15c7df2400ac7380e81d953cb40ce204aa691a4f011aeb91328e0eb77a334"
+    },
+    "compose/onlyoffice/compose.yml": {
+      "sha256": "8af4d144c6dfff0ec4e3d1c909bad64b67d93b4bb39b8b72fa0a4e55a512ceeb",
+      "previous_sha256": "a5570cb2a1a4e8d1c10f0bd9d778713ed263ddeacb4e3edb6c2800947a7b1149"
+    },
+    "compose/pairdrop/.env.example": {
+      "sha256": "2dc794508c78dbe8922a3476c43e2bfab3343439e1934b32f0a22ba0e6c3998c",
+      "previous_sha256": null
+    },
+    "compose/pairdrop/compose.yml": {
+      "sha256": "abeafda0468e84b10a2b0c7e425e4508e857aeee31fff9943705eaa13b95f451",
+      "previous_sha256": null
+    },
+    "compose/paperless/.env.example": {
+      "sha256": "35607c2cec5d488bfb7072c873752788f6225a10fc4ca5ef923dad2132bf8900",
+      "previous_sha256": "35607c2cec5d488bfb7072c873752788f6225a10fc4ca5ef923dad2132bf8900"
+    },
+    "compose/paperless/compose.yml": {
+      "sha256": "540beea64c15f5c561382865ec875d5cba98fdcb5e79c2af8c4a9fe8d300c797",
+      "previous_sha256": "e42d5ea500ec3b818a78d32ff0be7b7524d2d90923f30ad7027154ed392f93b9"
+    },
+    "compose/pihole/.env.example": {
+      "sha256": "24a685611807f284a449224164ad0dab999a9f2cb0ad54435a545bae4db0382f",
+      "previous_sha256": "24a685611807f284a449224164ad0dab999a9f2cb0ad54435a545bae4db0382f"
+    },
+    "compose/pihole/compose.yml": {
+      "sha256": "dcd979849648ac5c38f563f10c7ca52aa409a877ea5638f923c38a4699a8d14b",
+      "previous_sha256": "07b9223babbd480d1f85c0ef847d954ce0e399820de35b0810877c2176fd6b53"
+    },
+    "compose/portainer/.env.example": {
+      "sha256": "558a3adc98cfb026846cb54ee6bbe793df92ff696a3a2545d2351a1df389d634",
+      "previous_sha256": "558a3adc98cfb026846cb54ee6bbe793df92ff696a3a2545d2351a1df389d634"
+    },
+    "compose/portainer/compose.yml": {
+      "sha256": "448d98cec00a96f7e0c96d2d1ccecdcbc4965a9d431192097a74b7e122fd08ae",
+      "previous_sha256": "71e0e084eac529cf6d85cf997945d7e1e613d0c8d24c4eb7faecf5906f2e6852"
+    },
+    "compose/portainer/prepare.py": {
+      "sha256": "9e198fae8e4f4ce2c456fe22691ef1785b55acd85b31a9a8f48e5aa608968ac4",
+      "previous_sha256": "9e198fae8e4f4ce2c456fe22691ef1785b55acd85b31a9a8f48e5aa608968ac4"
+    },
+    "compose/portainer/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1"
+    },
+    "compose/scrutiny/.env.example": {
+      "sha256": "10625f6f5fd1b4c9a09f93a5e21b0568c1417645283517298ba792829846530f",
+      "previous_sha256": null
+    },
+    "compose/scrutiny/compose.yml": {
+      "sha256": "1983761b53409ea476f278201ff59674caf37435cdbad921be25c8f851313ecf",
+      "previous_sha256": null
+    },
+    "compose/scrutiny/prepare.py": {
+      "sha256": "71f60db79fee17d4ecf1517706cd3199e93f019fa4ed59199e13ad61a284a66c",
+      "previous_sha256": null
+    },
+    "compose/scrutiny/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": null
+    },
+    "compose/searxng/.env.example": {
+      "sha256": "7bbd48b4f1ff8eae32e31711afd9f6a14313e73bc49a7fa12825f1a123a8f292",
+      "previous_sha256": "7bbd48b4f1ff8eae32e31711afd9f6a14313e73bc49a7fa12825f1a123a8f292"
+    },
+    "compose/searxng/compose.yml": {
+      "sha256": "f3b04eaa0551bf3462f7e9d52d97558c15826ff64f1714da9e58809d0863dece",
+      "previous_sha256": "8d7e965eac87c70217838d851f40b1725cfe24df1676fe74b95baa6de4535714"
+    },
+    "compose/stirling-pdf/.env.example": {
+      "sha256": "3cdad023abfa1a31c7bc0da2250457eafab12fb2e68f01154d35fbb6c84a67a6",
+      "previous_sha256": "3cdad023abfa1a31c7bc0da2250457eafab12fb2e68f01154d35fbb6c84a67a6"
+    },
+    "compose/stirling-pdf/compose.yml": {
+      "sha256": "53b1d9acb24b39e0cbb15f4733079b4620cd8cb13d7505bd05e82439bbb060eb",
+      "previous_sha256": "ade9cae4a5034d4b501b734ed2a65d662d9bca3730bf9841893359fe69ccebd1"
+    },
+    "compose/syncthing/.env.example": {
+      "sha256": "6728dcd243d6bb8b16d7f5fced63fef9ebf494e2e68b663fbe1fb0260c1a24b3",
+      "previous_sha256": "6728dcd243d6bb8b16d7f5fced63fef9ebf494e2e68b663fbe1fb0260c1a24b3"
+    },
+    "compose/syncthing/compose.yml": {
+      "sha256": "07f6ba1ad3e4773a63d30b48bc84dd4413a2c773a0a1d753fddba5aae2c06291",
+      "previous_sha256": "6974832e215fd223521c565cda7412919ff31a2de3a162d6590301f309bb4255"
+    },
+    "compose/syncthing/prepare.py": {
+      "sha256": "ff04b66350325729508c1aca2cb9bf96c4bedfad341530d6baed221a9b6c46f3",
+      "previous_sha256": "ff04b66350325729508c1aca2cb9bf96c4bedfad341530d6baed221a9b6c46f3"
+    },
+    "compose/syncthing/prepare.sh": {
+      "sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1",
+      "previous_sha256": "8f81088cbdef90c446d6e6ad98d88500f7212d98d215186b256ac8e4ae058bf1"
+    },
+    "compose/uptime-kuma/.env.example": {
+      "sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d",
+      "previous_sha256": "d9af05d5d24fba62e1cb168e591859457ecdd6067eb6bed0fa71f378e83d929d"
+    },
+    "compose/uptime-kuma/compose.yml": {
+      "sha256": "70debc36c88ed6d906ba8c5e8401d062b98aacea1074f0d7bdacc6752343eb8c",
+      "previous_sha256": "0ced80c729d0e8e04d3498ad1e775679ae2c84b9f9e6d646b9f573f3f8b2e51e"
+    },
+    "compose/vaultwarden/.env.example": {
+      "sha256": "70059abe2da57c3f2789b7aa9c167c5e347afa4dc9d57aa6c31dc061c1f86b70",
+      "previous_sha256": "70059abe2da57c3f2789b7aa9c167c5e347afa4dc9d57aa6c31dc061c1f86b70"
+    },
+    "compose/vaultwarden/compose.yml": {
+      "sha256": "37bdc5ece4bba843a7ab38aa84e81a0c23763ecc16c855905717cd225cad7b94",
+      "previous_sha256": "98094fc3248c91dcedaa5ffa13299c831c9a1f10ce95fbfbd12637efd16a740b"
+    },
+    "compose/wikijs/.env.example": {
+      "sha256": "63f5bccdcaaad6a61269cd9768148265b1d59646005d4b34a2cb8b4ac5e4cae6",
+      "previous_sha256": "63f5bccdcaaad6a61269cd9768148265b1d59646005d4b34a2cb8b4ac5e4cae6"
+    },
+    "compose/wikijs/compose.yml": {
+      "sha256": "0addf984c1fd5c55b40aa1cb46abcf5518882fa6c6413fb948a6200252a49f68",
+      "previous_sha256": "693b710110d9eaab6a9f5eca58998cdf20b9fdd6d3a8f479b8fe98f22416697b"
+    },
+    "configs/autoheal/guard-proxy.py": {
+      "sha256": "94aae284abf83caee154fe83f41ec28393f2ea9344c92946ec6fdb2764d8344e",
+      "previous_sha256": null
+    },
+    "configs/backup.conf.example": {
+      "sha256": "0c8f6aec2f8023de9f8b58398b2a0625cff957e87eb4b993bc1839108d145ae8",
+      "previous_sha256": "0c8f6aec2f8023de9f8b58398b2a0625cff957e87eb4b993bc1839108d145ae8"
+    },
+    "configs/beszel/docker-read.cfg": {
+      "sha256": "33c4854e71d715d379ea6bef36ef242dc522445cf14b8cb4fe54144b6df47a5d",
+      "previous_sha256": null
+    },
+    "configs/changedetection/start.py": {
+      "sha256": "10f8dc4463d8a0261a82f4fd656e23c077ea38ae3dcb20ac719046b781894eac",
+      "previous_sha256": null
+    },
+    "configs/diun/diun.yml": {
+      "sha256": "d4fdf84b9e5cac8e57963eafb2a8fd30d2258f84c53208a8197ff4606a80f651",
+      "previous_sha256": null
+    },
+    "configs/diun/notify.sh": {
+      "sha256": "b94256803e9cbbe7d22c7da1aa425491902d91363afd4f70b5bef420b009a65d",
+      "previous_sha256": null
+    },
+    "configs/filebrowser/settings.json": {
+      "sha256": "8c14f131ba3447933acf935cc98cb53c2ff8c743305fdbec188cc96e7816f9bf",
+      "previous_sha256": "8c14f131ba3447933acf935cc98cb53c2ff8c743305fdbec188cc96e7816f9bf"
+    },
+    "configs/homepage/bookmarks.yaml": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "previous_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "configs/homepage/docker.yaml": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "previous_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "configs/homepage/services.yaml": {
+      "sha256": "d7336f590b2e1072729c5e59559f4882cb50a266d944f49dd51d16746092773b",
+      "previous_sha256": "53420b546a88196ea6250fc0e6f44d4dcdf766eebd35711f3ff2e25518a8c780"
+    },
+    "configs/homepage/settings.yaml": {
+      "sha256": "efbc9298c47eb23bd5f751e1ba0f48f090d0ad59e7d8797097e7390229f50805",
+      "previous_sha256": "efbc9298c47eb23bd5f751e1ba0f48f090d0ad59e7d8797097e7390229f50805"
+    },
+    "configs/homepage/widgets.yaml": {
+      "sha256": "ada8dcda881438e79cd3e423a869197097ddfb3fb418a4e301e4341540521724",
+      "previous_sha256": "ada8dcda881438e79cd3e423a869197097ddfb3fb418a4e301e4341540521724"
+    },
+    "configs/homepage-tailscale/bookmarks.yaml": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "previous_sha256": null
+    },
+    "configs/homepage-tailscale/docker.yaml": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "previous_sha256": null
+    },
+    "configs/homepage-tailscale/services.yaml": {
+      "sha256": "20a580a346d77aeb9dc9a432270d0986c9f30262433182ee4ee450ba9216760a",
+      "previous_sha256": null
+    },
+    "configs/homepage-tailscale/settings.yaml": {
+      "sha256": "2b7ec44cc3329b7c028ac29e2cc58ae03a4aaa9f520e4c630fc32ad9d132a2eb",
+      "previous_sha256": null
+    },
+    "configs/homepage-tailscale/widgets.yaml": {
+      "sha256": "55b926c701b34a02958026ca9a21887cfe33557aac151c1643077ccf5326f711",
+      "previous_sha256": null
+    },
+    "configs/kiwix/empty-library.xml": {
+      "sha256": "a96dab262879f01e895f7456523a1005e74a9691e0b8171a47c9c615f8022d36",
+      "previous_sha256": "a96dab262879f01e895f7456523a1005e74a9691e0b8171a47c9c615f8022d36"
+    },
+    "configs/kiwix/start.sh": {
+      "sha256": "e8964a502bb6c421a5d705fec34233388df7a3442e8c1f0c89eca8174beaed6d",
+      "previous_sha256": "e8964a502bb6c421a5d705fec34233388df7a3442e8c1f0c89eca8174beaed6d"
+    },
+    "configs/pairdrop/rtc-config.json": {
+      "sha256": "0fb0b16d2d4951904b1409bc46b78198eafde05485ff131aa13ae31b722d6028",
+      "previous_sha256": null
+    },
+    "configs/portable-backup.json.example": {
+      "sha256": "85e4db2ca918ec3400e5e2b6034cd8bc4868cbc23530cd6e50ba8643894f9977",
+      "previous_sha256": null
+    },
+    "configs/scrutiny/scrutiny.yaml": {
+      "sha256": "8bb8dce8c5fcf393e735934829cb70cc8753dc3dd3bad003134d71e7f36d5745",
+      "previous_sha256": null
+    },
+    "configs/searxng/settings.yml": {
+      "sha256": "7af7248f6da5c36842c849de27ad589c7bd38588bc9d990b482c7cc9775823e7",
+      "previous_sha256": "7af7248f6da5c36842c849de27ad589c7bd38588bc9d990b482c7cc9775823e7"
+    },
+    "configs/settings-ui/app.js": {
+      "sha256": "e3534a5df07485795db7e6f713f0ba85fa254674cde40a22e93d849af2198ead",
+      "previous_sha256": null
+    },
+    "configs/settings-ui/index.html": {
+      "sha256": "e2e0dfeb1c67900e1484df006e3cd3f229f4fb693dd8722d9bcf43237af66472",
+      "previous_sha256": null
+    },
+    "configs/settings-ui/navigation.css": {
+      "sha256": "a8f34da68592063478380cf12d501d72368023902920a376d06cb0b61c1507ed",
+      "previous_sha256": null
+    },
+    "configs/settings-ui/style.css": {
+      "sha256": "d24e3d4c3161da46207d6bf2b48e61d04f6d1db7c478e40aa0066fd230c8035f",
+      "previous_sha256": null
+    },
+    "configs/storage-metrics/server.cjs": {
+      "sha256": "c3aeb68368938f3cc6e060788c740087ebe79764f1b20a0fe78a15df14fe8ad1",
+      "previous_sha256": "9bd29df7a785a61ccc12cbf0a0094f337836a6d75a7ba75f8b54e47aad2bd6f9"
+    },
+    "configs/storage.json": {
+      "sha256": "67de44167ca5757ab226216cc60e30fa325b341e3e76c39ecf1529558ceb2ce5",
+      "previous_sha256": "67de44167ca5757ab226216cc60e30fa325b341e3e76c39ecf1529558ceb2ce5"
+    },
+    "docs/APPS-STATEFUL.md": {
+      "sha256": "d542884f425a661c2e2de071458589f71e33e5ce3ebff1f1362aaa8bfbd73258",
+      "previous_sha256": "d542884f425a661c2e2de071458589f71e33e5ce3ebff1f1362aaa8bfbd73258"
+    },
+    "docs/APPS-UTILITIES.md": {
+      "sha256": "f737afd29ccde6931d305e82319da328ee119d2505e3fa81d6cb55e9ad1226ca",
+      "previous_sha256": "f737afd29ccde6931d305e82319da328ee119d2505e3fa81d6cb55e9ad1226ca"
+    },
+    "docs/MONITORING-APPS.md": {
+      "sha256": "38d9d75e3f867290e1b1cdd8e00acc7c26ac9f6db581c218d613d426420ffffa",
+      "previous_sha256": null
+    },
+    "docs/monitoring-image-evidence.json": {
+      "sha256": "1aa86b3c5b83a7e8f29c63942da5dfe93c58bd0444251c1b5246dd93e067a938",
+      "previous_sha256": null
+    },
+    "docs/PORTABLE-BACKUP.md": {
+      "sha256": "93609aa68025f95c56a48d1bdd54d3d1d912ed3ce52c86e3026cfee57af20922",
+      "previous_sha256": null
+    },
+    "docs/RECOVERY.md": {
+      "sha256": "6f799fef64b7063a1d08592dbacc8fe04e5add5a946ea23d0c4f290c96a0e389",
+      "previous_sha256": "6f799fef64b7063a1d08592dbacc8fe04e5add5a946ea23d0c4f290c96a0e389"
+    },
+    "docs/STATEFUL-CONFIG-VALIDATION.json": {
+      "sha256": "cba4021e9aa271f6c2e48d9dace4c6d273cdf94c773f6513320c5e95b995e723",
+      "previous_sha256": "cba4021e9aa271f6c2e48d9dace4c6d273cdf94c773f6513320c5e95b995e723"
+    },
+    "docs/STATEFUL-IMAGE-VERIFICATION.json": {
+      "sha256": "3949fb2a2d2c1881243f7fe0b0f6734b2936f5b27107bc9558ae22f601d23ce4",
+      "previous_sha256": "3949fb2a2d2c1881243f7fe0b0f6734b2936f5b27107bc9558ae22f601d23ce4"
+    },
+    "docs/STORAGE-CUSTOMIZATION.md": {
+      "sha256": "6ff211bcdcf1066a7c7f188acf001b3626a7a05bc6a56c15380143aead8a2238",
+      "previous_sha256": null
+    },
+    "docs/STORAGE-MIGRATION-REPORT.md": {
+      "sha256": "32e8b564e2f957ce9d6539b5724daf14dc07a9c9ad3d80eaf4a1c288445a77bf",
+      "previous_sha256": "32e8b564e2f957ce9d6539b5724daf14dc07a9c9ad3d80eaf4a1c288445a77bf"
+    },
+    "docs/STORAGE-UPDATE.md": {
+      "sha256": "ce5ca47838ebe784b841fa94ee1cb6787122ff2cc6d3ed0ab7e13016e6bf24f4",
+      "previous_sha256": "ce5ca47838ebe784b841fa94ee1cb6787122ff2cc6d3ed0ab7e13016e6bf24f4"
+    },
+    "docs/TAILSCALE-HOMEPAGE.md": {
+      "sha256": "abe75814f69ba0cbc8ac0e925bb0a40f0ea770567af78f13191c137d15a27751",
+      "previous_sha256": null
+    },
+    "docs/UPGRADE.md": {
+      "sha256": "83ab61aa0644564957029ffe6fc39be78e85581b16e6849353a4615a9a113bf7",
+      "previous_sha256": null
+    },
+    "docs/UTILITIES-IMAGE-EVIDENCE.json": {
+      "sha256": "8fb027baebebe2d10651876347c7390f164043d104a9bfe72f0d6236bf7e8dd2",
+      "previous_sha256": "8fb027baebebe2d10651876347c7390f164043d104a9bfe72f0d6236bf7e8dd2"
+    },
+    "docs/UTILITY-ADDITIONS.md": {
+      "sha256": "0b1355a2ced3b0fc4a2000403c9e613a144fa22a92e4ecdfff15b47e71c7c817",
+      "previous_sha256": null
+    },
+    "docs/VALIDATION.md": {
+      "sha256": "4a2336f28286596416bf95e53998f7e03f481f91bec605ebfd4f900c76b68996",
+      "previous_sha256": "4a2336f28286596416bf95e53998f7e03f481f91bec605ebfd4f900c76b68996"
+    },
+    "install-all.sh": {
+      "sha256": "332e2f4f84a415463e594e60517651ee155cd408dd9a1e009bfed83a51fcc57f",
+      "previous_sha256": "f2e59813a51112a1af0106a97087b4606f0c52c7c09bdd9a824b2910517ac523"
+    },
+    "install-server.sh": {
+      "sha256": "5f77d48ef596aaff3a504579fd350743f0a00e1f6813c8b9ac7a393a76f3253d",
+      "previous_sha256": "5f77d48ef596aaff3a504579fd350743f0a00e1f6813c8b9ac7a393a76f3253d"
+    },
+    "manifest.json": {
+      "sha256": "ef459a408fbe48700af6e03d73d61edc60a53b78b57f6aca7f80a18a88bb68bb",
+      "previous_sha256": "a6a61abb923156f77439b6b128ae9538d3b6646beed4e929cf16e86c32d362bf"
+    },
+    "portable-backup.sh": {
+      "sha256": "69b2ef9daf5fbf6e38c4ca6bacf4ff5a23795448babe86214e1765d558e6f595",
+      "previous_sha256": null
+    },
+    "PORTS.md": {
+      "sha256": "1112ec4dda536950bdfbd40e20f7cbb9867374291422f04de939e91f92e72be9",
+      "previous_sha256": "af72ba17bfc7f528f5730acc84b1f64148b6eebf5cd761a1038c508f53b50544"
+    },
+    "README.md": {
+      "sha256": "c75ce5e2cf06cdc4b5eee0a4ee9f757f93a3b8aa9f094b2be6ce830b9deb28c0",
+      "previous_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02"
+    },
+    "scripts/apply-storage-update.py": {
+      "sha256": "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19",
+      "previous_sha256": "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19"
+    },
+    "scripts/backup.sh": {
+      "sha256": "3bf681def14df5148205fc35b3d6c95446a7ab75f0166c2dd359e98d1ba84f19",
+      "previous_sha256": "3bf681def14df5148205fc35b3d6c95446a7ab75f0166c2dd359e98d1ba84f19"
+    },
+    "scripts/boot-storage.py": {
+      "sha256": "824d1285cce2b34f82f88fceec0c8f3a5b6da1fbbf91d052b5b97b09b09f19e5",
+      "previous_sha256": "1787575fcbe4da2d40568a2833d754b8d6262a5369831aba6501bbd22891c564"
+    },
+    "scripts/check-storage.sh": {
+      "sha256": "d3efc498d20a8d566eebf6ab5ff7f9d471905d554d26700b87f4a0e9f051d456",
+      "previous_sha256": "d3efc498d20a8d566eebf6ab5ff7f9d471905d554d26700b87f4a0e9f051d456"
+    },
+    "scripts/common.sh": {
+      "sha256": "33e989f9d8cbd0b7e1ab5a48ee5107fb3470e2b4baef61117f46d5a4e9dcc720",
+      "previous_sha256": "33e989f9d8cbd0b7e1ab5a48ee5107fb3470e2b4baef61117f46d5a4e9dcc720"
+    },
+    "scripts/disk-health.sh": {
+      "sha256": "1d2fa96afae00381052da6804dbfbd9ee4bc050dcc557aa8bc8a524e3bfeae57",
+      "previous_sha256": "1d2fa96afae00381052da6804dbfbd9ee4bc050dcc557aa8bc8a524e3bfeae57"
+    },
+    "scripts/display-dashboard.sh": {
+      "sha256": "2179ceed61ef392ea53eb4cc27f8848a37da99178848051778f159ba5071300c",
+      "previous_sha256": "2179ceed61ef392ea53eb4cc27f8848a37da99178848051778f159ba5071300c"
+    },
+    "scripts/host-setup.py": {
+      "sha256": "7a673ea9f91e3ab3aafcd62655e4a3f7d9714cffd1b7de127b7c7a1a9fe5c1e1",
+      "previous_sha256": "74579cebd052f4760b96bbd1b97604bb5afb43c97df6b139e1758f97990410af"
+    },
+    "scripts/install-settings-service.py": {
+      "sha256": "f58b77e4c2364e324db210a80be4e43bcd7d5ff9308c9d22ff9796af6c108da3",
+      "previous_sha256": null
+    },
+    "scripts/manage.py": {
+      "sha256": "dca4669fc1b68e62b910aa499fafd6aa31e56a80c1d0ba5b8e047370dc102d4f",
+      "previous_sha256": "fec4f01966b93cb78567d0b2dfbc726183d7cdf8310c3035f241683a87c2b7fa"
+    },
+    "scripts/monitoring_devices.py": {
+      "sha256": "7982700d4939a79056a5167c7a057a50f9ae64ed2cfa193559442ac18819d0f1",
+      "previous_sha256": null
+    },
+    "scripts/portable-backup.py": {
+      "sha256": "39e23ff62238f972b1da0a68147e2f452a32739fe8a4c7b43c03c2f58dfbd9d7",
+      "previous_sha256": null
+    },
+    "scripts/preflight.py": {
+      "sha256": "7cb9f2466f2c02ec5585cc546b895384308506e8d895e35ee059291cbacbf97c",
+      "previous_sha256": "7cb9f2466f2c02ec5585cc546b895384308506e8d895e35ee059291cbacbf97c"
+    },
+    "scripts/prepare.py": {
+      "sha256": "e05b0e7fc8805678c285025422a784e8d88a23c25c41c8fde3f2e152cb47840b",
+      "previous_sha256": "468efab637826b8837ca442a9707a06da3999b1f36f1624a4d6a6731e68d4a45"
+    },
+    "scripts/restore.sh": {
+      "sha256": "2922842aa37bb7d756dd7d9d73aad430ee451365f860520d00e6579a0560c6cc",
+      "previous_sha256": "2922842aa37bb7d756dd7d9d73aad430ee451365f860520d00e6579a0560c6cc"
+    },
+    "scripts/settings_server.py": {
+      "sha256": "2c8529200862c1b9d8874f53a7e6f06780c41030b17e317e93a0db2024c44ce7",
+      "previous_sha256": null
+    },
+    "scripts/setup-tailscale-homepage.py": {
+      "sha256": "446ae55a423f7a9e2be0a5db01d0e973c945c4ebf4122da0ea0ccee4af30cfb9",
+      "previous_sha256": null
+    },
+    "scripts/storage-health.py": {
+      "sha256": "9653830eff28be27150a3f7e934a9153133778c95e2e2ad166ebdea228e24ba9",
+      "previous_sha256": "cff861566fd685e5cb06576539595a76d65bcec5ba47c82fc7a03e14e3fd3032"
+    },
+    "scripts/storage-status.py": {
+      "sha256": "0a5f4d57ded40a58c30fdd18a44e9601c78be2cd68872908fc9043ee93d61242",
+      "previous_sha256": "a5e64d6a58fdae9a5f3f7c63defa497583bc96277a24dc27d62519e7e41155bd"
+    },
+    "scripts/storage-status.sh": {
+      "sha256": "74e7df8e856548adef081799165fd542f39f310d2b1e8ca098acb17cb98eb567",
+      "previous_sha256": "74e7df8e856548adef081799165fd542f39f310d2b1e8ca098acb17cb98eb567"
+    },
+    "scripts/storage-watch.py": {
+      "sha256": "3b2c937a66235482e3d66eb732aca4e1fecca0bacee8e61d5aa3dfa53000968c",
+      "previous_sha256": "cf78762e99beaf94ba0656d3bda7d7f3da69f4d9d5d87f2c5d71b2a06f9cd98c"
+    },
+    "scripts/storage_guard.py": {
+      "sha256": "b538221317f223238d77a8748f4695bdf3d84ee672086ccb39af24e95e066263",
+      "previous_sha256": "6b82b4fe5dd0721f8fcd072f49d8a251187563f918168bcd9605b39db80a15d8"
+    },
+    "scripts/storage_setup.py": {
+      "sha256": "2f155933555a9ef840f7c3a2c14f1ef8779cba996e798aae71da3d6410468406",
+      "previous_sha256": null
+    },
+    "scripts/upgrade-package.py": {
+      "sha256": "51bfa4a6c3f9b9f7f6650fd92cc66999e375913fcbd59a7ddd1a70aa86ab997a",
+      "previous_sha256": null
+    },
+    "scripts/watch-storage.sh": {
+      "sha256": "843f087c23a5c2ca82d19b4533df9e904b3c3b8e63d44587fc2460c2fd845ccf",
+      "previous_sha256": "843f087c23a5c2ca82d19b4533df9e904b3c3b8e63d44587fc2460c2fd845ccf"
+    },
+    "setup-server.sh": {
+      "sha256": "0aeb11d847a9bd44ac2bf439dedd765ca5c9669d809c9319b80b25b77ac35018",
+      "previous_sha256": null
+    },
+    "setup-tailscale-homepage.sh": {
+      "sha256": "948e0a3aac392047af910f06f0791adcf171d38f5b124181e5980cd5f68a11c4",
+      "previous_sha256": null
+    },
+    "start-all.sh": {
+      "sha256": "58c2d7ed52c957bc1e96651c0abacc4febf4c29a57fc8bc78e9e675138dfa898",
+      "previous_sha256": "58c2d7ed52c957bc1e96651c0abacc4febf4c29a57fc8bc78e9e675138dfa898"
+    },
+    "status.sh": {
+      "sha256": "8b808fc9202b57a477459d4fddc8d52d94b7a512866cf2816a0a42818b4f42de",
+      "previous_sha256": "8b808fc9202b57a477459d4fddc8d52d94b7a512866cf2816a0a42818b4f42de"
+    },
+    "stop-all.sh": {
+      "sha256": "6efea2ff2009ba87107551ba03c9ff8c86047fbdec68c4f63068acd4389778b3",
+      "previous_sha256": "6efea2ff2009ba87107551ba03c9ff8c86047fbdec68c4f63068acd4389778b3"
+    },
+    "storage-status.sh": {
+      "sha256": "a2d2924793aef41aa61b414314e0769d2e33d1693ffea071b3704200fdf415d0",
+      "previous_sha256": "a2d2924793aef41aa61b414314e0769d2e33d1693ffea071b3704200fdf415d0"
+    },
+    "STORAGE.md": {
+      "sha256": "1d4989813c5670a28c578af443130e927f26fbb5123b34f4d057f6808862ed6a",
+      "previous_sha256": "30ee154fcae83af8b834ef9377434e89a96628a43c4f1ad4a9241c540bd924af"
+    },
+    "systemd/docker-storage.conf": {
+      "sha256": "28dbf69d003b9d359028713287af8a45804fccb53ac2c9b143fbcc2eaec25818",
+      "previous_sha256": "28dbf69d003b9d359028713287af8a45804fccb53ac2c9b143fbcc2eaec25818"
+    },
+    "systemd/pi-backup.service": {
+      "sha256": "e9fb524fbe40fc7ca3f328bd8d91f23ea3edb5e8fb9334a974c59baf25112473",
+      "previous_sha256": "e9fb524fbe40fc7ca3f328bd8d91f23ea3edb5e8fb9334a974c59baf25112473"
+    },
+    "systemd/pi-backup.timer": {
+      "sha256": "3173869222d8d2235043c662b66ef591dae9d21812fa32c2bcf84b16bcc453e8",
+      "previous_sha256": "3173869222d8d2235043c662b66ef591dae9d21812fa32c2bcf84b16bcc453e8"
+    },
+    "systemd/pi-portable-backup.service": {
+      "sha256": "1a2f72165a6f647d937b84b5953d7dbd5c8554fd45db7abc8a4bb93489d24d55",
+      "previous_sha256": null
+    },
+    "systemd/pi-portable-backup.timer": {
+      "sha256": "98fed362e70c93389c6a2beac1a42850f8787850b9e089a9e6fdb082d74ac859",
+      "previous_sha256": null
+    },
+    "systemd/pi-settings.service": {
+      "sha256": "51822075ac0cc42f07d58f02acbd903c2138c328c5a7f48f1cc4e4e2252f6161",
+      "previous_sha256": null
+    },
+    "systemd/pi-storage-metrics.service": {
+      "sha256": "73b2d74c18f43be1949c43b18ac1763f757346b5c2e1bd6d8b4b4714b398d5f1",
+      "previous_sha256": "73b2d74c18f43be1949c43b18ac1763f757346b5c2e1bd6d8b4b4714b398d5f1"
+    },
+    "systemd/pi-storage-metrics.timer": {
+      "sha256": "ca8633faabc017ea0bbf457eff711a831f0c04b61464fd68eb59c53402c0a976",
+      "previous_sha256": "ca8633faabc017ea0bbf457eff711a831f0c04b61464fd68eb59c53402c0a976"
+    },
+    "systemd/pi-storage-start.service": {
+      "sha256": "42e41df02ee2a31c035702c9a62d8342a18518478eddbfdc4ae1a25a21280d7a",
+      "previous_sha256": "8d3e31d4023581ed157f9bba421788428a59451ba061ed18bdc50948959c8919"
+    },
+    "systemd/pi-storage-watch.service": {
+      "sha256": "fba05ab93365534896f70b670d2d225ac06ca92afa7c811a4e713b2fb996cb5a",
+      "previous_sha256": "fba05ab93365534896f70b670d2d225ac06ca92afa7c811a4e713b2fb996cb5a"
+    },
+    "systemd/pi-storage-watch.timer": {
+      "sha256": "e00f4d025cc4c84c1d0983b4aaa63e1447564c6683bc3c667ef72c9c3e755115",
+      "previous_sha256": "e00f4d025cc4c84c1d0983b4aaa63e1447564c6683bc3c667ef72c9c3e755115"
+    },
+    "update-all.sh": {
+      "sha256": "469a174616a8382d871d16666c35cc00f8810fcb6e75b62fc45d142dad69b02d",
+      "previous_sha256": "469a174616a8382d871d16666c35cc00f8810fcb6e75b62fc45d142dad69b02d"
+    },
+    "upgrade-server.sh": {
+      "sha256": "7a31860cb1fdd84846f25ae0006768664c1d1d011e4d79c127f5e1e63467db8c",
+      "previous_sha256": null
+    },
+    "verify-after-reboot.sh": {
+      "sha256": "0f1d1e5820d471d6a56789067cf7b9e382dfb4a6be477c6d8cd65cda9050a69e",
+      "previous_sha256": "0f1d1e5820d471d6a56789067cf7b9e382dfb4a6be477c6d8cd65cda9050a69e"
+    }
+  }
+}

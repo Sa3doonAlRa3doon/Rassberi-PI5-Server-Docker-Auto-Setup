@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "web": {
+    "listen": {
+      "host": "0.0.0.0",
+      "port": 8080
+    },
+    "database": {
+      "location": "/opt/scrutiny/config/scrutiny.db"
+    },
+    "influxdb": {
+      "host": "127.0.0.1",
+      "port": 8086
+    }
+  },
+  "log": {
+    "level": "INFO"
+  }
+}

@@ -1,0 +1,370 @@
+[
+  {
+    "Verified storage": [
+      {
+        "NVMe SSD": {
+          "description": "OS, Docker and databases at /",
+          "widget": {
+            "type": "customapi",
+            "url": "http://storage-metrics:9079/v1/storage/root",
+            "refreshInterval": 30000,
+            "display": "list",
+            "mappings": [
+              {
+                "field": "display.status",
+                "label": "Verified status",
+                "format": "text"
+              },
+              {
+                "field": "display.total",
+                "label": "Total",
+                "format": "text"
+              },
+              {
+                "field": "display.used",
+                "label": "Used",
+                "format": "text"
+              },
+              {
+                "field": "display.free",
+                "label": "Free",
+                "format": "text"
+              },
+              {
+                "field": "display.percent",
+                "label": "Used %",
+                "format": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "1 TB HDD": {
+          "description": "HDD1TB - /mnt/hdd",
+          "widget": {
+            "type": "customapi",
+            "url": "http://storage-metrics:9079/v1/storage/hdd",
+            "refreshInterval": 30000,
+            "display": "list",
+            "mappings": [
+              {
+                "field": "display.status",
+                "label": "Verified status",
+                "format": "text"
+              },
+              {
+                "field": "display.total",
+                "label": "Total",
+                "format": "text"
+              },
+              {
+                "field": "display.used",
+                "label": "Used",
+                "format": "text"
+              },
+              {
+                "field": "display.free",
+                "label": "Free",
+                "format": "text"
+              },
+              {
+                "field": "display.percent",
+                "label": "Used %",
+                "format": "text"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "microSD media": {
+          "description": "Music and videos - /mnt/media",
+          "widget": {
+            "type": "customapi",
+            "url": "http://storage-metrics:9079/v1/storage/media",
+            "refreshInterval": 30000,
+            "display": "list",
+            "mappings": [
+              {
+                "field": "display.status",
+                "label": "Verified status",
+                "format": "text"
+              },
+              {
+                "field": "display.total",
+                "label": "Total",
+                "format": "text"
+              },
+              {
+                "field": "display.used",
+                "label": "Used",
+                "format": "text"
+              },
+              {
+                "field": "display.free",
+                "label": "Free",
+                "format": "text"
+              },
+              {
+                "field": "display.percent",
+                "label": "Used %",
+                "format": "text"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "Management": [
+      {
+        "Portainer": {
+          "href": "https://{{HOMEPAGE_VAR_SERVER_IP}}:9443/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Uptime Kuma": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:3002/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Dozzle": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8088/",
+          "description": "Private Pi server"
+        }
+      }
+    ]
+  },
+  {
+    "School": [
+      {
+        "Nextcloud": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8080/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Moodle": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8082/",
+          "description": "On demand"
+        }
+      },
+      {
+        "Stirling PDF": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8083/",
+          "description": "On demand"
+        }
+      },
+      {
+        "Wiki.js": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8084/",
+          "description": "Private Pi server"
+        }
+      }
+    ]
+  },
+  {
+    "Development": [
+      {
+        "Code Server": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8443/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Jupyter": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8888/",
+          "description": "On demand"
+        }
+      },
+      {
+        "Gitea": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:3001/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "IT Tools": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8085/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "CyberChef": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8086/",
+          "description": "Private Pi server"
+        }
+      }
+    ]
+  },
+  {
+    "Files and Media": [
+      {
+        "File Browser": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8092/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Paperless": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8087/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Syncthing": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8384/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Jellyfin": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8096/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Navidrome": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:4533/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Calibre-Web": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8093/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Kiwix": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8094/",
+          "description": "Private Pi server"
+        }
+      }
+    ]
+  },
+  {
+    "Productivity": [
+      {
+        "SearXNG": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8090/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Excalidraw": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8091/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "FreshRSS": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8095/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Actual Budget": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:5006/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Pi-hole": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8053/admin/",
+          "description": "Private Pi server"
+        }
+      }
+    ]
+  },
+  {
+    "Additional services": [
+      {
+        "OnlyOffice": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8081/",
+          "description": "On demand document integration"
+        }
+      },
+      {
+        "n8n": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:5678/",
+          "description": "Automation"
+        }
+      },
+      {
+        "Vaultwarden": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8089/",
+          "description": "HTTPS or SSH tunnel required"
+        }
+      }
+    ]
+  },
+  {
+    "More server tools": [
+      {
+        "Beszel": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8098/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Scrutiny": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8099/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Homebox": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:7745/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Linkding": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:9090/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Changedetection": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:5000/",
+          "description": "On demand"
+        }
+      },
+      {
+        "Pairdrop": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:3004/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Localsendy": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8100/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Netalertx": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:20211/",
+          "description": "On demand"
+        }
+      },
+      {
+        "Home Assistant": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8123/",
+          "description": "Private Pi server"
+        }
+      },
+      {
+        "Server settings": {
+          "href": "https://{{HOMEPAGE_VAR_SERVER_IP}}:8788/",
+          "description": "Apps, data placement and portable backups"
+        }
+      }
+    ]
+  }
+]

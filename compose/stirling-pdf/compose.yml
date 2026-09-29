@@ -1,0 +1,75 @@
+{
+  "name": "pi-stirling-pdf",
+  "services": {
+    "stirling-pdf": {
+      "image": "stirlingtools/stirling-pdf@sha256:3b3670fce70b396ec56ba380a3cc7858e0abf83fe13f31c88f7737847763a396",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "768m",
+      "cpus": 1,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "SECURITY_ENABLELOGIN": "true",
+        "SECURITY_INITIALLOGIN_USERNAME": "${ADMIN_USER:-saeed}",
+        "SECURITY_INITIALLOGIN_PASSWORD": "${STIRLING_PASSWORD:?Run installer}",
+        "JAVA_CUSTOM_OPTS": "-Xms64m -Xmx384m -XX:-HeapDumpOnOutOfMemoryError"
+      },
+      "ports": [
+        {
+          "target": 8080,
+          "published": "8083",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/stirling-pdf",
+          "target": "/configs",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/stirling-pdf/logs",
+          "target": "/logs",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Uploads/Stirling",
+          "target": "/pipeline",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "tmpfs": [
+        "/tmp:rw,size=128m,mode=1777"
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+- Setup:
+    - Private dashboard:
+        description: Run setup-tailscale-homepage.sh --dry-run on the Pi, then apply the reviewed routes. This dashboard uses independent settings.

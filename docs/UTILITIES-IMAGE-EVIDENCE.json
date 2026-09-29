@@ -1,0 +1,693 @@
+[
+  {
+    "requested": "portainer/portainer-ce:lts",
+    "image": "portainer/portainer-ce@sha256:4d616db18cfeb5dd41a69c0958bc825c84483ea9cde1106eb82a5d26f3bd8b0e",
+    "digest": "sha256:4d616db18cfeb5dd41a69c0958bc825c84483ea9cde1106eb82a5d26f3bd8b0e",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "ppc64le",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "amd64",
+        "os": "windows",
+        "os.version": "10.0.17763.9245"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "amd64",
+        "os": "windows",
+        "os.version": "10.0.20348.5622"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "amd64",
+        "os": "windows",
+        "os.version": "10.0.26100.33438"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/portainer/portainer-ce/manifests/lts",
+    "checked_at": "2026-09-22T13:35:19.936350+00:00"
+  },
+  {
+    "requested": "ghcr.io/gethomepage/homepage:latest",
+    "image": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+    "digest": "sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/gethomepage/homepage/manifests/latest",
+    "checked_at": "2026-09-22T13:35:18.471151+00:00"
+  },
+  {
+    "requested": "louislam/uptime-kuma:2",
+    "image": "louislam/uptime-kuma@sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+    "digest": "sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/louislam/uptime-kuma/manifests/2",
+    "checked_at": "2026-09-22T13:35:20.588005+00:00"
+  },
+  {
+    "requested": "amir20/dozzle:latest",
+    "image": "amir20/dozzle@sha256:c90494cbc3a9ca959634b89fdb3fdecbcbae1f690d7a567d0d356c6fda1d957c",
+    "digest": "sha256:c90494cbc3a9ca959634b89fdb3fdecbcbae1f690d7a567d0d356c6fda1d957c",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/amir20/dozzle/manifests/latest",
+    "checked_at": "2026-09-22T13:35:20.539045+00:00"
+  },
+  {
+    "requested": "stirlingtools/stirling-pdf:latest",
+    "image": "stirlingtools/stirling-pdf@sha256:3b3670fce70b396ec56ba380a3cc7858e0abf83fe13f31c88f7737847763a396",
+    "digest": "sha256:3b3670fce70b396ec56ba380a3cc7858e0abf83fe13f31c88f7737847763a396",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/stirlingtools/stirling-pdf/manifests/latest",
+    "checked_at": "2026-09-22T13:35:19.904505+00:00"
+  },
+  {
+    "requested": "lscr.io/linuxserver/code-server:latest",
+    "image": "lscr.io/linuxserver/code-server@sha256:6fb8bbaf3148a56027704830a63f5880cce31dda442b42d6cca66b29a505bad6",
+    "digest": "sha256:6fb8bbaf3148a56027704830a63f5880cce31dda442b42d6cca66b29a505bad6",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://lscr.io/v2/linuxserver/code-server/manifests/latest",
+    "checked_at": "2026-09-22T13:35:22.754404+00:00"
+  },
+  {
+    "requested": "quay.io/jupyter/base-notebook:latest",
+    "image": "quay.io/jupyter/base-notebook@sha256:6d0358f11292d59dbf621ea5f3a68b7432f6873a03ed92513799939ab372a5f7",
+    "digest": "sha256:6d0358f11292d59dbf621ea5f3a68b7432f6873a03ed92513799939ab372a5f7",
+    "platforms": [
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://quay.io/v2/jupyter/base-notebook/manifests/latest",
+    "checked_at": "2026-09-22T13:35:22.989970+00:00"
+  },
+  {
+    "requested": "ghcr.io/corentinth/it-tools:latest",
+    "image": "ghcr.io/corentinth/it-tools@sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f",
+    "digest": "sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/corentinth/it-tools/manifests/latest",
+    "checked_at": "2026-09-22T13:35:21.405380+00:00"
+  },
+  {
+    "requested": "ghcr.io/gchq/cyberchef:latest",
+    "image": "ghcr.io/gchq/cyberchef@sha256:f04a39926344faf8e4cbbc8c92fb125d2b466f9be62db09aff23c7c406101a51",
+    "digest": "sha256:f04a39926344faf8e4cbbc8c92fb125d2b466f9be62db09aff23c7c406101a51",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/gchq/cyberchef/manifests/latest",
+    "checked_at": "2026-09-22T13:35:21.987406+00:00"
+  },
+  {
+    "requested": "searxng/searxng:latest",
+    "image": "searxng/searxng@sha256:4109ebf36dc291931c5b43f5ee451c517085255aecfa71f8ffae21000ce5c5fa",
+    "digest": "sha256:4109ebf36dc291931c5b43f5ee451c517085255aecfa71f8ffae21000ce5c5fa",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/searxng/searxng/manifests/latest",
+    "checked_at": "2026-09-22T13:35:23.822016+00:00"
+  },
+  {
+    "requested": "excalidraw/excalidraw:latest",
+    "image": "excalidraw/excalidraw@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9",
+    "digest": "sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/excalidraw/excalidraw/manifests/latest",
+    "checked_at": "2026-09-22T13:35:25.107023+00:00"
+  },
+  {
+    "requested": "filebrowser/filebrowser:latest",
+    "image": "filebrowser/filebrowser@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a",
+    "digest": "sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/filebrowser/filebrowser/manifests/latest",
+    "checked_at": "2026-09-22T13:35:25.571802+00:00"
+  },
+  {
+    "requested": "syncthing/syncthing:latest",
+    "image": "syncthing/syncthing@sha256:397aa00b92b48d65540ea3ae3cbf271b87bdccbe07a0b7bd7d2debc3a7b29138",
+    "digest": "sha256:397aa00b92b48d65540ea3ae3cbf271b87bdccbe07a0b7bd7d2debc3a7b29138",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/syncthing/syncthing/manifests/latest",
+    "checked_at": "2026-09-22T13:35:26.638449+00:00"
+  },
+  {
+    "requested": "jellyfin/jellyfin:latest",
+    "image": "jellyfin/jellyfin@sha256:78d3ea1207d1322471fcac39a614f004f2ccf7e878f95ab2977d752f07e4dd7e",
+    "digest": "sha256:78d3ea1207d1322471fcac39a614f004f2ccf7e878f95ab2977d752f07e4dd7e",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/jellyfin/jellyfin/manifests/latest",
+    "checked_at": "2026-09-22T13:35:26.204684+00:00"
+  },
+  {
+    "requested": "deluan/navidrome:latest",
+    "image": "deluan/navidrome@sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5",
+    "digest": "sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5",
+    "platforms": [
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "riscv64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "386",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/deluan/navidrome/manifests/latest",
+    "checked_at": "2026-09-22T13:35:26.810347+00:00"
+  },
+  {
+    "requested": "lscr.io/linuxserver/calibre-web:latest",
+    "image": "lscr.io/linuxserver/calibre-web@sha256:802729966faed5e32d671cd4f92ba6196e9e754a6c0f740ce1ee9acd86b10e55",
+    "digest": "sha256:802729966faed5e32d671cd4f92ba6196e9e754a6c0f740ce1ee9acd86b10e55",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://lscr.io/v2/linuxserver/calibre-web/manifests/latest",
+    "checked_at": "2026-09-22T13:35:29.304300+00:00"
+  },
+  {
+    "requested": "ghcr.io/kiwix/kiwix-serve:latest",
+    "image": "ghcr.io/kiwix/kiwix-serve@sha256:e478554a9920412eeb5ce1d73f24e4b28445ebed233187cdd03c623c32be46a5",
+    "digest": "sha256:e478554a9920412eeb5ce1d73f24e4b28445ebed233187cdd03c623c32be46a5",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "386",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/kiwix/kiwix-serve/manifests/latest",
+    "checked_at": "2026-09-22T13:35:27.587483+00:00"
+  },
+  {
+    "requested": "freshrss/freshrss:latest",
+    "image": "freshrss/freshrss@sha256:258b8edfc8a76a61f60d2d6a14d8f8d12495d78abf38646a2137612dfa264a21",
+    "digest": "sha256:258b8edfc8a76a61f60d2d6a14d8f8d12495d78abf38646a2137612dfa264a21",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/freshrss/freshrss/manifests/latest",
+    "checked_at": "2026-09-22T13:35:29.790581+00:00"
+  },
+  {
+    "requested": "actualbudget/actual-server:latest",
+    "image": "actualbudget/actual-server@sha256:552beab3dec8c93d46b8b9245612d63c3f123b8a45063a474f53e229b17621d3",
+    "digest": "sha256:552beab3dec8c93d46b8b9245612d63c3f123b8a45063a474f53e229b17621d3",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/actualbudget/actual-server/manifests/latest",
+    "checked_at": "2026-09-22T13:35:30.205583+00:00"
+  },
+  {
+    "requested": "pihole/pihole:latest",
+    "image": "pihole/pihole@sha256:5b9c8cf51de7d6d3f2240dbe72baf5f06e1fd39cb4d77a99fab4fa13e23bd1be",
+    "digest": "sha256:5b9c8cf51de7d6d3f2240dbe72baf5f06e1fd39cb4d77a99fab4fa13e23bd1be",
+    "platforms": [
+      {
+        "architecture": "386",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v7"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "arm",
+        "os": "linux",
+        "variant": "v6"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      },
+      {
+        "architecture": "riscv64",
+        "os": "linux"
+      },
+      {
+        "architecture": "unknown",
+        "os": "unknown"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://registry-1.docker.io/v2/pihole/pihole/manifests/latest",
+    "checked_at": "2026-09-22T13:35:29.887319+00:00"
+  }
+]

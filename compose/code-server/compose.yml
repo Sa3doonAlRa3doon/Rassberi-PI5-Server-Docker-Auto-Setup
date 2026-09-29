@@ -1,0 +1,56 @@
+{
+  "name": "pi-code-server",
+  "services": {
+    "code-server": {
+      "image": "lscr.io/linuxserver/code-server@sha256:6fb8bbaf3148a56027704830a63f5880cce31dda442b42d6cca66b29a505bad6",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "512m",
+      "cpus": 1,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "PASSWORD": "${CODE_PASSWORD:?Run installer}",
+        "DEFAULT_WORKSPACE": "/workspace",
+        "SUDO_PASSWORD": ""
+      },
+      "ports": [
+        {
+          "target": 8443,
+          "published": "8443",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/code-server",
+          "target": "/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Shared/Code",
+          "target": "/workspace",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "pi-jupyter",
+  "services": {
+    "jupyter": {
+      "image": "quay.io/jupyter/base-notebook@sha256:6d0358f11292d59dbf621ea5f3a68b7432f6873a03ed92513799939ab372a5f7",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "768m",
+      "cpus": 1,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "JUPYTER_TOKEN": "${JUPYTER_TOKEN:?Run installer}"
+      },
+      "ports": [
+        {
+          "target": 8888,
+          "published": "8888",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/jupyter",
+          "target": "/home/jovyan",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Shared/Notebooks",
+          "target": "/home/jovyan/work",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "user": "1000:100",
+      "command": [
+        "start-notebook.py",
+        "--ServerApp.root_dir=/home/jovyan/work"
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

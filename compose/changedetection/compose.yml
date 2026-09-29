@@ -1,0 +1,109 @@
+{
+  "name": "pi-changedetection",
+  "services": {
+    "changedetection": {
+      "image": "ghcr.io/dgtlmoon/changedetection.io@sha256:34df3680db1cbffc45ac1e9c1514bc0507dd0c5b5fde47d1992fe6f14a7b40e4",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "384m",
+      "cpus": 0.75,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "CHANGEDETECTION_PASSWORD": "${CHANGEDETECTION_PASSWORD:?Run installer}",
+        "PLAYWRIGHT_DRIVER_URL": "ws://browser:3000",
+        "FETCH_WORKERS": "1",
+        "BASE_URL": "http://${SERVER_IP}:5000"
+      },
+      "ports": [
+        {
+          "target": 5000,
+          "published": "5000",
+          "host_ip": "${BIND_IP:?Run installer}",
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/changedetection",
+          "target": "/datastore",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/changedetection",
+          "target": "/bootstrap",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "entrypoint": [
+        "python",
+        "/bootstrap/start.py"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/', timeout=10).read(1)"
+        ],
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      },
+      "depends_on": {
+        "browser": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "browser": {
+      "image": "dgtlmoon/sockpuppetbrowser@sha256:1d8f72d2ce2085faed4232e5ae1e65c02efe5b831a18e127829b267c260b4fb2",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "768m",
+      "cpus": 1.0,
+      "shm_size": "256m",
+      "stop_grace_period": "60s",
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "MAX_CONCURRENT_CHROME_PROCESSES": "1"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python3",
+          "/usr/src/app/docker-health-check.py",
+          "--host",
+          "http://localhost"
+        ],
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    }
+  }
+}

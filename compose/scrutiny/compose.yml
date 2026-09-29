@@ -1,0 +1,75 @@
+{
+  "name": "pi-scrutiny",
+  "services": {
+    "scrutiny": {
+      "image": "ghcr.io/analogj/scrutiny@sha256:dbb1f255db48b7903dca111e81ed22b266cce212f034e1581f290c8e8efa8be6",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "384m",
+      "cpus": 0.75,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "stop_grace_period": "45s",
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "COLLECTOR_CRON_SCHEDULE": "17 */6 * * *"
+      },
+      "ports": [
+        {
+          "target": 8080,
+          "published": "8099",
+          "host_ip": "${BIND_IP:?Set private Pi address}",
+          "protocol": "tcp"
+        }
+      ],
+      "cap_add": [
+        "SYS_RAWIO",
+        "SYS_ADMIN"
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/run/udev",
+          "target": "/run/udev",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/scrutiny",
+          "target": "/opt/scrutiny/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/databases/scrutiny-influxdb",
+          "target": "/opt/scrutiny/influxdb",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8080/api/health >/dev/null"
+        ],
+        "interval": "60s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "45s"
+      }
+    }
+  }
+}

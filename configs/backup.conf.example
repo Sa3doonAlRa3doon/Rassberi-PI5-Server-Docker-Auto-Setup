@@ -1,0 +1,14 @@
+# Copy to /srv/docker/configs/backup.conf on the Pi, then chmod 600 and keep it
+# root-owned. The default is a same-NVMe staging backup and excludes bulk files.
+BACKUP_INCLUDE_BULK=0
+
+# For a separate mounted disk, set both values. BACKUP_ROOT must be inside the
+# mounted destination and that filesystem must differ from /, /mnt/hdd, and
+# /mnt/media. Example:
+# BACKUP_MOUNT=/mnt/backup-disk
+# BACKUP_ROOT=/mnt/backup-disk/pi-server
+
+# Optional encrypted remote/local restic repository. The repository must already
+# exist and RESTIC_PASSWORD_FILE must be a root-owned chmod-600 file.
+# RESTIC_REPOSITORY=sftp:user@backup-host:/srv/restic/pi-server
+# RESTIC_PASSWORD_FILE=/root/.config/restic/pi-server-password

@@ -1,0 +1,48 @@
+{
+  "name": "pi-home-assistant",
+  "services": {
+    "home-assistant": {
+      "image": "ghcr.io/home-assistant/home-assistant@sha256:3e6710a7ab2a61311d9d899b719f6c3657791c63e8f4942cec4ebc42401d6b76",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "1024m",
+      "cpus": 1.0,
+      "stop_grace_period": "120s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PI5_BIND_IP": "${BIND_IP:?Run installer}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/home-assistant",
+          "target": "/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "network_mode": "host",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python3",
+          "-c",
+          "import os,urllib.request; urllib.request.urlopen('http://'+os.environ['PI5_BIND_IP']+':8123/',timeout=10).read(1)"
+        ],
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "600s"
+      }
+    }
+  }
+}

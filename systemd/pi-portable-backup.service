@@ -1,0 +1,11 @@
+[Unit]
+Description=Verified portable backup to a separately configured disk
+After=docker.service
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/docker/scripts/portable-backup.py create --config /srv/docker/configs/portable-backup.json --json
+User=root
+UMask=0077
+TimeoutStartSec=infinity

@@ -1,0 +1,2598 @@
+[
+  {
+    "name": "docker-socket-proxy",
+    "order": 5,
+    "mounts": [],
+    "ports": [],
+    "directories": [],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000"
+    },
+    "setup": "Internal API proxy; no browser port. Used by Dozzle and other explicitly attached read-only consumers.",
+    "images": [
+      {
+        "image": "lscr.io/linuxserver/socket-proxy@sha256:ca6c0301a652232d02cb0ff9f1c5d20d9b339f391e1c1dffaae6ef3bfc59d009",
+        "arm64_verified": true,
+        "source": "https://lscr.io/v2/linuxserver/socket-proxy/manifests/latest",
+        "source_tag": "lscr.io/linuxserver/socket-proxy:latest",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:02.906786+00:00; source tag lscr.io/linuxserver/socket-proxy:latest"
+      }
+    ],
+    "notes": [
+      "Owns internal network pi-docker-read; never publish its Docker API port. Read access can reveal container configuration and logs. Docker creation, execution, start/stop/restart and archive access are disabled."
+    ],
+    "memory_mib": 32,
+    "default_enabled": true
+  },
+  {
+    "name": "portainer",
+    "order": 10,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 9443,
+        "container": 9443,
+        "protocol": "tcp",
+        "scheme": "https"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/portainer",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/portainer",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "PORTAINER_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "HTTPS uses a self-signed certificate. Initial username admin; generated PORTAINER_PASSWORD is read from the private .env. Select the local Docker environment. Existing users/passwords are retained.",
+    "images": [
+      {
+        "image": "portainer/portainer-ce@sha256:4d616db18cfeb5dd41a69c0958bc825c84483ea9cde1106eb82a5d26f3bd8b0e",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:19.936350+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: portainer/portainer-ce:lts",
+        "source": "https://registry-1.docker.io/v2/portainer/portainer-ce/manifests/lts"
+      }
+    ],
+    "notes": [
+      "Docker socket is necessary for container administration; it grants effective host administrator access. Restrict Portainer to your private network.",
+      "Portainer is checked externally over HTTPS; its minimal image has no shell/curl probe."
+    ],
+    "memory_mib": 160,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/portainer",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "homepage",
+    "order": 11,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 3000,
+        "container": 3000,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/homepage",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/storage-metrics",
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/storage-metrics",
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Open the dashboard. Edit /srv/docker/configs/homepage/services.yaml for links. Add any Tailscale hostname with :3000 to HOMEPAGE_ALLOWED_HOSTS before using it.",
+    "images": [
+      {
+        "image": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:18.471151+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: ghcr.io/gethomepage/homepage:latest",
+        "source": "https://ghcr.io/v2/gethomepage/homepage/manifests/latest"
+      }
+    ],
+    "notes": [
+      "No Docker socket. Host hardware, SMART and detailed status are provided by the host status scripts; dashboard links use configured SERVER_IP."
+    ],
+    "memory_mib": 192
+  },
+  {
+    "name": "homepage-tailscale",
+    "order": 12,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 3003,
+        "container": 3000,
+        "protocol": "tcp",
+        "scheme": "http",
+        "bind_env": "TAILSCALE_IPV4"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/homepage-tailscale",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "TAILSCALE_IPV4": "",
+      "TAILSCALE_HOSTNAME": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000"
+    },
+    "default_enabled": false,
+    "setup": "Run sudo ./setup-tailscale-homepage.sh --dry-run then --apply on the Pi. Requires host-installed, authenticated Tailscale 1.92+ and MagicDNS/HTTPS; helper detects addresses and preserves existing Serve settings. Start homepage-tailscale after configuration.",
+    "images": [
+      {
+        "image": "ghcr.io/gethomepage/homepage@sha256:643bd0be730d40f69d58028a55d1a896739333e8815786df42bc97f109ecbe61",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:18.471151+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: ghcr.io/gethomepage/homepage:latest",
+        "source": "https://ghcr.io/v2/gethomepage/homepage/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Independent tailnet-only Homepage on port3003; never wildcard bound. No Docker socket. Routes use explicit private Tailscale Serve HTTPS port mappings to actual LAN listeners.",
+      "Heavy applications remain stopped until explicitly started. Forwarding does not start them."
+    ],
+    "memory_mib": 192,
+    "required_before_start": [
+      "TAILSCALE_IPV4",
+      "TAILSCALE_HOSTNAME"
+    ]
+  },
+  {
+    "name": "uptime-kuma",
+    "order": 12,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 3002,
+        "container": 3001,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/uptime-kuma",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Create the initial administrator immediately, then add HTTP/DNS monitors. NVMe /app/data persists the embedded database.",
+    "images": [
+      {
+        "image": "louislam/uptime-kuma@sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:20.588005+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: louislam/uptime-kuma:2",
+        "source": "https://registry-1.docker.io/v2/louislam/uptime-kuma/manifests/2"
+      }
+    ],
+    "notes": [
+      "Initial administrator creation is an application first-run wizard. No Docker socket."
+    ],
+    "memory_mib": 256,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/uptime-kuma",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "dozzle",
+    "order": 13,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8088,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/dozzle",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DOZZLE_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and DOZZLE_PASSWORD from the private .env. prepare.sh generates a bcrypt users.yml once without publishing ports.",
+    "images": [
+      {
+        "image": "amir20/dozzle@sha256:c90494cbc3a9ca959634b89fdb3fdecbcbae1f690d7a567d0d356c6fda1d957c",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:20.539045+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: amir20/dozzle:latest",
+        "source": "https://registry-1.docker.io/v2/amir20/dozzle/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Read-only Docker API via internal socket proxy; no direct Docker socket. No container actions or shell access."
+    ],
+    "memory_mib": 96,
+    "requires": [
+      "docker-socket-proxy"
+    ]
+  },
+  {
+    "name": "beszel",
+    "order": 16,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8098,
+        "container": 8090,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/beszel",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/beszel-agent",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/beszel-socket",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/beszel-docker-socket",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/beszel",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "BESZEL_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "BESZEL_USER_EMAIL": "saeed@pi.local"
+    },
+    "setup": "Log in on :8098 with BESZEL_USER_EMAIL and generated BESZEL_PASSWORD from its private .env. post-start.py registers the local Pi automatically; configure notification destination and alert thresholds in Settings.",
+    "images": [
+      {
+        "image": "henrygd/beszel@sha256:897e807a065adf8e89e30ae0cd79d1f5e38fe84ccaffbc418bde9d3cdca4eacc",
+        "arm64_verified": true,
+        "source": "https://registry-1.docker.io/v2/henrygd/beszel/manifests/latest",
+        "source_tag": "henrygd/beszel:latest",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:03.622361+00:00; source tag henrygd/beszel:latest"
+      },
+      {
+        "image": "henrygd/beszel-agent@sha256:2a01a5600f780d264682b5f71108d72fa67f50c57e27b52b4184d3d0d01d115c",
+        "arm64_verified": true,
+        "source": "https://registry-1.docker.io/v2/henrygd/beszel-agent/manifests/alpine",
+        "source_tag": "henrygd/beszel-agent:alpine",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:04.370259+00:00; source tag henrygd/beszel-agent:alpine"
+      },
+      {
+        "image": "lscr.io/linuxserver/socket-proxy@sha256:ca6c0301a652232d02cb0ff9f1c5d20d9b339f391e1c1dffaae6ef3bfc59d009",
+        "arm64_verified": true,
+        "source": "https://lscr.io/v2/linuxserver/socket-proxy/manifests/latest",
+        "source_tag": "lscr.io/linuxserver/socket-proxy:latest",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:02.906786+00:00; source tag lscr.io/linuxserver/socket-proxy:latest"
+      }
+    ],
+    "notes": [
+      "Host-network agent measures actual host network interfaces. Its agent listener and restricted Docker API use separate local UNIX sockets, with no open agent/API TCP port.",
+      "SMART devices are regenerated from configured, mounted, identity-verified non-SD physical drives. Unsupported USB SMART passthrough remains unavailable. External filesystem capacity continues to use the existing verified storage dashboard.",
+      "SYS_RAWIO and SYS_ADMIN permit disk SMART ioctls; no privileged mode or whole /dev mount. Agent receives only each verified disk device with read permission."
+    ],
+    "memory_mib": 288,
+    "default_enabled": true,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/beszel",
+      "backup": "Stop the complete application before copying all its config/appdata/database directories."
+    }
+  },
+  {
+    "name": "scrutiny",
+    "order": 17,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8099,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/scrutiny",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/databases/scrutiny-influxdb",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000"
+    },
+    "setup": "Open :8099 for SMART history; only verified disks are exposed to the collector. Configure notification URLs in configs/scrutiny/scrutiny.yaml. UI has no built-in login: keep it on the private LAN/tailnet.",
+    "images": [
+      {
+        "image": "ghcr.io/analogj/scrutiny@sha256:dbb1f255db48b7903dca111e81ed22b266cce212f034e1581f290c8e8efa8be6",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/analogj/scrutiny/manifests/v0.9.4-omnibus",
+        "source_tag": "ghcr.io/analogj/scrutiny:v0.9.4-omnibus",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:55:59.542345+00:00; source tag ghcr.io/analogj/scrutiny:v0.9.4-omnibus"
+      }
+    ],
+    "notes": [
+      "Pinned upstream v0.9.4 omnibus image; InfluxDB is inside the container and port 8086 is not published. All history/databases stay on NVMe.",
+      "prepare.py resolves configured mount identities to stable by-id device sources and refreshes collection targets. No guessed USB disk letter is persisted. SD cards normally have no ATA/NVMe SMART.",
+      "USB bridges may not pass SMART; an empty dashboard or unavailable device is not proof that a disk is healthy."
+    ],
+    "memory_mib": 384,
+    "default_enabled": true,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/databases/scrutiny-influxdb",
+      "backup": "Stop the complete application before copying all its config/appdata/database directories."
+    }
+  },
+  {
+    "name": "nextcloud",
+    "order": 30,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8080,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/nextcloud",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/nextcloud/html",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/nextcloud/redis",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Nextcloud",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "REDIS_PASSWORD",
+      "ADMIN_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE",
+      "REDIS_PASSWORD": "GENERATE",
+      "ADMIN_PASSWORD": "GENERATE"
+    },
+    "setup": "Login as ADMIN_USER (saeed) with ADMIN_PASSWORD from the protected .env. Set background jobs to Cron in Administration settings > Basic settings. Add SMTP and a private HTTPS endpoint before regular remote access.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "nextcloud",
+      "user": "nextcloud",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "redis:8.6.7-alpine",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:79aff60c78f59416f3f639f810a11938d3e854d31c83675e3d8c52e8cc5b5208",
+        "arm64_digests": [
+          "sha256:a96bd0ba6fa75e5f403ce2140a116020d4515a4659f83cfa385613b970fb545a"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/redis/manifests/8.6.7-alpine",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "nextcloud:34.0.4-apache",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:a5ace30c695afe48c2c406e940ee7886a81e13fa382e57cd68b2416d1a66914c",
+        "arm64_digests": [
+          "sha256:bec039bd8c7bf56da38a8247b0d43dfb53f70ef2908244a71cda5456bd1def9a"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/nextcloud/manifests/34.0.4-apache",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "Nextcloud app/config and Redis are on NVMe; user files on the UUID-verified HDD. The included cron container runs /cron.sh.",
+      "OnlyOffice integration is a separate first-run step documented in APPS-STATEFUL.md."
+    ],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "stirling-pdf",
+    "order": 35,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8083,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/stirling-pdf",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/stirling-pdf/logs",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Uploads/Stirling",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "STIRLING_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and STIRLING_PASSWORD; change the initial password when prompted. Large OCR/conversion jobs may exceed the deliberate 768MiB limit; run demanding jobs separately after increasing only this app limit.",
+    "images": [
+      {
+        "image": "stirlingtools/stirling-pdf@sha256:3b3670fce70b396ec56ba380a3cc7858e0abf83fe13f31c88f7737847763a396",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:19.904505+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: stirlingtools/stirling-pdf:latest",
+        "source": "https://registry-1.docker.io/v2/stirlingtools/stirling-pdf/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Authentication database remains in /configs on NVMe. Pipeline files use HDD. No AI model/inference service is installed."
+    ],
+    "memory_mib": 768,
+    "default_enabled": false,
+    "optional": true,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/stirling-pdf",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "code-server",
+    "order": 40,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8443,
+        "container": 8443,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/code-server",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Shared/Code",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "CODE_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Port 8443 is HTTP for this image. Log in with CODE_PASSWORD. Projects belong under /workspace (HDD); editor configuration/extensions persist on NVMe. No sudo password or Docker socket is provided.",
+    "images": [
+      {
+        "image": "lscr.io/linuxserver/code-server@sha256:6fb8bbaf3148a56027704830a63f5880cce31dda442b42d6cca66b29a505bad6",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:22.754404+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: lscr.io/linuxserver/code-server:latest",
+        "source": "https://lscr.io/v2/linuxserver/code-server/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Terminals execute inside this restricted development container. Container packages disappear on recreation; persist dependency declarations with projects."
+    ],
+    "memory_mib": 512
+  },
+  {
+    "name": "onlyoffice",
+    "order": 40,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8081,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/onlyoffice",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/data",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/cache",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/logs",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/fonts",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/rabbitmq",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/onlyoffice/redis",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "JWT_SECRET"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE",
+      "JWT_SECRET": "GENERATE"
+    },
+    "setup": "On-demand service. Read APPS-STATEFUL.md for RAM requirements and Nextcloud connector configuration. Use JWT_SECRET from the protected .env and AuthorizationJwt as the JWT header.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "onlyoffice",
+      "user": "onlyoffice",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "onlyoffice/documentserver:9.4.0.1",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:3ab6ebc7c605e5a32b7ae3ff19daed4925090245acc8100ce2230bd766c88212",
+        "arm64_digests": [
+          "sha256:4cf3b55487209b8f53492c545263b7bb257e1be48dba1f9e0b30d2e50371a1c8"
+        ],
+        "source": "https://registry-1.docker.io/v2/onlyoffice/documentserver/manifests/9.4.0.1",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "Official ARM64 requirements specify at least 4GB RAM, 40GB disk and 4GB swap. Verify free NVMe space before enabling. The installer does not create swap automatically.",
+      "Private-IP callbacks are enabled for the LAN/Tailscale Nextcloud integration. Keep this server private and JWT enabled. No AI provider is configured."
+    ],
+    "optional": true,
+    "default_enabled": false,
+    "build": false
+  },
+  {
+    "name": "jupyter",
+    "order": 41,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8888,
+        "container": 8888,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/jupyter",
+        "uid": 1000,
+        "gid": 100,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Shared/Notebooks",
+        "uid": 1000,
+        "gid": 100,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "JUPYTER_TOKEN"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use JUPYTER_TOKEN on the login page. Save notebooks in /home/jovyan/work (HDD). The home directory and Jupyter settings persist on NVMe. This official image uses fixed UID 1000/GID 100.",
+    "images": [
+      {
+        "image": "quay.io/jupyter/base-notebook@sha256:6d0358f11292d59dbf621ea5f3a68b7432f6873a03ed92513799939ab372a5f7",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:22.989970+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: quay.io/jupyter/base-notebook:latest",
+        "source": "https://quay.io/v2/jupyter/base-notebook/manifests/latest"
+      }
+    ],
+    "notes": [],
+    "memory_mib": 768,
+    "default_enabled": false,
+    "optional": true
+  },
+  {
+    "name": "wikijs",
+    "order": 45,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8084,
+        "container": 3000,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/wikijs",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/wikijs/content",
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE"
+    },
+    "setup": "Complete the initial administrator/email wizard at port 8084. Set the site URL to the address you will use. Configure authentication and storage targets in Administration.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "wikijs",
+      "user": "wikijs",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "ghcr.io/requarks/wiki:2.5.315",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:af71a17dc27ccc4c768591b1c504631ed820d9d13d4e8c325be4232c0035638c",
+        "arm64_digests": [
+          "sha256:024eb003b62eb57001bac7d69abb3ee4ee2e7006141f620115a7a933c6acacca"
+        ],
+        "source": "https://ghcr.io/v2/requarks/wiki/manifests/2.5.315",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "filebrowser",
+    "order": 50,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8092,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/filebrowser/database",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/filebrowser",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Shared",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Uploads",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/filebrowser/root",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "FILEBROWSER_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and FILEBROWSER_PASSWORD. Only Shared and Uploads are exposed. File Browser does not directly edit Nextcloud or Paperless managed directories.",
+    "images": [
+      {
+        "image": "filebrowser/filebrowser@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:25.571802+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: filebrowser/filebrowser:latest",
+        "source": "https://registry-1.docker.io/v2/filebrowser/filebrowser/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Application database in /database stays on NVMe. prepare.sh initializes an empty database/admin before the web port opens."
+    ],
+    "memory_mib": 128,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/filebrowser",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "moodle",
+    "order": 50,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8082,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/moodle",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/moodle/cache",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Shared/Moodle",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "ADMIN_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "ADMIN_EMAIL": "saeed@example.invalid",
+      "DB_PASSWORD": "GENERATE",
+      "ADMIN_PASSWORD": "GENERATE"
+    },
+    "setup": "Source build runs on the Raspberry Pi only. Initial DB/schema/admin setup is automatic on an empty database. Login with ADMIN_USER/ADMIN_PASSWORD, change ADMIN_EMAIL, configure SMTP and site settings. Upgrades require an explicit maintenance/backup procedure; startup does not auto-upgrade existing databases.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "moodle",
+      "user": "moodle",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "php:8.3.33-apache-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:d9be5f5c49e07c71b1e906cf01a0bb7216dce466d1880d170467b9ca107071dd",
+        "arm64_digests": [
+          "sha256:854290c2b5631b1b4599de8be853d817e76ec3ec2d42b6c1ae0a385319937a52"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/php/manifests/8.3.33-apache-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "composer:2.10.3",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:a5f59b9fd2faf31218632be4809dc6491761085e8064c31dc3b84378c48c248b",
+        "arm64_digests": [
+          "sha256:de33d5893d3f4fcbc1e18891cd92a9be67796f2384ccb390bed611f998877aab"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/composer/manifests/2.10.3",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "Pinned official Moodle 5.2.3 source commit 344232c15336c71b80f9aca8359ce0e0a9f3d116; official PHP and Composer ARM64 bases. Custom image has not been runtime-tested on a Pi here.",
+      "Moodle code is immutable inside the image, served exclusively from public/. Rebuild to install reviewed plugins. Moodledata stays on HDD; sessions, temp files and caches stay on NVMe."
+    ],
+    "optional": true,
+    "default_enabled": false,
+    "build": true,
+    "build_services": [
+      "app",
+      "cron"
+    ],
+    "source_commit": "344232c15336c71b80f9aca8359ce0e0a9f3d116"
+  },
+  {
+    "name": "syncthing",
+    "order": 51,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8384,
+        "container": 8384,
+        "protocol": "tcp",
+        "scheme": "http"
+      },
+      {
+        "host": 22000,
+        "container": 22000,
+        "protocol": "tcp",
+        "scheme": ""
+      },
+      {
+        "host": 22000,
+        "container": 22000,
+        "protocol": "udp",
+        "scheme": ""
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/syncthing",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Shared/Syncthing",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "SYNCTHING_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and SYNCTHING_PASSWORD. Pair devices explicitly and use /data for folders. For LAN peers set tcp://SERVER_IP:22000 or quic://SERVER_IP:22000; container discovery cannot reliably advertise LAN addresses.",
+    "images": [
+      {
+        "image": "syncthing/syncthing@sha256:397aa00b92b48d65540ea3ae3cbf271b87bdccbe07a0b7bd7d2debc3a7b29138",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:26.638449+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: syncthing/syncthing:latest",
+        "source": "https://registry-1.docker.io/v2/syncthing/syncthing/manifests/latest"
+      }
+    ],
+    "notes": [
+      "NVMe contains device keys and index database. Files live on HDD. Local multicast discovery is not published; explicit peer addresses avoid Docker bridge discovery limitations."
+    ],
+    "memory_mib": 256,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/syncthing",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "gitea",
+    "order": 55,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 3001,
+        "container": 3000,
+        "protocol": "tcp",
+        "scheme": "http"
+      },
+      {
+        "host": 2222,
+        "container": 22,
+        "protocol": "tcp",
+        "scheme": "ssh"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/gitea",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/gitea",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "SECRET_KEY",
+      "INTERNAL_TOKEN"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE",
+      "SECRET_KEY": "GENERATE",
+      "INTERNAL_TOKEN": "GENERATE"
+    },
+    "setup": "Complete the first-run installer at port 3001 using prefilled PostgreSQL settings. Expand Administrator Account Settings and create saeed explicitly; public registration is disabled. Add SSH keys and use host port 2222.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "gitea",
+      "user": "gitea",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "gitea/gitea:1.27.3",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:87a67ee09d3ae0d1df5fda5dcda3e2a1f9236a45b0a59025d6e00e46adc43bef",
+        "arm64_digests": [
+          "sha256:9b107dff838b4518f720aae53033fc712019a1680267ea45944b858a71b487b5"
+        ],
+        "source": "https://registry-1.docker.io/v2/gitea/gitea/manifests/1.27.3",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "jellyfin",
+    "order": 60,
+    "mounts": [
+      "media"
+    ],
+    "ports": [
+      {
+        "host": 8096,
+        "container": 8096,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/jellyfin/config",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/jellyfin/cache",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/media/Videos",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Complete the wizard; library folder /media/videos. Prefer direct play. Disable video transcoding in each user playback policy for this Pi resource budget; clients must support the media format.",
+    "images": [
+      {
+        "image": "jellyfin/jellyfin@sha256:78d3ea1207d1322471fcac39a614f004f2ccf7e878f95ab2977d752f07e4dd7e",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:26.204684+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: jellyfin/jellyfin:latest",
+        "source": "https://registry-1.docker.io/v2/jellyfin/jellyfin/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Video files read-only on microSD. Database/config/cache on NVMe. No hardware device is passed through; do not assume Pi 5 hardware transcoding support."
+    ],
+    "memory_mib": 512,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/jellyfin",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "navidrome",
+    "order": 61,
+    "mounts": [
+      "media"
+    ],
+    "ports": [
+      {
+        "host": 4533,
+        "container": 4533,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/navidrome",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/media/Music",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Create the initial administrator immediately. Music is /music read-only; scans every hour. SQLite metadata/cache stay in /data on NVMe.",
+    "images": [
+      {
+        "image": "deluan/navidrome@sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:26.810347+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: deluan/navidrome:latest",
+        "source": "https://registry-1.docker.io/v2/deluan/navidrome/manifests/latest"
+      }
+    ],
+    "notes": [],
+    "memory_mib": 192,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/navidrome",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "calibre-web",
+    "order": 62,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8093,
+        "container": 8083,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/calibre-web/config",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/calibre-web/library",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Books",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "CALIBRE_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "prepare.sh sets ADMIN_USER/CALIBRE_PASSWORD and split-library settings. Supply a valid Calibre metadata.db at /srv/docker/appdata/calibre-web/library/metadata.db (NVMe). Put corresponding author/book folders in /mnt/hdd/Books. In Database Configuration use /library, enable Separate Book Files from Library, book path /books. Setup remains incomplete until valid library metadata is supplied.",
+    "images": [
+      {
+        "image": "lscr.io/linuxserver/calibre-web@sha256:802729966faed5e32d671cd4f92ba6196e9e754a6c0f740ce1ee9acd86b10e55",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:29.304300+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: lscr.io/linuxserver/calibre-web:latest",
+        "source": "https://lscr.io/v2/linuxserver/calibre-web/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Both Calibre-Web app.db and Calibre metadata.db/journals are on NVMe; no bind-mounting a single SQLite file over HDD. Book files use HDD via supported split library functionality.",
+      "No x86-only Calibre conversion Docker mod is enabled. Existing data and passwords are preserved."
+    ],
+    "memory_mib": 256,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/calibre-web/config/app.db and /srv/docker/appdata/calibre-web/library/metadata.db",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "kiwix",
+    "order": 63,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8094,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/mnt/hdd/Kiwix",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/kiwix",
+        "uid": "PUID",
+        "gid": "PGID",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Starts with an empty catalog when no ZIM exists. Copy .zim archives into /mnt/hdd/Kiwix, then restart Kiwix to load them. No large content is downloaded automatically.",
+    "images": [
+      {
+        "image": "ghcr.io/kiwix/kiwix-serve@sha256:e478554a9920412eeb5ce1d73f24e4b28445ebed233187cdd03c623c32be46a5",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:27.587483+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: ghcr.io/kiwix/kiwix-serve:latest",
+        "source": "https://ghcr.io/v2/kiwix/kiwix-serve/manifests/latest"
+      }
+    ],
+    "notes": [
+      "ZIM files read-only on HDD. Empty catalog is HTTP-ready but provides no offline content until archives are supplied."
+    ],
+    "memory_mib": 256
+  },
+  {
+    "name": "n8n",
+    "order": 65,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 5678,
+        "container": 5678,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/n8n",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/n8n",
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0700"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "N8N_ENCRYPTION_KEY",
+      "RUNNERS_AUTH_TOKEN"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE",
+      "N8N_ENCRYPTION_KEY": "GENERATE",
+      "RUNNERS_AUTH_TOKEN": "GENERATE"
+    },
+    "setup": "Create the instance owner at port 5678. Local HTTP bootstrap uses N8N_SECURE_COOKIE=false; configure private HTTPS then change it to true along with N8N_PROTOCOL/editor/webhook URLs. Back up N8N_ENCRYPTION_KEY with the DB.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "n8n",
+      "user": "n8n",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "n8nio/n8n:2.40.5",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:9f693fd5565539efd5e75ad168526c8041a6af516d9e50bc4d9cb1c9c5031523",
+        "arm64_digests": [
+          "sha256:de7539cae510d65a0aaed9fbef0113f395cea92337edf653c8ed21dd5de0d46d"
+        ],
+        "source": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/2.40.5",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "n8nio/runners:2.40.5",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:de290741c2c747a9af5c1490168b687db276149ec1a8bc06336877d213eb97d2",
+        "arm64_digests": [
+          "sha256:469b7cf97382a21e16fa125d51d8156ee8561faa06e93dffb552906dfe8a2a40"
+        ],
+        "source": "https://registry-1.docker.io/v2/n8nio/runners/manifests/2.40.5",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "An external matching-version task runner isolates JavaScript/Python Code nodes. It has no DB network, secrets volumes, host paths or internet egress.",
+      "No inference server or AI provider is installed. Code nodes needing network/packages require an explicit reviewed runner configuration."
+    ],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "it-tools",
+    "order": 70,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8085,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Client-side utility UI. There is no application server database or server-side user state to persist.",
+    "images": [
+      {
+        "image": "ghcr.io/corentinth/it-tools@sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:21.405380+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: ghcr.io/corentinth/it-tools:latest",
+        "source": "https://ghcr.io/v2/corentinth/it-tools/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Stateless client application. Browser data is separate from server backups; do not treat browser storage as a backup."
+    ],
+    "memory_mib": 64
+  },
+  {
+    "name": "paperless",
+    "order": 70,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8087,
+        "container": 8000,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/paperless",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/paperless/data",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/paperless/redis",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Paperless/media",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Paperless/consume",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Paperless/export",
+        "uid": "${PUID}",
+        "gid": "${PGID}",
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "REDIS_PASSWORD",
+      "PAPERLESS_SECRET_KEY",
+      "ADMIN_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "DB_PASSWORD": "GENERATE",
+      "REDIS_PASSWORD": "GENERATE",
+      "PAPERLESS_SECRET_KEY": "GENERATE",
+      "ADMIN_PASSWORD": "GENERATE"
+    },
+    "setup": "Login as ADMIN_USER with ADMIN_PASSWORD from .env. Import a small PDF from the consume folder and verify OCR. Large scanned PDFs may need the app limit raised while other optional apps are stopped.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "paperless",
+      "user": "paperless",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "redis:8.6.7-alpine",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:79aff60c78f59416f3f639f810a11938d3e854d31c83675e3d8c52e8cc5b5208",
+        "arm64_digests": [
+          "sha256:a96bd0ba6fa75e5f403ce2140a116020d4515a4659f83cfa385613b970fb545a"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/redis/manifests/8.6.7-alpine",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "ghcr.io/paperless-ngx/paperless-ngx:3.2.1",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:5fa76604a81df6945086e0837b14b56543d137e8ce4f311cc5d9ebe907e74e79",
+        "arm64_digests": [
+          "sha256:27fa8b70ab57b4387b9ed2cba492380eb756e62a4e2a7d0575278d5ecfd42379"
+        ],
+        "source": "https://ghcr.io/v2/paperless-ngx/paperless-ngx/manifests/3.2.1",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "English OCR is enabled. Optional Tika/Gotenberg office-document conversion is not installed.",
+      "This is a NEW v3 deployment; follow the upstream v3 migration guide before attaching a pre-existing v2 database or document library."
+    ],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "cyberchef",
+    "order": 71,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8086,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Client-side processing. Save recipes and outputs to files you back up.",
+    "images": [
+      {
+        "image": "ghcr.io/gchq/cyberchef@sha256:f04a39926344faf8e4cbbc8c92fb125d2b466f9be62db09aff23c7c406101a51",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:21.987406+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: ghcr.io/gchq/cyberchef:latest",
+        "source": "https://ghcr.io/v2/gchq/cyberchef/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Stateless server. Recipes/settings live in the browser or exported files."
+    ],
+    "memory_mib": 96
+  },
+  {
+    "name": "searxng",
+    "order": 72,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8090,
+        "container": 8080,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/searxng",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/searxng",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "SEARXNG_SECRET"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Private search UI; no user database. Outbound Internet access is needed to query search engines. Rate limiting is disabled because no shared Valkey is deployed; keep it private.",
+    "images": [
+      {
+        "image": "searxng/searxng@sha256:4109ebf36dc291931c5b43f5ee451c517085255aecfa71f8ffae21000ce5c5fa",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:23.822016+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: searxng/searxng:latest",
+        "source": "https://registry-1.docker.io/v2/searxng/searxng/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Config/cache persist on NVMe. No local AI service."
+    ],
+    "memory_mib": 256
+  },
+  {
+    "name": "excalidraw",
+    "order": 73,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8091,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Single-user sketching is stored in browser local storage. Export .excalidraw files to your backed-up Shared folder.",
+    "images": [
+      {
+        "image": "excalidraw/excalidraw@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:25.107023+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: excalidraw/excalidraw:latest",
+        "source": "https://registry-1.docker.io/v2/excalidraw/excalidraw/manifests/latest"
+      }
+    ],
+    "notes": [
+      "Stateless frontend; server container persistence cannot back up browser drawings. A private collaboration backend is not deployed. HTTPS may be needed for browser APIs; external collaboration/library integrations are upstream frontend features."
+    ],
+    "memory_mib": 64
+  },
+  {
+    "name": "freshrss",
+    "order": 74,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8095,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/freshrss/data",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/appdata/freshrss/extensions",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "FRESHRSS_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and FRESHRSS_PASSWORD. SQLite is the supported lightweight default; all data is on NVMe. Feed refresh occurs at minutes 7 and 37 each hour.",
+    "images": [
+      {
+        "image": "freshrss/freshrss@sha256:258b8edfc8a76a61f60d2d6a14d8f8d12495d78abf38646a2137612dfa264a21",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:29.790581+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: freshrss/freshrss:latest",
+        "source": "https://registry-1.docker.io/v2/freshrss/freshrss/manifests/latest"
+      }
+    ],
+    "notes": [],
+    "memory_mib": 128,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/freshrss",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "actual",
+    "order": 75,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 5006,
+        "container": 5006,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/actual",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Create the server password on first use. HTTPS or localhost is needed for SharedArrayBuffer and full browser support; use an SSH tunnel or Tailscale Serve as documented. Budget/server databases persist on NVMe.",
+    "images": [
+      {
+        "image": "actualbudget/actual-server@sha256:552beab3dec8c93d46b8b9245612d63c3f123b8a45063a474f53e229b17621d3",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:30.205583+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: actualbudget/actual-server:latest",
+        "source": "https://registry-1.docker.io/v2/actualbudget/actual-server/manifests/latest"
+      }
+    ],
+    "notes": [
+      "HTTP network response is not proof of browser secure-context readiness; see docs/APPS-UTILITIES.md for SSH tunnel."
+    ],
+    "memory_mib": 128,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/actual",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  },
+  {
+    "name": "vaultwarden",
+    "order": 75,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8089,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/databases/vaultwarden",
+        "uid": 999,
+        "gid": 999,
+        "mode": "0700"
+      },
+      {
+        "path": "/srv/docker/appdata/vaultwarden",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0700"
+      }
+    ],
+    "secrets": [
+      "DB_PASSWORD",
+      "ADMIN_TOKEN"
+    ],
+    "env": {
+      "BIND_IP": "CHANGE_ME",
+      "SERVER_IP": "CHANGE_ME",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "VAULTWARDEN_DOMAIN": "http://localhost:8089",
+      "DB_PASSWORD": "GENERATE",
+      "ADMIN_TOKEN": "GENERATE"
+    },
+    "setup": "Set up HTTPS with Tailscale Serve or use an SSH tunnel to http://localhost:8089; browsers require a secure context. Visit /admin using ADMIN_TOKEN, invite your account, then register the invited email. Public signups stay disabled.",
+    "database": {
+      "type": "postgres",
+      "service": "db",
+      "name": "vaultwarden",
+      "user": "vaultwarden",
+      "password_env": "DB_PASSWORD"
+    },
+    "images": [
+      {
+        "image": "postgres:17.11-bookworm",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+        "arm64_digests": [
+          "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+        ],
+        "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      },
+      {
+        "image": "vaultwarden/server:1.37.3",
+        "arm64_verified": true,
+        "checked_at": "2026-09-22",
+        "index_digest": "sha256:1587c45feaa479f1f5e8af3b00eded36bff77bcf1880cf8dbf0541706dd470e0",
+        "arm64_digests": [
+          "sha256:cdf1fc49e2813f1296ce4bbf2ba9227e6aa8ee64b56198a91d79606e33fded5f"
+        ],
+        "source": "https://registry-1.docker.io/v2/vaultwarden/server/manifests/1.37.3",
+        "evidence": "Registry manifest inspected; linux/arm64 found"
+      }
+    ],
+    "notes": [
+      "The admin token is a generated random bearer token in root-only .env. Use vaultwarden hash and replace it with an Argon2 hash when hardening; Compose .env escaping rules apply.",
+      "Vaultwarden scheduled jobs use UTC internally even with TZ=Asia/Dubai; its upstream env template explicitly documents this behavior."
+    ],
+    "optional": false,
+    "default_enabled": true,
+    "build": false
+  },
+  {
+    "name": "homebox",
+    "order": 76,
+    "default_enabled": true,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 7745,
+        "container": 7745,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/homebox",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "HOMEBOX_API_KEY_PEPPER"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "HOMEBOX_ALLOW_REGISTRATION": "true"
+    },
+    "setup": "Register your first account on the private web UI, then set HOMEBOX_ALLOW_REGISTRATION=false in this app .env and restart it. Keep the generated API key pepper with backups.",
+    "images": [
+      {
+        "image": "ghcr.io/sysadminsmedia/homebox@sha256:b1ad7e3c63f732a5f6daa466e8116be4f545b3b120383a64dcb62beb00a660cc",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/sysadminsmedia/homebox/manifests/latest",
+        "source_tag": "ghcr.io/sysadminsmedia/homebox:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:30.084341+00:00"
+      }
+    ],
+    "notes": [
+      "Inventory database and uploaded warranty/photo attachments stay together on NVMe under /data. The API-key pepper is generated once, not a login password."
+    ],
+    "memory_mib": 192,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/homebox",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "linkding",
+    "order": 77,
+    "default_enabled": true,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 9090,
+        "container": 9090,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/linkding",
+        "uid": 33,
+        "gid": 33,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "LINKDING_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Use ADMIN_USER and LINKDING_PASSWORD from the private app .env. Upstream creates the initial account only when absent.",
+    "images": [
+      {
+        "image": "ghcr.io/sissbruecker/linkding@sha256:e35cb50e0581178f245125ffaa909c565416c94c9f22ace305a7d234a4345522",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/sissbruecker/linkding/manifests/latest",
+        "source_tag": "ghcr.io/sissbruecker/linkding:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:30.094509+00:00"
+      }
+    ],
+    "notes": [
+      "Standard image includes bookmarks, tags and read-later. Chromium HTML-snapshot archiving is excluded to preserve RAM; browser exports and database remain on NVMe."
+    ],
+    "memory_mib": 256,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/linkding",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "changedetection",
+    "order": 78,
+    "default_enabled": false,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 5000,
+        "container": 5000,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/changedetection",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/changedetection",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "CHANGEDETECTION_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Start on demand with start-all.sh changedetection. Log in with CHANGEDETECTION_PASSWORD. Add URLs and notification destinations in the UI; select Chrome/Playwright only for pages needing JavaScript.",
+    "images": [
+      {
+        "image": "ghcr.io/dgtlmoon/changedetection.io@sha256:34df3680db1cbffc45ac1e9c1514bc0507dd0c5b5fde47d1992fe6f14a7b40e4",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/dgtlmoon/changedetection.io/manifests/latest",
+        "source_tag": "ghcr.io/dgtlmoon/changedetection.io:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:30.090873+00:00"
+      },
+      {
+        "image": "dgtlmoon/sockpuppetbrowser@sha256:1d8f72d2ce2085faed4232e5ae1e65c02efe5b831a18e127829b267c260b4fb2",
+        "arm64_verified": true,
+        "source": "https://registry-1.docker.io/v2/dgtlmoon/sockpuppetbrowser/manifests/latest",
+        "source_tag": "dgtlmoon/sockpuppetbrowser:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:35.675592+00:00"
+      }
+    ],
+    "notes": [
+      "The project includes a private ARM64 Chrome browser capped at one concurrent session. Both services start and stop together. Notifications require a destination selected by you.",
+      "A bootstrap wrapper derives the upstream SALTED_PASS value from the generated password. All watch state and snapshots stay on NVMe."
+    ],
+    "memory_mib": 1152,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/changedetection",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "pairdrop",
+    "order": 79,
+    "default_enabled": true,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 3004,
+        "container": 3000,
+        "protocol": "tcp",
+        "scheme": "http"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/pairdrop",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Open the same private PairDrop URL on both devices. Accept transfers on the receiver. Use HTTPS for pairing/PWA features. Files are saved by the receiving browser, not on the Pi.",
+    "images": [
+      {
+        "image": "ghcr.io/schlagmichdoch/pairdrop@sha256:c4b30977264a76e335740089e693a52a0d0d616330dec7f93c7b96beef7b4a02",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/schlagmichdoch/pairdrop/manifests/latest",
+        "source_tag": "ghcr.io/schlagmichdoch/pairdrop:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:30.092892+00:00"
+      }
+    ],
+    "notes": [
+      "No database or received-file directory. A private signaling service with WebSocket relay fallback helps VPN clients; relay traffic passes through your Pi. LAN users can discover one another.",
+      "No public STUN/TURN service is configured. Local WebRTC or the private WebSocket relay is used. PairDrop is not a background file receiver."
+    ],
+    "memory_mib": 128,
+    "database": null
+  },
+  {
+    "name": "localsendy",
+    "order": 80,
+    "default_enabled": true,
+    "mounts": [
+      "hdd"
+    ],
+    "ports": [
+      {
+        "host": 8100,
+        "container": 8100,
+        "protocol": "tcp",
+        "scheme": "http",
+        "host_network": true
+      },
+      {
+        "host": 53317,
+        "container": 53317,
+        "protocol": "tcp",
+        "scheme": "https",
+        "host_network": true
+      },
+      {
+        "host": 53317,
+        "container": 53317,
+        "protocol": "udp",
+        "scheme": "",
+        "host_network": true
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/localsendy",
+        "uid": 10001,
+        "gid": 10001,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Uploads/localsendy",
+        "uid": 10001,
+        "gid": 10001,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Uploads/localsendy/downloads",
+        "uid": 10001,
+        "gid": 10001,
+        "mode": "0750"
+      },
+      {
+        "path": "/mnt/hdd/Uploads/localsendy/tmp",
+        "uid": 10001,
+        "gid": 10001,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "LOCALSENDY_NETWORK_INTERFACES": "all"
+    },
+    "setup": "Open port 8100 on the trusted LAN; accept each incoming LocalSend request explicitly. Received files are /mnt/hdd/Uploads/localsendy/downloads. Initial download scope is persisted by the UI.",
+    "images": [
+      {
+        "image": "czyt/localsendy@sha256:e4b35d78be5309185d5d38bafbbb82a0f5e5b18b3f590a5de1283ba6168c34c8",
+        "arm64_verified": true,
+        "source": "https://registry-1.docker.io/v2/czyt/localsendy/manifests/latest",
+        "source_tag": "czyt/localsendy:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:56:17.608956+00:00"
+      }
+    ],
+    "notes": [
+      "Authentic ca-x/localsendy upstream. Its official Docker Hub mirror is used because GHCR denied anonymous pulls during verification.",
+      "The control UI is intentionally unauthenticated and binds only BIND_IP. Host networking supports LocalSend multicast; TCP+UDP 53317 listeners require a trusted LAN and host firewall. Tailscale does not carry LAN multicast.",
+      "SQLite/device identity stay on NVMe; received, staged and temporary file payloads stay on the verified HDD."
+    ],
+    "memory_mib": 192,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/localsendy",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "home-assistant",
+    "order": 81,
+    "default_enabled": true,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8123,
+        "container": 8123,
+        "protocol": "tcp",
+        "scheme": "http",
+        "host_network": true
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/home-assistant",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Complete Home Assistant onboarding at port8123. The first configuration binds HTTP to BIND_IP and keeps the recorder on NVMe. This is Home Assistant Container; Supervisor and add-ons are not included.",
+    "images": [
+      {
+        "image": "ghcr.io/home-assistant/home-assistant@sha256:3e6710a7ab2a61311d9d899b719f6c3657791c63e8f4942cec4ebc42401d6b76",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/home-assistant/home-assistant/manifests/stable",
+        "source_tag": "ghcr.io/home-assistant/home-assistant:stable",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:31.108563+00:00"
+      }
+    ],
+    "notes": [
+      "Host networking supports local device discovery. No privileged mode, host Docker socket, USB devices or D-Bus are granted by default.",
+      "For Bluetooth/Zigbee/other hardware, add only the required integration device permissions after identifying actual devices. Hardware integration setup is not claimed complete."
+    ],
+    "memory_mib": 1024,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/home-assistant",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "netalertx",
+    "order": 82,
+    "default_enabled": false,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 20211,
+        "container": 20211,
+        "protocol": "tcp",
+        "scheme": "http",
+        "host_network": true
+      },
+      {
+        "host": 20212,
+        "container": 20212,
+        "protocol": "tcp",
+        "scheme": "http",
+        "host_network": true,
+        "role": "token-protected backend API"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/netalertx",
+        "uid": 20211,
+        "gid": 20211,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "NETALERTX_API_TOKEN"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed",
+      "NETALERTX_SCAN_SUBNETS": "AUTO"
+    },
+    "setup": "Prepared on demand. prepare.sh scopes ARP discovery to the directly connected RFC1918 LAN of BIND_IP when it is /20 or smaller; otherwise scans remain disabled. Review the generated NETALERTX_SCAN_SUBNETS before starting. Set the web UI password and notification destinations during first run.",
+    "images": [
+      {
+        "image": "ghcr.io/netalertx/netalertx@sha256:0ee5cdcaa8a84bfd2f31354b4b30e603804d124821055b9942dcffb52d2ce4bc",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/netalertx/netalertx/manifests/latest",
+        "source_tag": "ghcr.io/netalertx/netalertx:latest",
+        "evidence": "OCI index and linux/arm64 image config inspected 2026-09-29T04:53:33.412002+00:00"
+      }
+    ],
+    "notes": [
+      "Host networking plus only upstream-required NET_ADMIN, NET_RAW, NET_BIND_SERVICE, CHOWN, SETUID and SETGID capabilities. No privileged mode, Docker socket or host sysctl changes.",
+      "Only local ARP/mDNS discovery is enabled; Internet probing plugins are omitted. Do not add public networks to the scan scope.",
+      "The upstream backend API listens on all host interfaces on20212 with a generated API token; keep both20211 and20212 within your trusted network/firewall."
+    ],
+    "memory_mib": 1024,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/netalertx",
+      "backup": "Stop this entire Compose project cleanly before copying its NVMe appdata and configuration; include any bulk files in the same backup."
+    }
+  },
+  {
+    "name": "diun",
+    "order": 88,
+    "mounts": [],
+    "ports": [],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/diun",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      },
+      {
+        "path": "/srv/docker/configs/diun",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000"
+    },
+    "setup": "Image-change notices are written to appdata/diun/notifications.log. Add a remote notification destination to configs/diun/diun.yml for phone/email alerts, then run start-all.sh diun. Runtime images stay pinned until explicitly reviewed.",
+    "images": [
+      {
+        "image": "crazymax/diun@sha256:e324b793eb32dfb7f74d3a39421ebf090141caaadee69b8f78da63112408ee25",
+        "arm64_verified": true,
+        "source": "https://registry-1.docker.io/v2/crazymax/diun/manifests/latest",
+        "source_tag": "crazymax/diun:latest",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:06.867067+00:00; source tag crazymax/diun:latest"
+      }
+    ],
+    "notes": [
+      "File provider watches source tags extracted from manifest evidence; immutable runtime digests would never change. No Docker socket, image pulling, container replacement or automatic updates.",
+      "Local notification log rotates at 1 MiB. Registry rate limits may delay checks; anonymous registry polling happens every six hours with two workers."
+    ],
+    "memory_mib": 128,
+    "default_enabled": true,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/diun",
+      "backup": "Stop the complete application before copying all its config/appdata/database directories."
+    }
+  },
+  {
+    "name": "autoheal",
+    "order": 90,
+    "mounts": [],
+    "ports": [],
+    "directories": [
+      {
+        "path": "/srv/docker/configs/autoheal",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000"
+    },
+    "setup": "JourneyDocker implements the requested Autoheal function; one controller only. Manager opts eligible NVMe services with a healthcheck into pi.autoheal.nvme=true.",
+    "images": [
+      {
+        "image": "ghcr.io/journeydocker/docker-autoheal@sha256:d35179b414d05a1d787700c2ae37bfff9d0a61a91eed6233a89b15f982a42c65",
+        "arm64_verified": true,
+        "source": "https://ghcr.io/v2/journeydocker/docker-autoheal/manifests/latest",
+        "source_tag": "ghcr.io/journeydocker/docker-autoheal:latest",
+        "evidence": "OCI registry index and ARM64 config verified 2026-09-29T04:42:01.850996+00:00; source tag ghcr.io/journeydocker/docker-autoheal:latest"
+      }
+    ],
+    "notes": [
+      "The guard proxy checks each restart/stop against the opt-in label, managed project, running state and inspected bind mounts. External/bulk paths are rejected even if accidentally labeled.",
+      "Three restarts per 30 minutes; then stop and investigate. No automatic image updates."
+    ],
+    "memory_mib": 160,
+    "default_enabled": true
+  },
+  {
+    "name": "pihole",
+    "order": 90,
+    "mounts": [],
+    "ports": [
+      {
+        "host": 8053,
+        "container": 80,
+        "protocol": "tcp",
+        "scheme": "http"
+      },
+      {
+        "host": 53,
+        "container": 53,
+        "protocol": "tcp",
+        "scheme": "dns"
+      },
+      {
+        "host": 53,
+        "container": 53,
+        "protocol": "udp",
+        "scheme": "dns"
+      }
+    ],
+    "directories": [
+      {
+        "path": "/srv/docker/appdata/pihole",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0750"
+      }
+    ],
+    "secrets": [
+      "PIHOLE_PASSWORD"
+    ],
+    "env": {
+      "BIND_IP": "",
+      "SERVER_IP": "",
+      "TZ": "Asia/Dubai",
+      "PUID": "1000",
+      "PGID": "1000",
+      "ADMIN_USER": "saeed"
+    },
+    "setup": "Open /admin/ on port 8053 and use PIHOLE_PASSWORD. Test DNS before manually pointing client/router DNS to SERVER_IP. Keep the Pi host DNS independently configured; installer does not alter host DNS.",
+    "images": [
+      {
+        "image": "pihole/pihole@sha256:5b9c8cf51de7d6d3f2240dbe72baf5f06e1fd39cb4d77a99fab4fa13e23bd1be",
+        "arm64_verified": true,
+        "evidence": "Registry OCI index inspected 2026-09-22T13:35:29.887319+00:00; linux/arm64 platform descriptor present; image config retrieved. Source tag: pihole/pihole:latest",
+        "source": "https://registry-1.docker.io/v2/pihole/pihole/manifests/latest"
+      }
+    ],
+    "notes": [
+      "DNS TCP/UDP 53 binds only BIND_IP. No DHCP, host networking, NET_ADMIN or SYS_TIME. Port 53 conflicts must be resolved without disabling host DNS blindly.",
+      "Pi-hole query/gravity/config databases all remain on NVMe."
+    ],
+    "memory_mib": 192,
+    "database": {
+      "kind": "application-embedded",
+      "path": "/srv/docker/appdata/pihole",
+      "backup": "Stop this application cleanly before copying its embedded database/appdata; include configuration and large files in the same backup run."
+    }
+  }
+]

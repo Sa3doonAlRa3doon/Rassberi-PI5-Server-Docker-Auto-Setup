@@ -1,0 +1,54 @@
+{
+  "name": "pi-navidrome",
+  "services": {
+    "navidrome": {
+      "image": "deluan/navidrome@sha256:df22d661b8d0322c33754d999b567150df9e131a47ae53be71fed0154bf8cef5",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "192m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "ND_SCANSCHEDULE": "1h",
+        "ND_LOGLEVEL": "info"
+      },
+      "ports": [
+        {
+          "target": 4533,
+          "published": "4533",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/navidrome",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/media/Music",
+          "target": "/music",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "user": "${PUID:-1000}:${PGID:-1000}"
+    }
+  }
+}

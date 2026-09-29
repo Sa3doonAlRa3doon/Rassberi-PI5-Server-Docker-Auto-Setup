@@ -1,0 +1,56 @@
+{
+  "name": "pi-searxng",
+  "services": {
+    "searxng": {
+      "image": "searxng/searxng@sha256:4109ebf36dc291931c5b43f5ee451c517085255aecfa71f8ffae21000ce5c5fa",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "SEARXNG_SECRET": "${SEARXNG_SECRET:?Run installer}",
+        "SEARXNG_BASE_URL": "http://${SERVER_IP}:8090/",
+        "SEARXNG_LIMITER": "false",
+        "SEARXNG_PUBLIC_INSTANCE": "false",
+        "GRANIAN_WORKERS": "1"
+      },
+      "ports": [
+        {
+          "target": 8080,
+          "published": "8090",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/searxng",
+          "target": "/etc/searxng",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/searxng",
+          "target": "/var/cache/searxng",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ]
+    }
+  }
+}

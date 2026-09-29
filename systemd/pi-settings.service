@@ -1,0 +1,19 @@
+[Unit]
+Description=Pi server private HTTPS settings panel
+After=network-online.target
+Wants=network-online.target
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/srv/docker
+ExecStart=/usr/bin/python3 /srv/docker/scripts/settings_server.py --port 8788
+Restart=on-failure
+RestartSec=10
+UMask=0077
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

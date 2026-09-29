@@ -1,0 +1,9 @@
+[Unit]
+Description=Consistent Pi configuration and database backup
+RequiresMountsFor=/srv/docker /mnt/hdd /mnt/media
+After=docker.service
+[Service]
+Type=oneshot
+ExecStart=/srv/docker/scripts/backup.sh
+Nice=10
+IOSchedulingClass=idle

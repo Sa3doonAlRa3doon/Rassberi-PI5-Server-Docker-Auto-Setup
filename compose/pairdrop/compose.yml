@@ -1,0 +1,51 @@
+{
+  "name": "pi-pairdrop",
+  "services": {
+    "pairdrop": {
+      "image": "ghcr.io/schlagmichdoch/pairdrop@sha256:c4b30977264a76e335740089e693a52a0d0d616330dec7f93c7b96beef7b4a02",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "128m",
+      "cpus": 0.35,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "WS_FALLBACK": "true",
+        "RTC_CONFIG": "/config/rtc-config.json",
+        "DEBUG_MODE": "false"
+      },
+      "ports": [
+        {
+          "target": 3000,
+          "published": "3004",
+          "host_ip": "${BIND_IP:?Run installer}",
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/pairdrop",
+          "target": "/config",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      }
+    }
+  }
+}

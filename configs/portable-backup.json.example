@@ -1,0 +1,7 @@
+{
+  "mount": "/mnt/backup",
+  "uuid": "",
+  "folder": "pi-server",
+  "include_bulk": true,
+  "reserve_gib": 5
+}

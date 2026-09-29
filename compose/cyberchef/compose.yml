@@ -1,0 +1,31 @@
+{
+  "name": "pi-cyberchef",
+  "services": {
+    "cyberchef": {
+      "image": "ghcr.io/gchq/cyberchef@sha256:f04a39926344faf8e4cbbc8c92fb125d2b466f9be62db09aff23c7c406101a51",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "96m",
+      "cpus": 0.2,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "ports": [
+        {
+          "target": 8080,
+          "published": "8086",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s"
+    }
+  }
+}
