@@ -7,6 +7,9 @@ import subprocess
 import sys
 
 BASE = Path('/srv/docker')
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(BASE / 'scripts'))
+import app_selection
 
 
 def names(path):
@@ -34,7 +37,8 @@ def main():
     fcntl.flock(lock, fcntl.LOCK_EX)
     manifest = json.loads((BASE / 'manifest.json').read_text())
     known = {app['name'] for app in manifest}
-    desired = set(names(BASE / 'enabled-apps.txt'))
+    installed = set(app_selection.installed_names(BASE, manifest))
+    desired = set(app_selection.startup_names(BASE, manifest)) & installed
     # enabled-apps.txt is the explicit current startup selection.
     holds = set(names(BASE / 'configs/storage-review-required.json'))
     report = BASE / 'logs' / 'boot-storage.log'
@@ -61,3 +65,4 @@ if __name__ == '__main__':
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         print('ERROR: boot storage start: ' + str(exc), file=sys.stderr)
         raise SystemExit(1)
+
