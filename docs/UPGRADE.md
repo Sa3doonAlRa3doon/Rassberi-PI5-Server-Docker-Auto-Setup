@@ -18,6 +18,12 @@ sudo cat /srv/docker/configs/settings-private/access-key
 
 Open `https://PI_PRIVATE_IP:8788` with the printed access key. The panel uses the new storage and settings code while preserving the existing `.env` files, data and credentials.
 
+## Release gate
+
+The package is manual-release only. `update-all.sh` updates pinned container images; it does not replace server code. `upgrade-server.sh` reads `RELEASE.json` and accepts only a published package whose `release_id` is higher than the installed release. A missing, invalid, same or older marker stops the code upgrade before files are staged.
+
+`FIXED AND IMPROVED` is the public release marker for this package. It is a release label, not a secret credential. When publishing a real code release, increment `release_id` only after the package has been reviewed and tested. Local customized files are still listed and preserved for review by the existing hash-based upgrade plan.
+
 The dry run is read-only. It accepts an installed file for replacement only when it is absent, already current, or exactly matches the recorded previous package. Unknown/customized files are listed and preserved. Customized systemd units stop the upgrade for review. Apply repeats the plan under the server lock, backs up every replaced file under `/srv/docker/backups/package-upgrade-<UTC>/`, stages the new package, reloads systemd without restarting Docker, and prints the next command.
 
 The updater always preserves storage identity/layout, application `.env` files and credentials, appdata, databases, bulk files, logs, backup settings, review holds, and the user's `enabled-apps.txt`. `install-all.sh` then installs required host tools, creates only missing guarded directories and environment fields, pulls/verifies new ARM64 images, and reconciles enabled projects. Heavy and network-scanning apps remain on demand according to the retained startup selection; add them in Settings when wanted.

@@ -13,6 +13,7 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 - Generates root-only `.env` files without replacing existing credentials.
 - Starts heavy and scanning applications on demand so a 16 GB Pi is not overloaded.
 - Provides guarded update, backup, restore, storage migration and upgrade tools.
+- Uses a manual release gate so code changes are applied only from a published, newer package.
 - Supports a different machine with a different combination of SSDs, HDDs, microSD cards and additional ext4 filesystems.
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
@@ -81,6 +82,8 @@ sudo cat /srv/docker/configs/settings-private/access-key
 ```
 
 Open `https://PI_PRIVATE_IP:8788` with the printed access key. The panel lets the owner review storage, plan guarded destination changes, choose on-demand applications, and configure a future backup drive. Read [docs/UPGRADE.md](docs/UPGRADE.md) first.
+
+The updater also checks `RELEASE.json`. It refuses a missing, invalid, or same/older release, so editing a package or leaving a broken package on the server does not silently replace an installed release. A new code release must increment `release_id` and keep the public marker `FIXED AND IMPROVED`. This marker is a release label, not a secret; anything committed to a public GitHub repository is visible.
 
 ## Changeable storage
 
@@ -240,6 +243,7 @@ After installation:
 
 ```text
 /srv/docker/
+├── RELEASE.json             # published release marker and release_id
 ├── compose/<app>/          # Compose files and root-only generated .env files
 ├── configs/                # storage profile, Homepage, monitoring and app configuration
 ├── appdata/                # application state on the selected SSD
