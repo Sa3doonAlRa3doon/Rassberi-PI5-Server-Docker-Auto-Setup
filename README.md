@@ -1,56 +1,58 @@
-# Raspberry Pi 5 server package
+# Raspberry Pi 5 Server Docker Auto Setup
 
-This folder is generated on Windows and is intended to be copied to the Raspberry Pi. The files are **Linux ARM64 deployment files**; they are not Windows server installers.
+An ARM64 Docker Compose platform for a Raspberry Pi 5. It installs a storage-aware home server with 41 projects, guarded startup, per-application secrets, monitoring, backups, and a private storage customization panel.
 
-Copy the folder to `~/Downloads/Rassberi-PI5-Codes` on the Pi, then run:
+> **Target:** Raspberry Pi OS/Debian Trixie on ARM64, with Docker Engine and Compose available. This repository contains Linux deployment files; it is not a Windows installer.
+
+## Start here
+
+Copy this repository to the Pi, then run the installer from the package directory:
 
 ```bash
-cd ~/Downloads/Rassberi-PI5-Codes
-chmod +x install-all.sh start-all.sh stop-all.sh update-all.sh backup.sh verify-after-reboot.sh scripts/*.sh
+chmod +x install-all.sh setup-server.sh start-all.sh stop-all.sh update-all.sh backup.sh verify-after-reboot.sh scripts/*.sh
 sudo BIND_IP=192.168.1.50 ./install-all.sh
 ```
 
-For a new or different machine, start with the temporary private setup panel. It discovers mounted ext4 filesystems without scanning or adopting their files, lets you review/auto-select every application data location, and then installs the selected layout:
+Replace `192.168.1.50` with the Pi's private LAN or Tailscale address. The installer refuses wildcard/public binding, non-ARM64 systems, unsupported distributions, missing Docker/Compose, unsafe root storage, and dangerously low free space.
+
+For a new machine, use the temporary setup panel first:
 
 ```bash
-chmod +x setup-server.sh
 sudo ./setup-server.sh
 ```
 
-Open the printed private HTTPS address and enter its one-time access key. Auto select always proposes fresh folders, keeps databases/appdata on an SSD, excludes the configured backup disk, and never formats, partitions, imports, moves or deletes existing files. The optional permanent panel uses private port 8788 after installation. Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md).
+Open the private address and one-time key printed by the script. The panel discovers mounted filesystems without adopting or changing existing files, lets you review every application location, and can auto-select a safe layout. The optional permanent settings panel runs on private port `8788` after installation.
 
-Replace `192.168.1.50` with the Pi's private LAN or Tailscale IPv4 address. Run from the host account `pi5`. The installer refuses wildcard/public binding, non-ARM64 systems, non-Trixie systems, missing Docker/Compose, unsafe NVMe storage, and dangerously low space. If a data disk is missing, its dependent applications are skipped with a clear error; independent applications can continue. Existing application usernames and secrets are preserved.
+## Included services
 
-The installer creates `/srv/docker` on the NVMe and writes per-application secrets to root-only `/srv/docker/compose/<app>/.env`. It creates one Compose project per application. It generates an installation report and per-application logs under the copied project's `logs/` directory. Architecture, Docker and unsafe root storage are critical failures. A missing HDD or microSD blocks only the projects that need that disk, and never triggers data-folder creation on the bare NVMe mount point.
+The package contains 41 Compose projects and 59 containers. The default set is capped at 12,224 MiB so a 16 GB Pi retains operating-system and filesystem-cache headroom. The full catalog is intentionally not started together; heavier services start on demand.
 
-For an already installed server changing to the replacement HDD, use [docs/STORAGE-UPDATE.md](docs/STORAGE-UPDATE.md) and retain the [migration report](docs/STORAGE-MIGRATION-REPORT.md). Rerunning the original installer alone does not replace existing configuration files. The storage updater has a dry run, backs up changed files, checks known file hashes, and preserves secrets and application data.
+| Area | Included projects |
+|---|---|
+| Core | Nextcloud, Paperless-ngx, PostgreSQL, MariaDB, Redis, Vaultwarden, Gitea, Wiki.js, Moodle, n8n, OnlyOffice |
+| Media and files | Jellyfin, Navidrome, Calibre-Web, Kiwix, File Browser, Syncthing, PairDrop, Localsendy |
+| Monitoring and safety | Beszel, Scrutiny, Docker Socket Proxy, JourneyDocker Autoheal, Diun, Uptime Kuma, Dozzle |
+| Utilities | Home Assistant, Homebox, Linkding, ChangeDetection.io, NetAlertX, Stirling PDF, Jupyter, Portainer, Homepage |
+| Network and tools | Pi-hole, SearXNG, Code Server, IT-Tools, CyberChef, Excalidraw, Actual |
 
-Resource-heavy and scanning applications are installed and image/build checked but stay on demand by default: Stirling PDF, Jupyter, ONLYOFFICE, Moodle, ChangeDetection.io and NetAlertX. The separate Tailscale Homepage also stays off until it has a real Tailscale address. Start one only when needed:
+The second Tailscale-only Homepage is included as `homepage-tailscale` and stays disabled until a real Tailscale address is configured.
+
+Start or stop a heavy project on demand:
 
 ```bash
 sudo /srv/docker/start-all.sh onlyoffice
 sudo /srv/docker/stop-all.sh onlyoffice
 ```
 
-The 41 projects contain 59 containers. The default enabled set has a 12,224 MiB aggregate container cap, leaving the 16 GB Pi operating system and filesystem cache headroom. All configured services total 21,760 MiB, so they are intentionally not started together. The runtime checks the current Docker memory budget before starting an app.
+## Storage layout
 
-## Storage contract
-
-| Device | Required mount | Contents |
+| Device | Mount | Stores |
 |---|---|---|
-| NVMe, approximately 512 GB; root partition `/dev/nvme0n1p2` | `/` | OS, Docker, Compose projects, configs, appdata, caches, databases, logs and scripts |
-| Seagate ST1000LM035-1RK172, approximately 1 TB; label `HDD1TB`; ext4 | `/mnt/hdd` | Nextcloud, Paperless, Books, Kiwix, Shared and Uploads |
-| microSD, approximately 256 GB; label `MEDIA`; ext4 | `/mnt/media` | Music and Videos |
+| NVMe SSD, about 512 GB | `/` | OS, Docker, databases, configs, appdata, caches, logs and scripts |
+| Seagate HDD, about 1 TB | `/mnt/hdd` | Nextcloud, Paperless, Books, Kiwix, Shared and Uploads |
+| microSD, about 256 GB | `/mnt/media` | Music and Videos |
 
-HDD identity is UUID `a8293b36-2c0e-4852-84fd-92ac7503f4db`; microSD identity remains `17e44bc7-f360-45c4-878b-a7fe7aa45f6e`. The HDD is approximately 931.5 GiB raw and 916 GiB as a filesystem. Actual capacity, used space and free space are read from the live mount; free space is never hardcoded. HDD device letters are not used as persistent identity.
-
-The storage guard runs before directory creation, installation, and every managed start. It verifies UUIDs, mount targets, writable state, free space, symlink/submount redirection, and declared paths. A guarded boot service starts configured projects after checking their individual dependencies. Managed containers use `on-failure:5`, so a daemon or host restart cannot bypass per-application storage checks. A selective monitor stops affected projects when their disk becomes unsafe and can resume previously affected work after the correct filesystem returns. It does not stop the entire Docker daemon merely because one optional data disk is missing.
-
-The table above remains the supplied machine's default. A reviewed version-2 layout can use another mounted SSD, omit the HDD, place bulk files on a larger microSD, or add other ext4 data filesystems. Paths and required UUID mounts are derived from that saved layout instead of fixed drive names. Databases and application state still require SSD storage. Existing populated data moves only through an explicit stop-copy-verify operation; originals remain in place.
-
-Use the provided management scripts for storage-dependent projects. Direct `docker compose up`, `docker start`, or Portainer actions can bypass the host wrapper. `create_host_path: false` prevents creating a missing source directory but does not prove an existing directory is the expected mount. UUID checks, guarded startup, restart policy and monitoring protect the managed path. The HDD's `nofail` mount lets the Pi boot without that disk; it does not authorize HDD applications to start.
-
-All active PostgreSQL databases stay under `/srv/docker/databases/<app>` on the NVMe. No database is placed on the HDD or microSD. Large data is mapped as follows:
+The default data paths are:
 
 ```text
 /mnt/hdd/Nextcloud
@@ -63,7 +65,11 @@ All active PostgreSQL databases stay under `/srv/docker/databases/<app>` on the 
 /mnt/media/Videos
 ```
 
-## Management
+Databases and application state remain on the NVMe. Before creating paths, installing projects, or starting dependent containers, the storage guard verifies the expected UUID, mount target, filesystem state, free space, writable state, symlink boundaries, and declared paths. If a data disk is absent, only projects that need it are held back; the installer never creates a false `/mnt/hdd` or `/mnt/media` directory on the root disk.
+
+The setup panel supports a different machine with an SSD-only layout, a larger microSD, another HDD, or additional ext4 filesystems. It does not format, partition, import, move, or delete populated files. Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md).
+
+## Operations
 
 ```bash
 sudo /srv/docker/status.sh
@@ -75,18 +81,31 @@ sudo /srv/docker/verify-after-reboot.sh
 sudo /srv/docker/scripts/disk-health.sh
 ```
 
-The added projects are Beszel, Scrutiny, Docker Socket Proxy, JourneyDocker Autoheal, Diun, Homebox, Linkding, ChangeDetection.io, PairDrop, Localsendy, Home Assistant, NetAlertX and a second Tailscale-only Homepage. Monitoring and utility details are in [docs/MONITORING-APPS.md](docs/MONITORING-APPS.md) and [docs/UTILITY-ADDITIONS.md](docs/UTILITY-ADDITIONS.md). Portable future-drive backups and standalone recovery are in [docs/PORTABLE-BACKUP.md](docs/PORTABLE-BACKUP.md).
+`update-all.sh` preserves the running set and never removes volumes. `backup.sh` takes an outage, dumps PostgreSQL/MariaDB logically, captures stopped appdata/configuration, and never copies a live database directory. Configure a separate disk or encrypted restic repository before treating backups as disaster protection.
 
-To add this release to the earlier 28-project installation without overwriting secrets or data, follow [docs/UPGRADE.md](docs/UPGRADE.md). Run the downloaded package's `upgrade-server.sh --dry-run` before `--apply`.
+For a replacement HDD or a future portable backup disk:
 
-`update-all.sh` backs up first, pulls only the pinned Compose images, preserves the set of currently running apps, and never removes volumes. `backup.sh` takes an outage, dumps external PostgreSQL/MariaDB databases logically, captures stopped appdata/configuration, and never copies a live database directory. The default backup is a same-NVMe staging copy; configure a separate destination or encrypted restic repository in `/srv/docker/configs/backup.conf` before treating it as disaster protection. Read `BACKUPS.md` and `docs/RECOVERY.md` before restoring.
+```bash
+sudo ./upgrade-server.sh --dry-run
+sudo /srv/docker/portable-backup.sh create
+```
 
-## First login and access
+See [docs/STORAGE-UPDATE.md](docs/STORAGE-UPDATE.md), [docs/PORTABLE-BACKUP.md](docs/PORTABLE-BACKUP.md), and [docs/RECOVERY.md](docs/RECOVERY.md).
 
-Generated passwords are in each root-only `.env`; do not paste them into chat or commit them. Most applications have a first-run setup described in `docs/APPS-STATEFUL.md` or `docs/APPS-UTILITIES.md`. The package does not configure router forwarding or public Internet access. Use a private LAN/Tailscale path and add private HTTPS before using browser features that require a secure context (Vaultwarden, Actual and similar apps).
+## Documentation
 
-The package does not install Ollama, Open WebUI, local LLMs, Mailu, a desktop environment, or host DNS changes. Pi-hole binds DNS port 53 only to `BIND_IP`; check the host first and do not blindly disable the Pi's existing resolver.
+- [Documentation index](docs/INDEX.md)
+- [Application setup and first logins](docs/APPS-STATEFUL.md)
+- [Monitoring and safety services](docs/MONITORING-APPS.md)
+- [Utility applications](docs/UTILITY-ADDITIONS.md)
+- [Storage map](STORAGE.md)
+- [Published ports](PORTS.md)
+- [Backup notes](BACKUPS.md)
+- [Upgrade path](docs/UPGRADE.md)
+- [Tailscale Homepage](docs/TAILSCALE-HOMEPAGE.md)
 
 ## Validation boundary
 
-The Windows-side audit reads all 41 Compose files and manifest storage declarations, then checks Compose syntax, Bash/Python/JavaScript syntax, 46 unique ports, ARM64 evidence, resource limits, guarded bind mounts, database isolation, storage-layout safety, backup/recovery behavior and Docker-socket boundaries. This is configuration validation, not a live Pi deployment test. Hardware UUIDs, filesystem write/read tests, SMART passthrough, alerts, real file transfers, Home Assistant discovery, NetAlertX discovery, Tailscale Serve, container health and reboot recovery still require the Pi. Read [STORAGE.md](STORAGE.md) for the per-application map.
+The Windows-side audit checks all Compose files and manifest declarations, syntax, ports, ARM64 evidence, resource limits, guarded mounts, database isolation, backup/recovery behavior, and Docker-socket boundaries. It does not replace live Pi checks. SMART passthrough, filesystem read/write tests, alerts, real transfers, Home Assistant discovery, NetAlertX discovery, Tailscale Serve, container health, and reboot recovery must be verified on the target device.
+
+The existing dashboard archive remains in [dashboard types/IT SIMPLI+.zip](<dashboard%20types/IT%20SIMPLI%2B.zip>).
