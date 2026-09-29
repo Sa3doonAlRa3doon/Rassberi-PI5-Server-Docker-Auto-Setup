@@ -22,7 +22,7 @@ sudo python3 /srv/docker/scripts/install-settings-service.py
 sudo cat /srv/docker/configs/settings-private/access-key
 ```
 
-Open `https://PI_PRIVATE_IP:8788`. The service uses its own root-only access key and self-signed TLS certificate. It can select which Docker applications are installed, choose which installed apps start at boot, plan guarded storage changes, configure a future backup drive and start/stop one app through the same manager. Storage groups are shown only for selected applications. Private config files and operation logs are never returned by the API.
+Open `https://PI_PRIVATE_IP:8788`. The service uses its own root-only access key and self-signed TLS certificate. It can select which Docker applications are installed, choose which installed apps start at boot, plan guarded storage changes, configure a future backup drive and start/stop one app through the same manager. Storage groups are shown only for selected applications. Removing an app from an existing selection stops its running containers immediately but never deletes its data. Private config files and operation logs are never returned by the API.
 
 Custom layouts preserve existing `/etc/fstab`; the panel does not invent persistent mounts. Before relying on an external path after reboot, create a reviewed UUID-based fstab/systemd mount yourself and verify it with `findmnt --verify`. Missing mounts leave their dependent applications stopped rather than writing into the bare mountpoint on the OS disk.
 
