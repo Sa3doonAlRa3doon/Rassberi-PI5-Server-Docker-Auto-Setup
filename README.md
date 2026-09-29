@@ -18,6 +18,25 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
 
+## Officially fixed in Release 4
+
+Release 4 is the published **FIXED AND IMPROVED** release. The following issues from the earlier installer and upgrade path are now officially fixed in the code on `main`:
+
+- **Fresh-install storage selection:** a new machine must use the temporary setup wizard before installation. The installer refuses an unreviewed layout, so it cannot silently write to example `/mnt/hdd` or `/mnt/media` paths.
+- **Changeable storage profiles:** the wizard and permanent settings panel support different SSDs, HDDs, microSD cards, additional mounted filesystems, SSD-only machines, and a separate future backup drive. Destinations can be selected manually or proposed by a fresh auto-select profile.
+- **Missing-mount protection:** storage identity, mount state, writability, UUID and free space are checked before paths are created, configurations are committed, services are started, or a disk-return resume runs. A missing disk cannot turn into a directory on the NVMe root filesystem.
+- **Database placement:** PostgreSQL, MariaDB, SQLite and application state stay on the selected writable SSD. Bulk documents, books, ZIM files, shared files, music and videos can use the reviewed HDD or microSD destinations.
+- **Upgrade safety:** upgrades are manual-release-only, reject missing, invalid, same or older releases, and accept hashes from the published release history. Older release 1 installations can therefore receive reviewed fixes without treating genuine local customizations as package files.
+- **Data preservation:** the upgrade and apply paths preserve existing secrets, `.env` files, enabled-app choices, application data, databases, bulk files, storage identity and backup settings. They do not delete existing Nextcloud, Paperless or other application data.
+- **Port collision handling:** an existing container published on a wildcard address is correctly recognized as belonging to the same project when the configured private `BIND_IP` is checked. This removes the false port-conflict failure seen during re-runs while still rejecting a real conflict from another project.
+- **Settings-panel startup:** the permanent settings service waits for its root-only access key and confirms that the service is active before the install step reports success.
+- **Interrupted-install recovery:** detached root-shell commands, lock checks and idempotent installers are documented for SSH sessions that close while large ARM64 images are downloading. Completed image layers and services are reused on resume.
+- **Replacement and backup-drive handling:** replacement HDD and future backup-drive workflows are guarded, keep backup storage out of active application placement, and provide portable recovery procedures.
+- **16 GB memory behavior:** all requested services can be installed, while heavy applications remain on demand and are started only when needed after the aggregate memory check.
+- **Monitoring and utility additions:** the published 41-project manifest includes the second Tailscale Homepage, Autoheal, Beszel, Scrutiny, Docker Socket Proxy, Diun, Localsendy, NetAlertX, Homebox, Linkding, ChangeDetection.io and PairDrop.
+
+The release marker, upgrade history and source code are committed in this public repository. Runtime credentials, access keys, databases and user files remain on the Pi and are never part of the GitHub package.
+
 ## Before you start
 
 You need:
@@ -298,3 +317,4 @@ Windows-side validation checks the 41 Compose projects and manifest declarations
 That is configuration validation. The target Pi still needs live checks for filesystem read/write behavior, SMART passthrough, network discovery, real file transfers, alerts, Home Assistant onboarding, NetAlertX discovery, Tailscale Serve, container health, and reboot recovery.
 
 The existing dashboard archive remains in [dashboard types/IT SIMPLI+.zip](<dashboard%20types/IT%20SIMPLI%2B.zip>).
+
