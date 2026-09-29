@@ -46,13 +46,15 @@ sudo /srv/docker/stop-all.sh onlyoffice
 
 ## Storage layout
 
+The table below is the supplied Raspberry Pi's **default profile**. It is not a fixed hardware requirement. Before installation, the setup panel can select a different mounted SSD, HDD, microSD, or additional ext4 filesystem; after installation, the permanent settings panel can plan reviewed storage changes.
+
 | Device | Mount | Stores |
 |---|---|---|
 | NVMe SSD, about 512 GB | `/` | OS, Docker, databases, configs, appdata, caches, logs and scripts |
 | Seagate HDD, about 1 TB | `/mnt/hdd` | Nextcloud, Paperless, Books, Kiwix, Shared and Uploads |
 | microSD, about 256 GB | `/mnt/media` | Music and Videos |
 
-The default data paths are:
+The supplied profile's default data paths are:
 
 ```text
 /mnt/hdd/Nextcloud
@@ -65,7 +67,7 @@ The default data paths are:
 /mnt/media/Videos
 ```
 
-Databases and application state remain on the NVMe. Before creating paths, installing projects, or starting dependent containers, the storage guard verifies the expected UUID, mount target, filesystem state, free space, writable state, symlink boundaries, and declared paths. If a data disk is absent, only projects that need it are held back; the installer never creates a false `/mnt/hdd` or `/mnt/media` directory on the root disk.
+Databases and application state remain on the selected writable SSD; the supplied profile uses the NVMe. Before creating paths, installing projects, or starting dependent containers, the storage guard verifies the expected UUID, mount target, filesystem state, free space, writable state, symlink boundaries, and declared paths. If a data disk is absent, only projects that need it are held back; the installer never creates a false `/mnt/hdd` or `/mnt/media` directory on the root disk.
 
 The setup panel supports a different machine with an SSD-only layout, a larger microSD, another HDD, or additional ext4 filesystems. It does not format, partition, import, move, or delete populated files. Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md).
 
