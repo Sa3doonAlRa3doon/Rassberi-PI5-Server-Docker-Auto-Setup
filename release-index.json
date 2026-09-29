@@ -648,7 +648,7 @@
       "previous_sha256": "4a2336f28286596416bf95e53998f7e03f481f91bec605ebfd4f900c76b68996"
     },
     "install-all.sh": {
-      "sha256": "332e2f4f84a415463e594e60517651ee155cd408dd9a1e009bfed83a51fcc57f",
+      "sha256": "46c78cbac5e4cbf57705e749ffe83e1a255000354da1d2ac54195a61eb53306e",
       "previous_sha256": "f2e59813a51112a1af0106a97087b4606f0c52c7c09bdd9a824b2910517ac523"
     },
     "install-server.sh": {
@@ -668,11 +668,11 @@
       "previous_sha256": "af72ba17bfc7f528f5730acc84b1f64148b6eebf5cd761a1038c508f53b50544"
     },
     "README.md": {
-      "sha256": "c8fd23252483c6f2cf2b13be63a44ddd6a769bd12e914ef3be666a212625b1a6",
+      "sha256": "c66b0c92dd3c73551326c662bce284d2d5ce4a7104ba10c859e7f082c6c52913",
       "previous_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02"
     },
     "RELEASE.json": {
-      "sha256": "c5a968bc0828211662c435a7efed3b44dd1ec53ac46a357bd79e2fd371ee98f1",
+      "sha256": "f5c9638b278c4b45861e73261014573fb4a8c278924b9a007ffc8b1f4fc6b0bf",
       "previous_sha256": null
     },
     "scripts/apply-storage-update.py": {
@@ -708,11 +708,11 @@
       "previous_sha256": "74579cebd052f4760b96bbd1b97604bb5afb43c97df6b139e1758f97990410af"
     },
     "scripts/install-settings-service.py": {
-      "sha256": "f58b77e4c2364e324db210a80be4e43bcd7d5ff9308c9d22ff9796af6c108da3",
+      "sha256": "4c6e6b6991a22b3cf4cd5f9bdd62bac13fae84639d45d399ebcbacbedd29d644",
       "previous_sha256": null
     },
     "scripts/manage.py": {
-      "sha256": "dca4669fc1b68e62b910aa499fafd6aa31e56a80c1d0ba5b8e047370dc102d4f",
+      "sha256": "7b8a2a5fb87e3280cbd4307e7ec2595561c34d01df5a95f7e9d51e6640c14ef4",
       "previous_sha256": "fec4f01966b93cb78567d0b2dfbc726183d7cdf8310c3035f241683a87c2b7fa"
     },
     "scripts/monitoring_devices.py": {
