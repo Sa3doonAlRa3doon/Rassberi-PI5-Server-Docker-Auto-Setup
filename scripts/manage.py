@@ -58,12 +58,17 @@ def verify_ports(app, cfg):
                     raise RuntimeError(f'Host-network port unavailable: {port["host"]}/{proto}: {exc}') from exc
                 finally:
                     sock.close()
-    owned={(p['HostIp'],int(p['HostPort']),key.split('/')[1]) for c in containers(app)
+    # Existing containers from this same Compose project may have been created
+    # with a wildcard host bind while the current package uses BIND_IP (or the
+    # reverse).  The published port is still owned by this project, so do not
+    # report its own container as a foreign collision.  Ports belonging to a
+    # different project are still caught by the bind probe below.
+    owned={(int(p['HostPort']),key.split('/')[1]) for c in containers(app)
            for key, ps in (c.get('NetworkSettings',{}).get('Ports') or {}).items() for p in (ps or [])}
     for svc in cfg['services'].values():
         for port in svc.get('ports',[]):
             host,number,proto=port.get('host_ip','0.0.0.0'),int(port['published']),port.get('protocol','tcp')
-            if (host,number,proto) in owned: continue
+            if (number,proto) in owned: continue
             sock=socket.socket(socket.AF_INET,socket.SOCK_DGRAM if proto=='udp' else socket.SOCK_STREAM)
             try: sock.bind((host,number))
             except OSError as exc: raise RuntimeError(f'Host port conflict/unavailable: {host}:{number}/{proto}: {exc}') from exc

@@ -47,8 +47,14 @@ chmod +x setup-server.sh install-all.sh start-all.sh stop-all.sh update-all.sh b
 sudo ./setup-server.sh
 ```
 
-4. Open the private HTTPS address and one-time key printed by the wizard.
-5. Review each destination, or choose auto-select, then apply the reviewed layout.
+4. Open the private HTTPS address and one-time key printed by the wizard. This
+   panel is temporary: it shuts down after you finish, press `Ctrl+C`, or remain
+   idle for two hours. It does not install Docker services or become the
+   permanent settings panel.
+5. Review each destination, or choose auto-select, then apply the reviewed
+   layout. The installer refuses a fresh install until this step has created
+   `configs/layout.json`, so a new machine cannot silently use the example
+   `/mnt/hdd` and `/mnt/media` profile.
 6. Run the installer with the Pi's private address:
 
 ```bash
@@ -56,6 +62,19 @@ sudo BIND_IP=192.168.1.50 ./install-all.sh
 ```
 
 Replace `192.168.1.50` with the Pi's private LAN or Tailscale IPv4 address.
+
+If the SSH terminal might close during image pulls, start the install in a
+detached root shell and monitor its private log:
+
+```bash
+sudo nohup sh -c 'BIND_IP=192.168.1.50 exec ./install-all.sh > /srv/docker/logs/install-console.log 2>&1' </dev/null &
+sudo tail -f /srv/docker/logs/install-console.log
+```
+
+The first run may take a while while ARM64 images are downloaded and unpacked.
+If the session is interrupted, reconnect and run the same detached command only
+after checking that no `install-all.sh` process and no `/run/lock/pi-server.lock`
+owner remains. The installer is idempotent and reuses completed image layers.
 
 ### Existing installation
 
