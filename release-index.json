@@ -632,7 +632,7 @@
       "previous_sha256": null
     },
     "docs/UPGRADE.md": {
-      "sha256": "83ab61aa0644564957029ffe6fc39be78e85581b16e6849353a4615a9a113bf7",
+      "sha256": "e93b07f6c1501bfe37259154dad37d0bbd4ed50b1d48e8276c4d2b34ec07bbf3",
       "previous_sha256": null
     },
     "docs/UTILITIES-IMAGE-EVIDENCE.json": {
@@ -668,7 +668,7 @@
       "previous_sha256": "af72ba17bfc7f528f5730acc84b1f64148b6eebf5cd761a1038c508f53b50544"
     },
     "README.md": {
-      "sha256": "c75ce5e2cf06cdc4b5eee0a4ee9f757f93a3b8aa9f094b2be6ce830b9deb28c0",
+      "sha256": "c8fd23252483c6f2cf2b13be63a44ddd6a769bd12e914ef3be666a212625b1a6",
       "previous_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02"
     },
     "RELEASE.json": {
