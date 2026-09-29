@@ -18,6 +18,10 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
 
+## Release 6 changes
+
+Release 6 fixes app-selection cleanup: when an installed app is removed from the selection on an existing Pi, its currently running containers are stopped immediately. Its appdata, databases, credentials and files remain untouched and can be selected again later.
+
 ## Release 5 changes
 
 - ONLYOFFICE, Jupyter and Stirling PDF are enabled for automatic startup after Docker and verified storage are ready.

@@ -2462,8 +2462,9 @@
       ]
     },
     "docs/STORAGE-CUSTOMIZATION.md": {
-      "sha256": "1d849c8e847c550d3b18f68cdd4020be1e0b7982fd9c9c2b4d19da94fe3299b6",
+      "sha256": "58128f3cfed6a5b836c5f5f6f592998dc081d75da0852e69a64ba1f28e7b49d1",
       "accepted_sha256": [
+        "1d849c8e847c550d3b18f68cdd4020be1e0b7982fd9c9c2b4d19da94fe3299b6",
         "6ff211bcdcf1066a7c7f188acf001b3626a7a05bc6a56c15380143aead8a2238"
       ]
     },
@@ -2673,10 +2674,11 @@
       ]
     },
     "README.md": {
-      "sha256": "1c51d8e05bf0c763265bfeab76a9f6fb7b9115197f6a333187c15b94ad7141d1",
+      "sha256": "4496ecbf63a2082ef39022ccce3516fb0c4645bdc1ac5a68a39c7b3d8860263c",
       "accepted_sha256": [
         "0",
         "1",
+        "1c51d8e05bf0c763265bfeab76a9f6fb7b9115197f6a333187c15b94ad7141d1",
         "1dd35f3c15a3a97f1b40449492208c794c3f43b9b5e84250ae0149a6d899f700",
         "2",
         "25ed1b9daa20e0145e844cf9761a3142725acd014ed4e971c526f0b6ce5e8f61",
@@ -2700,8 +2702,9 @@
       ]
     },
     "RELEASE.json": {
-      "sha256": "1b74a2bafe5d75cb6511c2633b8cace329496d542804b316d2c133883f52198b",
+      "sha256": "af2d0a1810ca66a4cbf3eb0dec64df1967f7e85cb5dbd19b7e8ca2decd293648",
       "accepted_sha256": [
+        "1b74a2bafe5d75cb6511c2633b8cace329496d542804b316d2c133883f52198b",
         "4f961ba73e6efb8225cb74aafdd36b70296919941056bd1b7ab7abf5f5df95ec",
         "c10fb5e18cc10cf268382265ea71fcce2edc6a19ac4b3e9966408e7f74996155",
         "c5a968bc0828211662c435a7efed3b44dd1ec53ac46a357bd79e2fd371ee98f1",
@@ -2898,7 +2901,7 @@
       ]
     },
     "scripts/manage.py": {
-      "sha256": "604eabdda787c6839b601a919611486a91eb9ba9d39aec6c5f43bfef4a4f40d5",
+      "sha256": "e43161b94aad78040fd26c1dde9c98b0bfdc74b137aca18b5b45f429c4c63c73",
       "accepted_sha256": [
         "0",
         "1",
@@ -2907,6 +2910,7 @@
         "4",
         "5",
         "6",
+        "604eabdda787c6839b601a919611486a91eb9ba9d39aec6c5f43bfef4a4f40d5",
         "7",
         "7b8a2a5fb87e3280cbd4307e7ec2595561c34d01df5a95f7e9d51e6640c14ef4",
         "8",
@@ -3005,9 +3009,10 @@
       "sha256": "abbe1bda55d744b68d3a0488d4736d44b438a539331d0b241d250042eea9a641"
     },
     "scripts/settings_server.py": {
-      "sha256": "37545696cd2f8a369493fc12207b1bf8be1c196de7510437bef16547e6134668",
+      "sha256": "9cb1b7d534c567f488b53b06c51e4b470ab946da1f4a6f39ac9aaa8869a98c54",
       "accepted_sha256": [
-        "2c8529200862c1b9d8874f53a7e6f06780c41030b17e317e93a0db2024c44ce7"
+        "2c8529200862c1b9d8874f53a7e6f06780c41030b17e317e93a0db2024c44ce7",
+        "37545696cd2f8a369493fc12207b1bf8be1c196de7510437bef16547e6134668"
       ]
     },
     "scripts/setup-tailscale-homepage.py": {
