@@ -3,7 +3,7 @@ set -Eeuo pipefail
 umask 077
 SOURCE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 if [[ $EUID -ne 0 ]]; then exec sudo --preserve-env=BIND_IP bash "$SOURCE/install-all.sh" "$@"; fi
-if [[ ! -f /srv/docker/manifest.json && "$SOURCE" != /srv/docker && ! -f "$SOURCE/configs/layout.json" ]]; then
+if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/configs/layout.json" ]]; then
   cat >&2 <<'MSG'
 CRITICAL: this is a fresh install and no storage layout has been selected.
 Run ./setup-server.sh first, mount the existing filesystems, review or auto-select
