@@ -12,6 +12,14 @@ This guard prevents a new machine from silently adopting the supplied example pa
 MSG
   exit 2
 fi
+if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/installed-apps.txt" ]]; then
+  cat >&2 <<'MSG'
+CRITICAL: this is a fresh install and no Docker application selection has been saved.
+Run ./setup-server.sh, open the temporary panel, choose the applications to install,
+save that selection, review storage for those applications, and then rerun install-all.sh.
+MSG
+  exit 2
+fi
 mkdir -p "$SOURCE/logs"
 LOG="$SOURCE/logs/install-$(date +%Y%m%d-%H%M%S).log"
 exec > >(tee -a "$LOG") 2>&1
@@ -55,3 +63,4 @@ fi
 echo "Logs: $SOURCE/logs; report: $SOURCE/logs/installation-report.txt"
 echo 'Reboot verification: sudo /srv/docker/verify-after-reboot.sh'
 exit "$result"
+
