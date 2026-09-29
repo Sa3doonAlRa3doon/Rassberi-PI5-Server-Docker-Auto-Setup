@@ -16,8 +16,9 @@ File Browser's empty `/srv` scaffold is on NVMe and mounted read-only; its two H
 
 The host account is `pi5`. PUID/PGID-aware utility containers use configured numeric IDs; existing `.env` values remain authoritative. Jupyter retains image UID/GID 1000:100. Verify `id pi5` before assuming those are the host IDs. Every source directory must be prepared on the correct validated filesystem, never on a bare NVMe mount point.
 
-SearXNG is private and needs outbound Internet access to query upstream search engines. Excalidraw and IT-Tools are stateless frontends; export important browser data to backed-up files. Actual Budget, FreshRSS, Uptime Kuma, Jellyfin and Navidrome have first-run web setup. Jupyter and Stirling PDF are on demand to conserve RAM. Jupyter's token and each generated password are in the protected per-app `.env`.
+SearXNG is private and needs outbound Internet access to query upstream search engines. Excalidraw and IT-Tools are stateless frontends; export important browser data to backed-up files. Actual Budget, FreshRSS, Uptime Kuma, Jellyfin and Navidrome have first-run web setup. Jupyter and Stirling PDF start at boot by default in the requested release; on an 8 GB Pi, remove them from the boot selection in Settings while keeping them installed. Jupyter's token and each generated password are in the protected per-app `.env`.
 
 Pi-hole binds DNS port 53 only to `BIND_IP`, with no host networking, DHCP, `NET_ADMIN`, or host DNS rewrite. Test `dig @BIND_IP example.com` before pointing other clients at it. The host keeps an independent resolver path so Docker pulls and system updates do not depend on a broken Pi-hole container.
 
 The images and ARM64 manifest evidence are recorded in `UTILITIES-IMAGE-EVIDENCE.json`. Tags are pinned by digest in generated Compose where available; the installer still inspects the pulled image architecture locally before starting it.
+
