@@ -1,0 +1,8 @@
+[Unit]
+Description=Check Pi drive identities and free space every minute
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=60
+AccuracySec=5
+[Install]
+WantedBy=timers.target

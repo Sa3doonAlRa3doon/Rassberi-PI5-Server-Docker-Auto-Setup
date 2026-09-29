@@ -1,0 +1,180 @@
+{
+  "name": "pi-onlyoffice",
+  "services": {
+    "db": {
+      "image": "postgres:17.11-bookworm",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.6,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "POSTGRES_DB": "onlyoffice",
+        "POSTGRES_USER": "onlyoffice",
+        "POSTGRES_PASSWORD": "${DB_PASSWORD:?DB_PASSWORD missing}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/databases/onlyoffice",
+          "target": "/var/lib/postgresql/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": [
+        "backend"
+      ],
+      "command": [
+        "postgres",
+        "-c",
+        "shared_buffers=64MB",
+        "-c",
+        "max_connections=50",
+        "-c",
+        "timezone=Asia/Dubai",
+        "-c",
+        "log_timezone=Asia/Dubai"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" && PGPASSWORD=\"$$POSTGRES_PASSWORD\" psql -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -tAc \"SELECT 1\" >/dev/null"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "60s"
+      },
+      "stop_grace_period": "60s"
+    },
+    "app": {
+      "image": "onlyoffice/documentserver:9.4.0.1",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "4096m",
+      "cpus": 2.0,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "DB_TYPE": "postgres",
+        "DB_HOST": "db",
+        "DB_PORT": "5432",
+        "DB_NAME": "onlyoffice",
+        "DB_USER": "onlyoffice",
+        "DB_PWD": "${DB_PASSWORD:?DB_PASSWORD missing}",
+        "JWT_ENABLED": "true",
+        "JWT_SECRET": "${JWT_SECRET:?JWT_SECRET missing}",
+        "JWT_HEADER": "AuthorizationJwt",
+        "ALLOW_PRIVATE_IP_ADDRESS": "true",
+        "ALLOW_META_IP_ADDRESS": "false",
+        "USE_UNAUTHORIZED_STORAGE": "false"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/data",
+          "target": "/var/www/onlyoffice/Data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/cache",
+          "target": "/var/lib/onlyoffice",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/logs",
+          "target": "/var/log/onlyoffice",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/fonts",
+          "target": "/usr/share/fonts/truetype/custom",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/rabbitmq",
+          "target": "/var/lib/rabbitmq",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/onlyoffice/redis",
+          "target": "/var/lib/redis",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": [
+        "frontend",
+        "backend"
+      ],
+      "ports": [
+        {
+          "target": 80,
+          "published": "8081",
+          "host_ip": "${BIND_IP:?Set BIND_IP to a LAN or Tailscale address}",
+          "protocol": "tcp"
+        }
+      ],
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      },
+      "stop_grace_period": "120s",
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "curl --fail --silent --max-time 8 http://127.0.0.1/healthcheck | grep -q true"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 5,
+        "start_period": "300s"
+      }
+    }
+  },
+  "networks": {
+    "frontend": {},
+    "backend": {
+      "internal": true
+    }
+  }
+}

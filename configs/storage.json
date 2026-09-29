@@ -1,0 +1,17 @@
+{
+  "root": {
+    "mount": "/", "device": "/dev/nvme0n1p2", "uuid": null,
+    "filesystem": "ext4", "label": null, "model": "Micron MTFDHBA512QF",
+    "description": "512GB NVMe: OS, databases and fast application state"
+  },
+  "hdd": {
+    "mount": "/mnt/hdd", "uuid": "a8293b36-2c0e-4852-84fd-92ac7503f4db",
+    "filesystem": "ext4", "label": "HDD1TB", "model": "ST1000LM035-1RK172",
+    "description": "1TB Seagate HDD: bulk persistent storage"
+  },
+  "media": {
+    "mount": "/mnt/media", "uuid": "17e44bc7-f360-45c4-878b-a7fe7aa45f6e",
+    "filesystem": "ext4", "label": "MEDIA", "model": null,
+    "description": "256GB microSD: Music and Videos"
+  }
+}

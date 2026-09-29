@@ -1,0 +1,63 @@
+{
+  "name": "pi-calibre-web",
+  "services": {
+    "calibre-web": {
+      "image": "lscr.io/linuxserver/calibre-web@sha256:802729966faed5e32d671cd4f92ba6196e9e754a6c0f740ce1ee9acd86b10e55",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "CALIBRE_DBPATH": "/config"
+      },
+      "ports": [
+        {
+          "target": 8083,
+          "published": "8093",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/calibre-web/config",
+          "target": "/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/calibre-web/library",
+          "target": "/library",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Books",
+          "target": "/books",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ]
+    }
+  }
+}

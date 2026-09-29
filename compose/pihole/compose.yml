@@ -1,0 +1,66 @@
+{
+  "name": "pi-pihole",
+  "services": {
+    "pihole": {
+      "image": "pihole/pihole@sha256:5b9c8cf51de7d6d3f2240dbe72baf5f06e1fd39cb4d77a99fab4fa13e23bd1be",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "192m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "FTLCONF_webserver_api_password": "${PIHOLE_PASSWORD:?Run installer}",
+        "FTLCONF_dns_listeningMode": "ALL",
+        "FTLCONF_dns_upstreams": "1.1.1.1;9.9.9.9",
+        "FTLCONF_webserver_port": "80",
+        "FTLCONF_ntp_ipv4_active": "false",
+        "FTLCONF_ntp_ipv6_active": "false"
+      },
+      "ports": [
+        {
+          "target": 80,
+          "published": "8053",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        },
+        {
+          "target": 53,
+          "published": "53",
+          "host_ip": "${BIND_IP:?Set BIND_IP}",
+          "protocol": "tcp"
+        },
+        {
+          "target": 53,
+          "published": "53",
+          "host_ip": "${BIND_IP:?Set BIND_IP}",
+          "protocol": "udp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/pihole",
+          "target": "/etc/pihole",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

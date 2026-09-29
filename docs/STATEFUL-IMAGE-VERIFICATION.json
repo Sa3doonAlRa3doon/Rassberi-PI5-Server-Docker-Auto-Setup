@@ -1,0 +1,134 @@
+[
+  {
+    "image": "nextcloud:34.0.4-apache",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:a5ace30c695afe48c2c406e940ee7886a81e13fa382e57cd68b2416d1a66914c",
+    "arm64_digests": [
+      "sha256:bec039bd8c7bf56da38a8247b0d43dfb53f70ef2908244a71cda5456bd1def9a"
+    ],
+    "source": "https://registry-1.docker.io/v2/library/nextcloud/manifests/34.0.4-apache",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "postgres:17.11-bookworm",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+    "arm64_digests": [
+      "sha256:75731e2765e7d0c8bb7dea960ef3bdcde68d16314991ab2057a2a74ea0fff257"
+    ],
+    "source": "https://registry-1.docker.io/v2/library/postgres/manifests/17.11-bookworm",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "redis:8.6.7-alpine",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:79aff60c78f59416f3f639f810a11938d3e854d31c83675e3d8c52e8cc5b5208",
+    "arm64_digests": [
+      "sha256:a96bd0ba6fa75e5f403ce2140a116020d4515a4659f83cfa385613b970fb545a"
+    ],
+    "source": "https://registry-1.docker.io/v2/library/redis/manifests/8.6.7-alpine",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "onlyoffice/documentserver:9.4.0.1",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:3ab6ebc7c605e5a32b7ae3ff19daed4925090245acc8100ce2230bd766c88212",
+    "arm64_digests": [
+      "sha256:4cf3b55487209b8f53492c545263b7bb257e1be48dba1f9e0b30d2e50371a1c8"
+    ],
+    "source": "https://registry-1.docker.io/v2/onlyoffice/documentserver/manifests/9.4.0.1",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "gitea/gitea:1.27.3",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:87a67ee09d3ae0d1df5fda5dcda3e2a1f9236a45b0a59025d6e00e46adc43bef",
+    "arm64_digests": [
+      "sha256:9b107dff838b4518f720aae53033fc712019a1680267ea45944b858a71b487b5"
+    ],
+    "source": "https://registry-1.docker.io/v2/gitea/gitea/manifests/1.27.3",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "n8nio/n8n:2.40.5",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:9f693fd5565539efd5e75ad168526c8041a6af516d9e50bc4d9cb1c9c5031523",
+    "arm64_digests": [
+      "sha256:de7539cae510d65a0aaed9fbef0113f395cea92337edf653c8ed21dd5de0d46d"
+    ],
+    "source": "https://registry-1.docker.io/v2/n8nio/n8n/manifests/2.40.5",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "vaultwarden/server:1.37.3",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:1587c45feaa479f1f5e8af3b00eded36bff77bcf1880cf8dbf0541706dd470e0",
+    "arm64_digests": [
+      "sha256:cdf1fc49e2813f1296ce4bbf2ba9227e6aa8ee64b56198a91d79606e33fded5f"
+    ],
+    "source": "https://registry-1.docker.io/v2/vaultwarden/server/manifests/1.37.3",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "ghcr.io/paperless-ngx/paperless-ngx:3.2.1",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:5fa76604a81df6945086e0837b14b56543d137e8ce4f311cc5d9ebe907e74e79",
+    "arm64_digests": [
+      "sha256:27fa8b70ab57b4387b9ed2cba492380eb756e62a4e2a7d0575278d5ecfd42379"
+    ],
+    "source": "https://ghcr.io/v2/paperless-ngx/paperless-ngx/manifests/3.2.1",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "ghcr.io/requarks/wiki:2.5.315",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:af71a17dc27ccc4c768591b1c504631ed820d9d13d4e8c325be4232c0035638c",
+    "arm64_digests": [
+      "sha256:024eb003b62eb57001bac7d69abb3ee4ee2e7006141f620115a7a933c6acacca"
+    ],
+    "source": "https://ghcr.io/v2/requarks/wiki/manifests/2.5.315",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "php:8.3.33-apache-bookworm",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:d9be5f5c49e07c71b1e906cf01a0bb7216dce466d1880d170467b9ca107071dd",
+    "arm64_digests": [
+      "sha256:854290c2b5631b1b4599de8be853d817e76ec3ec2d42b6c1ae0a385319937a52"
+    ],
+    "source": "https://registry-1.docker.io/v2/library/php/manifests/8.3.33-apache-bookworm",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "composer:2.10.3",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:a5f59b9fd2faf31218632be4809dc6491761085e8064c31dc3b84378c48c248b",
+    "arm64_digests": [
+      "sha256:de33d5893d3f4fcbc1e18891cd92a9be67796f2384ccb390bed611f998877aab"
+    ],
+    "source": "https://registry-1.docker.io/v2/library/composer/manifests/2.10.3",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  },
+  {
+    "image": "n8nio/runners:2.40.5",
+    "arm64_verified": true,
+    "checked_at": "2026-09-22",
+    "index_digest": "sha256:de290741c2c747a9af5c1490168b687db276149ec1a8bc06336877d213eb97d2",
+    "arm64_digests": [
+      "sha256:469b7cf97382a21e16fa125d51d8156ee8561faa06e93dffb552906dfe8a2a40"
+    ],
+    "source": "https://registry-1.docker.io/v2/n8nio/runners/manifests/2.40.5",
+    "evidence": "Registry manifest inspected; linux/arm64 found"
+  }
+]

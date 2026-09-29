@@ -1,0 +1,31 @@
+nav a {
+  background: transparent;
+  border-radius: 8px;
+  color: #b9ccc3;
+  font-size: 13px;
+  padding: 13px 14px;
+  text-align: left;
+  text-decoration: none;
+}
+nav a:hover,
+nav a.active { background: #284c40; color: #fff; }
+.button {
+  background: var(--green);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 17px;
+  position: relative;
+  text-decoration: none;
+  z-index: 1;
+}
+.tab { display: none; }
+.tab#overview { display: block; }
+.tab:target { display: block; }
+body:has(.tab:target:not(#overview)) #overview { display: none; }
+@media (max-width: 760px) {
+  nav a { font-size: 11px; padding: 9px; white-space: nowrap; }
+}

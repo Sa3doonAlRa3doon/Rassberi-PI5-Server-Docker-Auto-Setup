@@ -1,0 +1,29 @@
+# Runtime state and host-specific secrets
+.env
+.env.*
+!.env.example
+logs/
+backups/
+appdata/
+databases/
+configs/settings-private/
+configs/layout.json
+configs/portable-backup.json
+configs/storage-paused.json
+configs/storage-review-required.json
+
+# Generated local validation/build output
+__pycache__/
+*.py[cod]
+*.log
+*.sqlite
+*.sqlite3
+*.db
+*.tar
+*.tar.gz
+*.zip.tmp
+
+# Editor and OS metadata
+.DS_Store
+Thumbs.db
+.vscode/

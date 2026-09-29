@@ -1,0 +1,237 @@
+{
+  "format": 1,
+  "created_utc": "2026-09-23T05:48:43.829062+00:00",
+  "files": [
+    {
+      "path": "apply-storage-update.sh",
+      "after_sha256": "ab8eb6d551acfa2af05362062c2ddd8ff4140095c01280c775502f262dbd349f"
+    },
+    {
+      "path": "compose/calibre-web/compose.yml",
+      "after_sha256": "6addc822b9fcc2c7f685ddb97c4abad7da237209882ae7769063fec800cd1a77",
+      "before_sha256": "7756990163d39482ddd1017ee204ec5de306c20f34d08411a34c2d9716b51bd8"
+    },
+    {
+      "path": "compose/code-server/compose.yml",
+      "after_sha256": "0a1e69c89f235b00807a82b791a44f7e4b19f67c9ac9800824927bbc9998dd27",
+      "before_sha256": "adbb83a7dbf419557e7007b728d3a9952e4c4e8d39439ee76192b9ebf84bf893"
+    },
+    {
+      "path": "compose/filebrowser/compose.yml",
+      "after_sha256": "bac636be31d5902704dc3b0f6aeb258558ee2fba1e15f005c50a304dbe0723b3",
+      "before_sha256": "521bf499c03172bdc4877a7d9a828f1c6f141b063678038bdda881ac8dece24a"
+    },
+    {
+      "path": "compose/homepage/compose.yml",
+      "after_sha256": "01b906b334b3f315161d245a097568fd312cae9c45c79dfbe54c7ce6553f00b8",
+      "before_sha256": "0d504e6ebe4b93146663841364615cf1ab7e3add15e8b402adfe0655c3b53b72"
+    },
+    {
+      "path": "compose/jellyfin/compose.yml",
+      "after_sha256": "ada2e418c23f42d4cc5245a40593fbc589d11377730b4f842c347b8f90d5c683",
+      "before_sha256": "4ef2d9fa81f4b3694fecf1c1466f39f19a6a2ddb7e9334a8ec36869d72d2da6e"
+    },
+    {
+      "path": "compose/jupyter/compose.yml",
+      "after_sha256": "62eb5e85e363346fd847c0cdae5352a26c20daa86954937f9023e3babd587613",
+      "before_sha256": "82157be560e6f966565d0b2ce20f08fd93b4d914f661cef9f597a0e7700d8d9b"
+    },
+    {
+      "path": "compose/kiwix/compose.yml",
+      "after_sha256": "009db7dc9f39feeac043a061c43dc9dc760b4b3dcb58453a24c4f8142a2256e3",
+      "before_sha256": "0286e65d0d0cf2a4b8f15c3be6385307c3e3e2eae820d8b514e1c7911afd8c12"
+    },
+    {
+      "path": "compose/moodle/compose.yml",
+      "after_sha256": "975893a25d056e6de4aadf77d93cd94455c9ccce369dc01bf3c1dbc8671b210e",
+      "before_sha256": "bac2ad4def5f5cd2e80d72ddf1c52f888234146eefd1ed5f85b5d223b02a6c01"
+    },
+    {
+      "path": "compose/navidrome/compose.yml",
+      "after_sha256": "b44810dff147b634e0a72b847e735ab5220f8fe7f5f2c0f60deeb088fbbfe852",
+      "before_sha256": "d3d0b578ca30d0cd58be0d19607874b559bab911d359cc973e56de49c8679b9d"
+    },
+    {
+      "path": "compose/nextcloud/compose.yml",
+      "after_sha256": "cfbd0e27b148f0e4003576ae3280cc63fe4c8b62cbc1e0400c628c492ff5c726",
+      "before_sha256": "0bec6926e8a2fe7942cb531789c3477b0d1ad621dcbee767cc430d4e77f4cfdd"
+    },
+    {
+      "path": "compose/paperless/compose.yml",
+      "after_sha256": "e42d5ea500ec3b818a78d32ff0be7b7524d2d90923f30ad7027154ed392f93b9",
+      "before_sha256": "007ce90a1b03e2f0a45b9b236cf8381fe32664c91ce7780cc0f602f2fc672725"
+    },
+    {
+      "path": "compose/stirling-pdf/compose.yml",
+      "after_sha256": "ade9cae4a5034d4b501b734ed2a65d662d9bca3730bf9841893359fe69ccebd1",
+      "before_sha256": "34762b3e520b18dc6263fc110957ec05f4a69bf5f8ee13a6feae112e3889b314"
+    },
+    {
+      "path": "compose/syncthing/compose.yml",
+      "after_sha256": "6974832e215fd223521c565cda7412919ff31a2de3a162d6590301f309bb4255",
+      "before_sha256": "d78288cc2f248690e307145dd5118b0712039bd7970f2d2d29da07ff4ebeb41d"
+    },
+    {
+      "path": "configs/homepage/services.yaml",
+      "after_sha256": "53420b546a88196ea6250fc0e6f44d4dcdf766eebd35711f3ff2e25518a8c780",
+      "before_sha256": "b2f5c15b6294fbbcd1e3566316d7129d31db188c9c9180a1515050b67f2df526"
+    },
+    {
+      "path": "configs/storage-metrics/server.cjs",
+      "after_sha256": "9bd29df7a785a61ccc12cbf0a0094f337836a6d75a7ba75f8b54e47aad2bd6f9"
+    },
+    {
+      "path": "configs/storage.json",
+      "after_sha256": "67de44167ca5757ab226216cc60e30fa325b341e3e76c39ecf1529558ceb2ce5"
+    },
+    {
+      "path": "docs/APPS-STATEFUL.md",
+      "after_sha256": "d542884f425a661c2e2de071458589f71e33e5ce3ebff1f1362aaa8bfbd73258",
+      "before_sha256": "eb075bece27be7fdacd4e4efbf4e83a7bf5c2fe356760ba854659354f476d464"
+    },
+    {
+      "path": "docs/APPS-UTILITIES.md",
+      "after_sha256": "f737afd29ccde6931d305e82319da328ee119d2505e3fa81d6cb55e9ad1226ca",
+      "before_sha256": "21456abcf43a3f932491cf0e04afab0c6a015328950596f953bac983a6728636"
+    },
+    {
+      "path": "docs/RECOVERY.md",
+      "after_sha256": "6f799fef64b7063a1d08592dbacc8fe04e5add5a946ea23d0c4f290c96a0e389",
+      "before_sha256": "7ee18e329c2fa78bf23739d045b57e564a8bec0412a7a98023d956ff5b4a920e"
+    },
+    {
+      "path": "docs/STORAGE-MIGRATION-REPORT.md",
+      "after_sha256": "32e8b564e2f957ce9d6539b5724daf14dc07a9c9ad3d80eaf4a1c288445a77bf"
+    },
+    {
+      "path": "docs/STORAGE-UPDATE.md",
+      "after_sha256": "ce5ca47838ebe784b841fa94ee1cb6787122ff2cc6d3ed0ab7e13016e6bf24f4"
+    },
+    {
+      "path": "install-all.sh",
+      "after_sha256": "f2e59813a51112a1af0106a97087b4606f0c52c7c09bdd9a824b2910517ac523",
+      "before_sha256": "4e1e12a487a964d0cc716a4bed84eb753ff6edc5e3ab37ba1b3f816a7e306264"
+    },
+    {
+      "path": "manifest.json",
+      "after_sha256": "a6a61abb923156f77439b6b128ae9538d3b6646beed4e929cf16e86c32d362bf",
+      "before_sha256": "244755aebb1631403f6cf7dc92f131ac3931b4abb2b8f7038984c3364cd7a873"
+    },
+    {
+      "path": "README.md",
+      "after_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02",
+      "before_sha256": "c2698cc5098bf0b46f5279465d2ec5b4be46cf2a54b4b5cd4aebbe18e5dac874"
+    },
+    {
+      "path": "scripts/apply-storage-update.py",
+      "after_sha256": "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19"
+    },
+    {
+      "path": "scripts/boot-storage.py",
+      "after_sha256": "1787575fcbe4da2d40568a2833d754b8d6262a5369831aba6501bbd22891c564"
+    },
+    {
+      "path": "scripts/disk-health.sh",
+      "after_sha256": "1d2fa96afae00381052da6804dbfbd9ee4bc050dcc557aa8bc8a524e3bfeae57",
+      "before_sha256": "16ac49f1d07f3b756e46954cd46d831ff6a47760189e313fb8a4d1d33444e412"
+    },
+    {
+      "path": "scripts/host-setup.py",
+      "after_sha256": "74579cebd052f4760b96bbd1b97604bb5afb43c97df6b139e1758f97990410af",
+      "before_sha256": "2e6545c1a3b38e6ff03677f4ef5a8af75105c0642d15b66f1a6be9a45c9d167e"
+    },
+    {
+      "path": "scripts/manage.py",
+      "after_sha256": "fec4f01966b93cb78567d0b2dfbc726183d7cdf8310c3035f241683a87c2b7fa",
+      "before_sha256": "69075c3563ddb5394a9928d9fd77d146836a1c66b0990b5e616babf3aa3ff93d"
+    },
+    {
+      "path": "scripts/prepare.py",
+      "after_sha256": "468efab637826b8837ca442a9707a06da3999b1f36f1624a4d6a6731e68d4a45",
+      "before_sha256": "52cd2dbdc8c2d5683a8df227679295f583d1ca2e632810070ae33c108db28ee2"
+    },
+    {
+      "path": "scripts/restore.sh",
+      "after_sha256": "2922842aa37bb7d756dd7d9d73aad430ee451365f860520d00e6579a0560c6cc",
+      "before_sha256": "9afa37837fa3d4bf0166d3a3032346508dee4be93cad0b8c2241786ea33e3748"
+    },
+    {
+      "path": "scripts/storage-health.py",
+      "after_sha256": "cff861566fd685e5cb06576539595a76d65bcec5ba47c82fc7a03e14e3fd3032"
+    },
+    {
+      "path": "scripts/storage-status.py",
+      "after_sha256": "a5e64d6a58fdae9a5f3f7c63defa497583bc96277a24dc27d62519e7e41155bd"
+    },
+    {
+      "path": "scripts/storage-status.sh",
+      "after_sha256": "74e7df8e856548adef081799165fd542f39f310d2b1e8ca098acb17cb98eb567"
+    },
+    {
+      "path": "scripts/storage-watch.py",
+      "after_sha256": "cf78762e99beaf94ba0656d3bda7d7f3da69f4d9d5d87f2c5d71b2a06f9cd98c"
+    },
+    {
+      "path": "scripts/storage_guard.py",
+      "after_sha256": "6b82b4fe5dd0721f8fcd072f49d8a251187563f918168bcd9605b39db80a15d8",
+      "before_sha256": "83e39c4ed75233890c8e9791b7a0defcf85f53553f4da5d03fde4140cdcf2463"
+    },
+    {
+      "path": "scripts/watch-storage.sh",
+      "after_sha256": "843f087c23a5c2ca82d19b4533df9e904b3c3b8e63d44587fc2460c2fd845ccf",
+      "before_sha256": "ec52f19982bdee30ed70e5128e9a6c6f72b79e009c27c61e2059501b07e892ad"
+    },
+    {
+      "path": "start-all.sh",
+      "after_sha256": "58c2d7ed52c957bc1e96651c0abacc4febf4c29a57fc8bc78e9e675138dfa898",
+      "before_sha256": "a874441f7cb19759a414fe4c01e64a466bd296718cd21878e59a9299d739d656"
+    },
+    {
+      "path": "status.sh",
+      "after_sha256": "8b808fc9202b57a477459d4fddc8d52d94b7a512866cf2816a0a42818b4f42de",
+      "before_sha256": "0db86269732973fe26c5d2d33abb1a9a20811b0178bf044d2a66ff0408b2b9e0"
+    },
+    {
+      "path": "storage-status.sh",
+      "after_sha256": "a2d2924793aef41aa61b414314e0769d2e33d1693ffea071b3704200fdf415d0"
+    },
+    {
+      "path": "STORAGE.md",
+      "after_sha256": "30ee154fcae83af8b834ef9377434e89a96628a43c4f1ad4a9241c540bd924af",
+      "before_sha256": "d498fd4d71498cc0c731d6499eac73aaaccc39b3b937982978632abfffd98300"
+    },
+    {
+      "path": "systemd/docker-storage.conf",
+      "after_sha256": "28dbf69d003b9d359028713287af8a45804fccb53ac2c9b143fbcc2eaec25818",
+      "before_sha256": "5bd607fd6c56ac80ed10b0fbe1364a0b036efe28ddec081bd060fb246fff913a"
+    },
+    {
+      "path": "systemd/pi-storage-metrics.service",
+      "after_sha256": "73b2d74c18f43be1949c43b18ac1763f757346b5c2e1bd6d8b4b4714b398d5f1"
+    },
+    {
+      "path": "systemd/pi-storage-metrics.timer",
+      "after_sha256": "ca8633faabc017ea0bbf457eff711a831f0c04b61464fd68eb59c53402c0a976"
+    },
+    {
+      "path": "systemd/pi-storage-start.service",
+      "after_sha256": "8d3e31d4023581ed157f9bba421788428a59451ba061ed18bdc50948959c8919"
+    },
+    {
+      "path": "systemd/pi-storage-watch.service",
+      "after_sha256": "fba05ab93365534896f70b670d2d225ac06ca92afa7c811a4e713b2fb996cb5a",
+      "before_sha256": "3cc9d1b6917a9b11cacee737b03e27a248312df86683741398376b39d57c801e"
+    },
+    {
+      "path": "update-all.sh",
+      "after_sha256": "469a174616a8382d871d16666c35cc00f8810fcb6e75b62fc45d142dad69b02d",
+      "before_sha256": "a27810d7719d9adba4b613cfeb5c4001147f93c1c8d8446ac7ed555c77011e50"
+    },
+    {
+      "path": "verify-after-reboot.sh",
+      "after_sha256": "0f1d1e5820d471d6a56789067cf7b9e382dfb4a6be477c6d8cd65cda9050a69e",
+      "before_sha256": "edbf7789fe1dd5ea8bcf4486ecd5d63c5533c113562cfc836392c32f843eb292"
+    }
+  ],
+  "host_files": []
+}

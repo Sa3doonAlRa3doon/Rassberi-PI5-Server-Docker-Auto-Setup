@@ -1,0 +1,13 @@
+[Unit]
+Description=Publish verified Pi storage capacities for the local dashboard
+After=local-fs.target
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=oneshot
+User=root
+UMask=0022
+ExecStart=/usr/bin/python3 /srv/docker/scripts/storage-status.py --write-metrics --quiet
+TimeoutStartSec=25
+Nice=10
+NoNewPrivileges=true

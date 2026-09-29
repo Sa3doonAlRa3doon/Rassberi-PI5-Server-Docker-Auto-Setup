@@ -1,0 +1,51 @@
+{
+  "name": "pi-uptime-kuma",
+  "services": {
+    "uptime-kuma": {
+      "image": "louislam/uptime-kuma@sha256:c74379ac4509ce2d2c2633f509e67003ee2e45b6e995c5e43fc101f45a0e1fbe",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "ports": [
+        {
+          "target": 3001,
+          "published": "3002",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/uptime-kuma",
+          "target": "/app/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      },
+      "labels": {
+        "pi.autoheal.nvme": "true"
+      }
+    }
+  }
+}

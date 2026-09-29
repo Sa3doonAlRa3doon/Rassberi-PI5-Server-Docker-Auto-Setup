@@ -1,0 +1,26 @@
+{
+  "db": {
+    "path": "/data/diun.db"
+  },
+  "watch": {
+    "workers": 2,
+    "schedule": "0 */6 * * *",
+    "jitter": "45s",
+    "firstCheckNotif": false,
+    "runOnStartup": true,
+    "compareDigest": true
+  },
+  "providers": {
+    "file": {
+      "filename": "/config/images.yml"
+    }
+  },
+  "notif": {
+    "script": {
+      "cmd": "/bin/sh",
+      "args": [
+        "/config/notify.sh"
+      ]
+    }
+  }
+}

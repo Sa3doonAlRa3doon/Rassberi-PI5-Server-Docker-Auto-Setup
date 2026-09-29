@@ -1,0 +1,85 @@
+{
+  "name": "pi-filebrowser",
+  "services": {
+    "filebrowser": {
+      "image": "filebrowser/filebrowser@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "128m",
+      "cpus": 0.35,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "ports": [
+        {
+          "target": 80,
+          "published": "8092",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/filebrowser/database",
+          "target": "/database",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/configs/filebrowser",
+          "target": "/config",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/filebrowser/root",
+          "target": "/srv",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Shared",
+          "target": "/srv/Shared",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Uploads",
+          "target": "/srv/Uploads",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "user": "${PUID:-1000}:${PGID:-1000}",
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

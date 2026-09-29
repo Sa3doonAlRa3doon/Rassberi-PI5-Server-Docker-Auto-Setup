@@ -1,0 +1,37 @@
+{
+  "name": "pi-excalidraw",
+  "services": {
+    "excalidraw": {
+      "image": "excalidraw/excalidraw@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "64m",
+      "cpus": 0.2,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}"
+      },
+      "ports": [
+        {
+          "target": 80,
+          "published": "8091",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "pi-linkding",
+  "services": {
+    "linkding": {
+      "image": "ghcr.io/sissbruecker/linkding@sha256:e35cb50e0581178f245125ffaa909c565416c94c9f22ace305a7d234a4345522",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.5,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "LD_SUPERUSER_NAME": "${ADMIN_USER:-saeed}",
+        "LD_SUPERUSER_PASSWORD": "${LINKDING_PASSWORD:?Run installer}",
+        "LD_DB_ENGINE": "sqlite",
+        "LD_SERVER_HOST": "0.0.0.0",
+        "LD_REQUEST_MAX_CONTENT_LENGTH": "33554432"
+      },
+      "ports": [
+        {
+          "target": 9090,
+          "published": "9090",
+          "host_ip": "${BIND_IP:?Run installer}",
+          "protocol": "tcp"
+        }
+      ],
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/linkding",
+          "target": "/etc/linkding/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      },
+      "labels": {
+        "pi.autoheal.nvme": "true"
+      }
+    }
+  }
+}

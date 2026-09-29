@@ -1,0 +1,7 @@
+# Private household instance; no public registration or Redis requirement.
+use_default_settings: true
+server:
+  limiter: false
+  public_instance: false
+search:
+  safe_search: 1

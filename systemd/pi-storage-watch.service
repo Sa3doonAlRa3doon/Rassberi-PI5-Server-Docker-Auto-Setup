@@ -1,0 +1,10 @@
+[Unit]
+Description=Pause only applications whose storage drive is unavailable
+After=local-fs.target docker.service
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/docker/scripts/storage-watch.py
+User=root
+NoNewPrivileges=true

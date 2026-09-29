@@ -1,0 +1,8 @@
+[Unit]
+Description=Nightly Pi backup at 03:15 Asia/Dubai
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+RandomizedDelaySec=300
+[Install]
+WantedBy=timers.target

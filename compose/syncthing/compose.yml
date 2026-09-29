@@ -1,0 +1,72 @@
+{
+  "name": "pi-syncthing",
+  "services": {
+    "syncthing": {
+      "image": "syncthing/syncthing@sha256:397aa00b92b48d65540ea3ae3cbf271b87bdccbe07a0b7bd7d2debc3a7b29138",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "256m",
+      "cpus": 0.5,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "STGUIADDRESS": "0.0.0.0:8384"
+      },
+      "ports": [
+        {
+          "target": 8384,
+          "published": "8384",
+          "host_ip": "${BIND_IP:?Set a private Pi address in .env}",
+          "protocol": "tcp"
+        },
+        {
+          "target": 22000,
+          "published": "22000",
+          "host_ip": "${BIND_IP:?Set BIND_IP}",
+          "protocol": "tcp"
+        },
+        {
+          "target": 22000,
+          "published": "22000",
+          "host_ip": "${BIND_IP:?Set BIND_IP}",
+          "protocol": "udp"
+        }
+      ],
+      "stop_grace_period": "45s",
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/syncthing",
+          "target": "/var/syncthing",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Shared/Syncthing",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 5,
+        "start_period": "180s"
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "name": "pi-docker-socket-proxy",
+  "services": {
+    "docker-socket-proxy": {
+      "image": "lscr.io/linuxserver/socket-proxy@sha256:ca6c0301a652232d02cb0ff9f1c5d20d9b339f391e1c1dffaae6ef3bfc59d009",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "32m",
+      "cpus": 0.2,
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "stop_grace_period": "45s",
+      "read_only": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "tmpfs": [
+        "/run"
+      ],
+      "environment": {
+        "AUTH": "0",
+        "BUILD": "0",
+        "COMMIT": "0",
+        "CONFIGS": "0",
+        "DISTRIBUTION": "0",
+        "EXEC": "0",
+        "NODES": "0",
+        "PLUGINS": "0",
+        "POST": "0",
+        "SECRETS": "0",
+        "SERVICES": "0",
+        "SESSION": "0",
+        "SWARM": "0",
+        "SYSTEM": "0",
+        "TASKS": "0",
+        "VOLUMES": "0",
+        "ALLOW_ARCHIVE": "0",
+        "ALLOW_CHANGES": "0",
+        "ALLOW_EXPORT": "0",
+        "ALLOW_PAUSE": "0",
+        "ALLOW_RESTARTS": "0",
+        "ALLOW_START": "0",
+        "ALLOW_STOP": "0",
+        "ALLOW_UNPAUSE": "0",
+        "ALLOW_TOP": "0",
+        "CONTAINERS": "1",
+        "INFO": "1",
+        "IMAGES": "1",
+        "EVENTS": "1",
+        "PING": "1",
+        "VERSION": "1",
+        "NETWORKS": "1",
+        "ALLOW_LOGS": "1",
+        "DISABLE_IPV6": "1"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/var/run/docker.sock",
+          "target": "/var/run/docker.sock",
+          "read_only": true,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "networks": {
+        "docker-read": {
+          "aliases": [
+            "docker-socket-proxy"
+          ]
+        }
+      },
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "wget -q -O /dev/null http://127.0.0.1:2375/_ping"
+        ],
+        "interval": "60s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "45s"
+      },
+      "cap_add": [
+        "SYS_CHROOT"
+      ]
+    }
+  },
+  "networks": {
+    "docker-read": {
+      "name": "pi-docker-read",
+      "internal": true
+    }
+  }
+}

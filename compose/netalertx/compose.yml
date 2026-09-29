@@ -1,0 +1,65 @@
+{
+  "name": "pi-netalertx",
+  "services": {
+    "netalertx": {
+      "image": "ghcr.io/netalertx/netalertx@sha256:0ee5cdcaa8a84bfd2f31354b4b30e603804d124821055b9942dcffb52d2ce4bc",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "1024m",
+      "cpus": 1.0,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "LISTEN_ADDR": "${BIND_IP:?Run installer}",
+        "PORT": "20211",
+        "GRAPHQL_PORT": "20212",
+        "PUID": "20211",
+        "PGID": "20211",
+        "ALWAYS_FRESH_INSTALL": "false",
+        "LOADED_PLUGINS": "[\"ARPSCAN\",\"AVAHISCAN\",\"CSVBCKP\",\"DBCLNP\",\"MAINT\",\"NEWDEV\",\"NTFPRCS\",\"SETPWD\",\"SMTP\",\"WORKFLOWS\",\"UI\"]",
+        "APP_CONF_OVERRIDE": "{\"SCAN_SUBNETS\":\"${NETALERTX_SCAN_SUBNETS:-[]}\",\"GRAPHQL_PORT\":\"20212\",\"API_TOKEN\":\"${NETALERTX_API_TOKEN:?Run installer}\"}"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/netalertx",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      },
+      "network_mode": "host",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "cap_add": [
+        "NET_ADMIN",
+        "NET_RAW",
+        "NET_BIND_SERVICE",
+        "CHOWN",
+        "SETUID",
+        "SETGID"
+      ],
+      "tmpfs": [
+        "/tmp:uid=20211,gid=20211,mode=1700,size=256m,rw,noexec,nosuid,nodev"
+      ],
+      "pids_limit": 512
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "name": "pi-localsendy",
+  "services": {
+    "localsendy": {
+      "image": "czyt/localsendy@sha256:e4b35d78be5309185d5d38bafbbb82a0f5e5b18b3f590a5de1283ba6168c34c8",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "192m",
+      "cpus": 0.5,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "TZ": "${TZ:-Asia/Dubai}",
+        "LOCALSENDY_BIND": "${BIND_IP:?Run installer}:8100",
+        "LOCALSENDY_ALIAS": "Raspberry Pi 5",
+        "LOCALSENDY_PORT": "53317",
+        "LOCALSENDY_DATA_DIR": "/data",
+        "LOCALSENDY_DOWNLOAD_DIR": "/transfers/downloads",
+        "LOCALSENDY_TEMP_DIR": "/transfers/tmp",
+        "LOCALSENDY_AUTO_ACCEPT": "false",
+        "LOCALSENDY_MAX_UPLOAD_BYTES": "1073741824",
+        "LOCALSENDY_NETWORK_INTERFACES": "${LOCALSENDY_NETWORK_INTERFACES:-all}",
+        "RUST_LOG": "localsendy=info,tower_http=info"
+      },
+      "volumes": [
+        {
+          "type": "bind",
+          "source": "/srv/docker/appdata/localsendy",
+          "target": "/data",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        },
+        {
+          "type": "bind",
+          "source": "/mnt/hdd/Uploads/localsendy",
+          "target": "/transfers",
+          "read_only": false,
+          "bind": {
+            "create_host_path": false
+          }
+        }
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "curl --fail --silent --show-error \"http://$${LOCALSENDY_BIND}/api/v1/health\""
+        ],
+        "interval": "60s",
+        "timeout": "15s",
+        "retries": 4,
+        "start_period": "180s"
+      },
+      "network_mode": "host"
+    }
+  }
+}

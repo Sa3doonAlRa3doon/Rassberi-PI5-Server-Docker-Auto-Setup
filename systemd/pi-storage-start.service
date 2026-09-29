@@ -1,0 +1,16 @@
+[Unit]
+Description=Start configured Pi applications after storage-aware Docker boot
+Requires=docker.service
+PartOf=docker.service
+After=docker.service local-fs.target
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/docker/scripts/boot-storage.py
+User=root
+RemainAfterExit=yes
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target docker.service
