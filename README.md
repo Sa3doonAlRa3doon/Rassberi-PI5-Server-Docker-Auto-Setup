@@ -70,9 +70,17 @@ For an older 28-project installation, download this release separately and run t
 cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup
 sudo ./upgrade-server.sh --dry-run
 sudo ./upgrade-server.sh --apply
+sudo /srv/docker/install-all.sh
 ```
 
-The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings and the enabled-app selection. Read [docs/UPGRADE.md](docs/UPGRADE.md) first.
+The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings and the enabled-app selection. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
+
+```bash
+sudo python3 /srv/docker/scripts/install-settings-service.py
+sudo cat /srv/docker/configs/settings-private/access-key
+```
+
+Open `https://PI_PRIVATE_IP:8788` with the printed access key. The panel lets the owner review storage, plan guarded destination changes, choose on-demand applications, and configure a future backup drive. Read [docs/UPGRADE.md](docs/UPGRADE.md) first.
 
 ## Changeable storage
 
