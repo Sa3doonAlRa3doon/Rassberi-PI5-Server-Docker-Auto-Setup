@@ -1,9 +1,10 @@
 {
   "format": 1,
-  "release_id": 4,
+  "release_id": 5,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 4 accepts hashes from the published release history so release 1 installations receive reviewed fixes while local customizations remain preserved."
+  "notes": "Release 5 adds selective Docker app installation, requested boot startup defaults, and balanced hardware guidance while preserving storage and upgrade state."
 }
+
