@@ -149,7 +149,7 @@ def main():
     unknown=set(args.apps)-{a['name'] for a in manifest}
     if unknown: raise RuntimeError('Unknown applications: '+','.join(sorted(unknown)))
     not_installed=set(args.apps)-installed
-    if not_installed:
+    if not_installed and args.action in {'start', 'install', 'update', 'verify'}:
         raise RuntimeError('Application is not selected for installation: '+','.join(sorted(not_installed))+
                            '. Choose it in the settings page and save the application selection first.')
     if args.action=='list':
