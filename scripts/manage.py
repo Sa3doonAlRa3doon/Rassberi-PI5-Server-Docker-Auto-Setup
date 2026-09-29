@@ -13,6 +13,9 @@ import urllib.error
 import urllib.request
 
 BASE = Path('/srv/docker')
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(BASE / 'scripts'))
+import app_selection
 
 def now(): return datetime.now(timezone.utc).isoformat()
 
@@ -141,11 +144,17 @@ def main():
     args=p.parse_args()
     manifest=json.loads((BASE/'manifest.json').read_text())
     manifest.sort(key=lambda x:x.get('order',50))
-    enabled={line.strip() for line in (BASE/'enabled-apps.txt').read_text().splitlines() if line.strip() and not line.startswith('#')}
+    installed=set(app_selection.installed_names(BASE, manifest))
+    enabled=set(app_selection.startup_names(BASE, manifest)) & installed
     unknown=set(args.apps)-{a['name'] for a in manifest}
     if unknown: raise RuntimeError('Unknown applications: '+','.join(sorted(unknown)))
+    not_installed=set(args.apps)-installed
+    if not_installed:
+        raise RuntimeError('Application is not selected for installation: '+','.join(sorted(not_installed))+
+                           '. Choose it in the settings page and save the application selection first.')
     if args.action=='list':
-        print('\n'.join(a['name'] for a in manifest if args.all or a['name'] in enabled)); return 0
+        pool = set(a['name'] for a in manifest) if args.all else installed
+        print('\n'.join(a['name'] for a in manifest if a['name'] in pool)); return 0
     if os.geteuid()!=0: raise RuntimeError('Run with sudo.')
     subprocess.run(['docker','info'],stdout=subprocess.DEVNULL,check=True)
     if args.action!='stop': storage()
@@ -284,3 +293,4 @@ if __name__=='__main__':
     try: sys.exit(main())
     except (RuntimeError,subprocess.SubprocessError,OSError,ValueError) as exc:
         print('CRITICAL: '+str(exc),file=sys.stderr); sys.exit(1)
+
