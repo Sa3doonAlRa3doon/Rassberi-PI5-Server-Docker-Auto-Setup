@@ -144,10 +144,14 @@ def plan(stage, index):
                 preserved.append({'path': rel, 'reason': 'release marker is not newer',
                                   'current': current, 'incoming': after})
             continue
-        previous = (index.get(rel) or {}).get('previous_sha256')
+        entry = index.get(rel) or {}
+        accepted = set(entry.get('accepted_sha256') or [])
+        previous = entry.get('previous_sha256')
+        if previous:
+            accepted.add(previous)
         if current == after:
             continue
-        if current is None or current == previous:
+        if current is None or current in accepted:
             changes.append({'path': rel, 'action': 'add' if current is None else 'replace',
                             'before': current, 'after': after})
         else:
@@ -165,10 +169,14 @@ def host_units(stage, index):
         rel = 'systemd/' + name
         current = sha256(destination) if destination.is_file() else None
         after = sha256(source)
-        previous = (index.get(rel) or {}).get('previous_sha256')
+        entry = index.get(rel) or {}
+        accepted = set(entry.get('accepted_sha256') or [])
+        previous = entry.get('previous_sha256')
+        if previous:
+            accepted.add(previous)
         if current == after:
             continue
-        if current is None or current == previous:
+        if current is None or current in accepted:
             result.append((destination, source, current))
         else:
             raise RuntimeError('Customized systemd unit needs review before upgrade: ' + str(destination))
