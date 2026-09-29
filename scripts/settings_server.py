@@ -148,8 +148,17 @@ def dispatch(action, data):
         if (not isinstance(installed, list) or not all(isinstance(n, str) for n in installed) or
                 not isinstance(startup, list) or not all(isinstance(n, str) for n in startup)):
             raise ValueError('Application selections must be lists of names')
+        before = set(installed_apps())
         def save():
-            return app_selection.save_selection(BASE, manifest, installed, startup)
+            result = app_selection.save_selection(BASE, manifest, installed, startup)
+            removed = sorted(before - set(result['installed']))
+            stopped = []
+            if BASE.resolve() == Path('/srv/docker'):
+                for name in removed:
+                    external(['python3', str(BASE / 'scripts' / 'manage.py'), 'stop', name])
+                    stopped.append(name)
+            result['stopped'] = stopped
+            return result
         return with_lock(save)
     if action in {'app-start', 'app-stop'}:
         name = data.get('app')
