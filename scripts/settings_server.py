@@ -16,6 +16,7 @@ import time
 from urllib.parse import urlsplit
 
 import storage_setup as layout
+import app_selection
 
 BASE = Path(__file__).resolve().parents[1]
 WEB = BASE / 'configs/settings-ui'
@@ -42,10 +43,16 @@ def configured_ip():
 
 
 def selected_apps():
-    path = BASE / 'enabled-apps.txt'
-    if path.exists():
-        return [line.strip() for line in path.read_text().splitlines() if line.strip() and not line.lstrip().startswith('#')]
-    return [a['name'] for a in layout.read_json(BASE / 'manifest.json') if a.get('default_enabled', True)]
+    manifest = layout.read_json(BASE / 'manifest.json')
+    saved = app_selection.startup_names(BASE, manifest)
+    if saved:
+        return saved
+    return [a['name'] for a in manifest if a.get('default_enabled', True) and
+            a['name'] in app_selection.installed_names(BASE, manifest)]
+
+
+def installed_apps():
+    return app_selection.installed_names(BASE, layout.read_json(BASE / 'manifest.json'))
 
 
 def snapshot():
@@ -57,8 +64,10 @@ def snapshot():
              model='1 TB Seagate HDD (preview)', size=1000*1024**3, free_bytes=780*1024**3),
         dict(name='/dev/mmcblk0p1', uuid='demo-media', mount='/mnt/media', eligible=True, kind='microSD',
              model='256 GB microSD (preview)', size=256*1024**3, free_bytes=210*1024**3)]
-    return dict(disks=disks, placements=layout.catalog(), enabled=selected_apps(),
-        apps=[{k: a.get(k) for k in ('name', 'memory_mib', 'default_enabled', 'setup', 'ports')} for a in manifest],
+    installed = installed_apps()
+    return dict(disks=disks, placements=layout.catalog(BASE, installed), enabled=selected_apps(), installed=installed,
+        apps=[{**{k: a.get(k) for k in ('name', 'memory_mib', 'default_enabled', 'setup', 'ports', 'optional', 'blocked_reason')},
+               'installed': a['name'] in installed} for a in manifest],
         backup=layout.read_json(BASE / 'configs/portable-backup.json', dict(mount='/mnt/backup', uuid='', folder='pi-server', include_bulk=True)),
         demo=DEMO, deployed=BASE.resolve() == Path('/srv/docker'), job=STATE.copy())
 
@@ -133,13 +142,14 @@ def dispatch(action, data):
             return external(['bash', str(BASE / 'install-all.sh')])
         return external(['bash', str(BASE / 'install-all.sh')])
     if action == 'save-apps':
-        names = data.get('enabled', [])
-        known = {a['name'] for a in layout.read_json(BASE / 'manifest.json')}
-        if not isinstance(names, list) or not all(isinstance(n, str) for n in names) or set(names) - known:
-            raise ValueError('Unknown application selection')
+        manifest = layout.read_json(BASE / 'manifest.json')
+        installed = data.get('installed', [])
+        startup = data.get('enabled', [])
+        if (not isinstance(installed, list) or not all(isinstance(n, str) for n in installed) or
+                not isinstance(startup, list) or not all(isinstance(n, str) for n in startup)):
+            raise ValueError('Application selections must be lists of names')
         def save():
-            layout.atomic_bytes(BASE / 'enabled-apps.txt', ('\n'.join(sorted(set(names))) + '\n').encode())
-            return {'saved': True, 'message': 'Startup selection saved. Start or stop apps separately below.'}
+            return app_selection.save_selection(BASE, manifest, installed, startup)
         return with_lock(save)
     if action in {'app-start', 'app-stop'}:
         name = data.get('app')
@@ -341,3 +351,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

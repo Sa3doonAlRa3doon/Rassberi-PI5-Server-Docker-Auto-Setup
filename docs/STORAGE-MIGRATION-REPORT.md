@@ -1,6 +1,6 @@
 # Storage migration report
 
-**Prepared:** 2026-09-23
+**Prepared:** 2026-09-23  
 **Scope:** replace the retired HDD identity while keeping the NVMe root and microSD roles unchanged.
 
 ## Result
@@ -15,7 +15,7 @@ HDD-dependent projects are **Nextcloud, Stirling PDF, Code Server, Jupyter, File
 
 microSD-dependent projects are **Jellyfin** (`/mnt/media/Videos`, read-only) and **Navidrome** (`/mnt/media/Music`, read-only).
 
-NVMe-only projects are **Portainer, Homepage, Uptime Kuma, Dozzle, ONLYOFFICE, Wiki.js, Gitea, n8n, IT Tools, CyberChef, SearXNG, Excalidraw, FreshRSS, Actual Budget, Vaultwarden and Pi-hole**. Stirling PDF, Jupyter, ONLYOFFICE and Moodle remain installed but on demand to fit the Pi's 16 GB RAM; they are started explicitly when needed.
+NVMe-only projects are **Portainer, Homepage, Uptime Kuma, Dozzle, ONLYOFFICE, Wiki.js, Gitea, n8n, IT Tools, CyberChef, SearXNG, Excalidraw, FreshRSS, Actual Budget, Vaultwarden and Pi-hole**. ONLYOFFICE, Jupyter and Stirling PDF now start automatically when selected; the memory guard still stops the boot sequence before the OS is starved. Moodle remains on demand by default. Use the settings page to reduce the boot selection on an 8 GB Pi.
 
 ## Exact implementation changes
 
@@ -39,3 +39,4 @@ NVMe-only projects are **Portainer, Homepage, Uptime Kuma, Dozzle, ONLYOFFICE, W
 ## Live-Pi checks still required
 
 Run the updater on the Pi and retain its `migration-report.json`. The Pi must still confirm `findmnt` identities, the candidate `/etc/fstab`, real UID/GID ownership, free space, SMART visibility through the USB bridge, Docker container health and one reboot recovery. USB SMART passthrough may report `UNSUPPORTED`; that is a visibility warning rather than proof of disk failure.
+

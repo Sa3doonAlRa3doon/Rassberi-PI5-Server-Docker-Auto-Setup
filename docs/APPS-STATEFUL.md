@@ -22,7 +22,7 @@ n8n, Wiki.js, Vaultwarden and ONLYOFFICE acquire no new HDD dependency.
 | Application | Host ports | Total memory ceiling | Permanent application data | PostgreSQL data |
 | --- | --- | ---: | --- | --- |
 | Nextcloud | 8080 | 1504 MiB | NVMe `/srv/docker/appdata/nextcloud`; files `/mnt/hdd/Nextcloud` | `/srv/docker/databases/nextcloud` |
-| ONLYOFFICE, on demand | 8081 | 4352 MiB | `/srv/docker/appdata/onlyoffice` | `/srv/docker/databases/onlyoffice` |
+| ONLYOFFICE, starts at boot by default | 8081 | 4352 MiB | `/srv/docker/appdata/onlyoffice` | `/srv/docker/databases/onlyoffice` |
 | Moodle, on demand | 8082 | 1280 MiB | NVMe caches `/srv/docker/appdata/moodle/cache`; files `/mnt/hdd/Shared/Moodle` | `/srv/docker/databases/moodle` |
 | Wiki.js | 8084 | 640 MiB | `/srv/docker/appdata/wikijs/content` and PostgreSQL | `/srv/docker/databases/wikijs` |
 | Gitea | 3001 web; 2222 SSH | 640 MiB | `/srv/docker/appdata/gitea` | `/srv/docker/databases/gitea` |
@@ -33,7 +33,7 @@ n8n, Wiki.js, Vaultwarden and ONLYOFFICE acquire no new HDD dependency.
 Always-on stacks in this document total **5632 MiB (5.5 GiB)** of memory ceilings.
 This leaves capacity for the other application groups and the host. Ceilings are
 limits, not promises of performance under simultaneous load. Keep heavy workflows
-small and run heavy optional applications only when needed. A process that exceeds
+small and run heavy optional applications only when needed. ONLYOFFICE now starts at boot by default; disable it in the settings page if the machine is being used for a lighter profile. A process that exceeds
 its limit can be killed by the kernel; inspect `docker stats` and the health report.
 
 ONLYOFFICE's official ARM64 instructions specify at least 4 GB RAM, 40 GB free
@@ -42,10 +42,7 @@ disk and 4 GB swap. Its application container therefore has a 4 GiB ceiling, plu
 Check NVMe free space and host memory before starting it. Stop it when finished.
 [Official ARM64 requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker-arm64.aspx).
 
-Start an optional application with `sudo /srv/docker/start-all.sh onlyoffice` or
-`sudo /srv/docker/start-all.sh moodle`; stop it using the matching `stop-all.sh`
-command. Its persistence remains intact. Follow the root README for changing the
-enabled-app list if you want it to start every time.
+ONLYOFFICE, Jupyter and Stirling PDF start automatically after Docker and storage are ready. Use the settings page or `sudo /srv/docker/select-apps.sh` to change the installed-app and boot-start lists. Start or stop any selected application manually with `sudo /srv/docker/start-all.sh APP` and `sudo /srv/docker/stop-all.sh APP`; its persistence remains intact.
 
 ## Initial accounts and URLs
 
@@ -265,3 +262,4 @@ Validation performed during generation is recorded separately from runtime healt
 The Pi must still pass database health, HTTP readiness, mount UUID checks, data
 write/read checks, and the documented reboot procedure before this server can be
 called fully installed and verified.
+

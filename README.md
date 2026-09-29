@@ -11,12 +11,20 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 - Keeps large documents, books, ZIM files, shared files, music and videos on selected bulk-storage mounts.
 - Verifies filesystem identity, mount points, free space and writable state before creating paths or starting dependent projects.
 - Generates root-only `.env` files without replacing existing credentials.
-- Starts heavy and scanning applications on demand so a 16 GB Pi is not overloaded.
+- Starts ONLYOFFICE, Jupyter and Stirling PDF at boot as requested; other heavy or scanning applications remain on demand so the host can be tuned.
 - Provides guarded update, backup, restore, storage migration and upgrade tools.
 - Uses a manual release gate so code changes are applied only from a published, newer package.
 - Supports a different machine with a different combination of SSDs, HDDs, microSD cards and additional ext4 filesystems.
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
+
+## Release 5 changes
+
+- ONLYOFFICE, Jupyter and Stirling PDF are enabled for automatic startup after Docker and verified storage are ready.
+- The temporary and permanent settings pages now separate apps to install from apps to start at boot.
+- The storage table follows the installed-app selection, so unneeded apps do not force unrelated HDD or microSD destinations.
+- select-apps.sh provides the same selection from a Linux terminal; dependencies are included automatically.
+- Existing app data, databases, secrets and storage choices remain preserved when an app is deselected or an upgrade is applied.
 
 ## Officially fixed in Release 4
 
@@ -52,21 +60,19 @@ Do not expose the installer, settings panel or application ports to the public I
 
 ## Minimum and balanced hardware
 
-The installer can deploy all 41 projects on a Raspberry Pi 5, but it does not start every container together. Heavy applications stay on demand so the hardware is not overloaded.
+These profiles apply to the complete Docker package, not just the always-on services. All 41 projects can be installed, while the app-selection page controls which projects are actually prepared and pulled.
 
-| Resource | Minimum workable setup | Balanced setup for this package |
+| Resource | Minimum for the full package | Balanced for the full package |
 |---|---|---|
 | CPU | Raspberry Pi 5, Broadcom BCM2712, quad-core 2.4 GHz ARM64 | Same CPU with active cooling |
-| RAM | 4 GB; run light services and one heavy application at a time | 8 GB works well; **16 GB is preferred** for several services and heavy apps |
-| System storage | 128 GB SSD/NVMe with at least 40 GB free after the OS | 512 GB NVMe SSD for Docker images, databases, appdata, logs and caches |
-| Bulk storage | Optional; add a mounted HDD or microSD for large files | About 1 TB HDD for documents/files plus 256 GB microSD for music/videos |
-| Backup storage | Separate disk recommended before storing important data | Separate removable 2 TB-or-larger HDD for portable backups and recovery |
-| Power and cooling | Official 27 W USB-C power supply and active cooling | Official 27 W USB-C power supply, active cooler or fan case |
-| Network | Private Ethernet or Wi-Fi with a private LAN/Tailscale IPv4 address | Gigabit Ethernet preferred for Nextcloud, backups and media transfers |
+| RAM | **8 GB**; install all apps but run only a small set together | **12–16 GB**; 16 GB is preferred for the full selected set and the three requested auto-start apps |
+| System storage | SSD/NVMe sized for the selected images, databases and appdata; 256 GB is a practical floor | 512 GB NVMe for images, databases, appdata, logs and caches |
+| Bulk storage | Only the mounted HDD/microSD needed by the selected apps | About 1 TB HDD for documents/files plus 256 GB microSD for music/videos |
+| Backup storage | Separate disk recommended | Separate removable 2 TB-or-larger HDD for portable backups and recovery |
+| Power and cooling | Official 27 W USB-C supply and active cooling | Official 27 W USB-C supply and active cooler or fan case |
+| Network | Private Ethernet or Wi-Fi with a private LAN/Tailscale IPv4 address | Gigabit Ethernet preferred for transfers and backups |
 
-The minimum profile is suitable for installation, light services and on-demand use. It is not intended to run all heavy applications together. The balanced profile still uses on-demand startup for ONLYOFFICE, Moodle, Jupyter, Stirling PDF, ChangeDetection.io, NetAlertX and Tailscale Homepage.
-
-The storage capacities are recommendations, not fixed requirements. Use the setup wizard to select different mounted devices; databases and application state must remain on a writable SSD, while bulk data can use reviewed HDD or microSD paths.
+Storage depends on the applications selected. Databases and application state remain on a writable SSD; bulk data uses the reviewed HDD, SSD or microSD destinations.
 
 ## Choose your install path
 
@@ -80,7 +86,7 @@ The setup wizard is the recommended first step when the machine does not match t
 
 ```bash
 cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup
-chmod +x setup-server.sh install-all.sh start-all.sh stop-all.sh update-all.sh backup.sh verify-after-reboot.sh scripts/*.sh
+chmod +x setup-server.sh install-all.sh start-all.sh stop-all.sh update-all.sh backup.sh verify-after-reboot.sh select-apps.sh scripts/*.sh
 sudo ./setup-server.sh
 ```
 
@@ -88,11 +94,14 @@ sudo ./setup-server.sh
    panel is temporary: it shuts down after you finish, press `Ctrl+C`, or remain
    idle for two hours. It does not install Docker services or become the
    permanent settings panel.
-5. Review each destination, or choose auto-select, then apply the reviewed
-   layout. The installer refuses a fresh install until this step has created
-   `configs/layout.json`, so a new machine cannot silently use the example
-   `/mnt/hdd` and `/mnt/media` profile.
-6. Run the installer with the Pi's private address:
+5. Open **Applications**, select only the Docker apps you need, choose which
+   installed apps start at boot, and save the selection. Dependencies are included
+   automatically.
+6. Review each destination, or choose auto-select, then apply the reviewed
+   layout. The storage table now covers only the selected applications. The installer
+   refuses a fresh install until both the app selection and `configs/layout.json`
+   exist, so a new machine cannot silently use the example profile.
+7. Run the installer with the Pi's private address:
 
 ```bash
 sudo BIND_IP=192.168.1.50 ./install-all.sh
@@ -130,7 +139,7 @@ sudo ./upgrade-server.sh --apply
 sudo /srv/docker/install-all.sh
 ```
 
-The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings and the enabled-app selection. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
+The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings, the installed-app selection and the startup selection. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
 
 ```bash
 sudo python3 /srv/docker/scripts/install-settings-service.py
@@ -189,7 +198,7 @@ Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md), [STORAGE.md
 
 ## Included projects
 
-The package contains 41 Compose projects and 59 containers. The default enabled set has a 12,224 MiB aggregate container cap. The configured projects total 21,760 MiB, so they are intentionally not started together.
+The package contains 41 Compose projects and 59 containers. You can install all of them or select only the projects you need in the setup/settings page. The complete manifest is deliberately not started as one unbounded batch; the manager checks the current memory budget before every start.
 
 | Group | Projects |
 |---|---|
@@ -201,26 +210,17 @@ The package contains 41 Compose projects and 59 containers. The default enabled 
 
 The second Homepage instance is `homepage-tailscale`. It stays disabled until a real Tailscale address is configured.
 
-### Heavy projects
+### Startup defaults
 
-These are installed and image/build checked, but remain on demand by default:
+These three requested services now start automatically after Docker and storage are ready:
 
 - ONLYOFFICE
-- Stirling PDF
 - Jupyter
-- Moodle
-- ChangeDetection.io
-- NetAlertX
-- Tailscale Homepage
+- Stirling PDF
 
-Start one only when needed, then stop it when finished:
+Moodle, ChangeDetection.io, NetAlertX and Tailscale Homepage remain on demand by default. You can change both the installed-app list and the boot-start list in the permanent settings page.
 
-```bash
-sudo /srv/docker/start-all.sh onlyoffice
-sudo /srv/docker/stop-all.sh onlyoffice
-```
-
-The manager checks the current aggregate memory budget before starting a project. Read [docs/APPS-STATEFUL.md](docs/APPS-STATEFUL.md) and [docs/UTILITY-ADDITIONS.md](docs/UTILITY-ADDITIONS.md) for first-login and application-specific notes.
+The manager checks the current aggregate memory budget before starting a project. The app page and select-apps.sh never delete existing data when an application is deselected. Read [docs/APPS-STATEFUL.md](docs/APPS-STATEFUL.md) and [docs/UTILITY-ADDITIONS.md](docs/UTILITY-ADDITIONS.md) for first-login and application-specific notes.
 
 ## Daily operations
 
@@ -233,6 +233,9 @@ sudo /srv/docker/status.sh
 # Start or stop selected projects
 sudo /srv/docker/start-all.sh [app ...]
 sudo /srv/docker/stop-all.sh [app ...]
+
+# Select the Docker apps to install and start at boot from the terminal
+sudo /srv/docker/select-apps.sh
 
 # Pull the explicit pinned images while preserving the running set
 sudo /srv/docker/update-all.sh [app ...]
@@ -335,4 +338,5 @@ Windows-side validation checks the 41 Compose projects and manifest declarations
 That is configuration validation. The target Pi still needs live checks for filesystem read/write behavior, SMART passthrough, network discovery, real file transfers, alerts, Home Assistant onboarding, NetAlertX discovery, Tailscale Serve, container health, and reboot recovery.
 
 The existing dashboard archive remains in [dashboard types/IT SIMPLI+.zip](<dashboard%20types/IT%20SIMPLI%2B.zip>).
+
 

@@ -20,7 +20,7 @@ sudo /srv/docker/start-all.sh netalertx
 sudo /srv/docker/stop-all.sh changedetection netalertx
 ```
 
-Installation prepares and downloads every project, including those that start on demand. ChangeDetection includes a private browser sidecar; the whole project has a 1,152 MiB cap. NetAlertX and Home Assistant each have a 1,024 MiB cap. The manager checks the aggregate running-container memory caps and leaves at least 2 GiB for the OS. Stop unused applications if that check declines another start.
+Installation prepares and downloads only the applications selected in the setup/settings page. The default boot selection starts ONLYOFFICE, Jupyter and Stirling PDF; ChangeDetection.io and NetAlertX remain on demand. ChangeDetection includes a private browser sidecar; the whole project has a 1,152 MiB cap. NetAlertX and Home Assistant each have a 1,024 MiB cap. The manager checks the aggregate running-container memory caps and leaves at least 2 GiB for the OS. Stop unused applications if that check declines another start.
 
 ## Homebox
 
@@ -89,3 +89,4 @@ Source: [official Docker Compose](https://docs.netalertx.com/DOCKER_COMPOSE/), [
 Stop the complete affected project before copying embedded databases. Include its private `.env`, NVMe appdata/configuration and any related HDD files in the same backup. PairDrop has only server configuration; receiving devices must back up their own files. The browser sidecar is disposable.
 
 On the Pi, verify container health and first login, then actually perform a small Localsendy upload/download, a PairDrop transfer between two devices, a watch check/notification, a Home Assistant integration discovery, and a NetAlertX LAN discovery. Verify missing-HDD behavior before relying on unattended Localsendy operation. None of those device-level checks can be established by Compose validation on Windows.
+

@@ -107,14 +107,18 @@ def discover():
     return result
 
 
-def catalog(base=BASE):
+def catalog(base=BASE, selected=None):
     manifest = read_json(base / 'manifest.json')
+    if selected is not None:
+        selected = set(selected)
     rows = {}
     saved = read_json(base / 'configs/layout.json', {}).get('placements', {})
     if len(set(saved.values())) != len(saved):
         raise RuntimeError('Saved layout contains duplicate placement destinations')
     reverse = {v: k for k, v in saved.items()}
     for app in manifest:
+        if selected is not None and app['name'] not in selected:
+            continue
         for directory in app.get('directories', []):
             path = directory['path']
             original = mapped_path(path, reverse)
@@ -224,7 +228,13 @@ def source_state(path, base, inspect_size=True):
 
 def plan(placements, base=BASE, disks=None):
     disks = discover() if disks is None else disks
-    entries = catalog(base)
+    manifest_all = read_json(base / 'manifest.json')
+    try:
+        import app_selection
+        selected = app_selection.installed_names(base, manifest_all)
+    except ImportError:
+        selected = None
+    entries = catalog(base, selected)
     known = {r['id']: r for r in entries}
     if not isinstance(placements, dict) or set(placements) != set(known):
         raise RuntimeError('Placement plan must include every displayed data group exactly once')
@@ -528,3 +538,4 @@ def apply(placements, migrate=False, base=BASE):
                 restarted.append(app)
     return dict(applied=True, recovery=str(recovery), restarted=restarted,
                 message='Layout saved. Original data kept. Non-running services stay stopped; use Install on a new server.')
+
