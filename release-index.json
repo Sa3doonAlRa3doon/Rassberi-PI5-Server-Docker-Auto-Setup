@@ -671,6 +671,10 @@
       "sha256": "c75ce5e2cf06cdc4b5eee0a4ee9f757f93a3b8aa9f094b2be6ce830b9deb28c0",
       "previous_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02"
     },
+    "RELEASE.json": {
+      "sha256": "c5a968bc0828211662c435a7efed3b44dd1ec53ac46a357bd79e2fd371ee98f1",
+      "previous_sha256": null
+    },
     "scripts/apply-storage-update.py": {
       "sha256": "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19",
       "previous_sha256": "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19"
@@ -764,7 +768,7 @@
       "previous_sha256": null
     },
     "scripts/upgrade-package.py": {
-      "sha256": "51bfa4a6c3f9b9f7f6650fd92cc66999e375913fcbd59a7ddd1a70aa86ab997a",
+      "sha256": "3c65a96c16009524ecb7e9ee9db14d6a17a635997a13dffab0eefc750f0af01f",
       "previous_sha256": null
     },
     "scripts/watch-storage.sh": {

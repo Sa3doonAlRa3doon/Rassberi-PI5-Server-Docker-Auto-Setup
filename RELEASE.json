@@ -1,0 +1,9 @@
+{
+  "format": 1,
+  "release_id": 1,
+  "release_code": "FIXED AND IMPROVED",
+  "state": "published",
+  "channel": "stable",
+  "update_policy": "manual-release-only",
+  "notes": "Code is applied only from a published package with a higher release_id. Local customizations are preserved for review."
+}
