@@ -50,6 +50,24 @@ You need:
 
 Do not expose the installer, settings panel or application ports to the public Internet. The installer rejects wildcard and public binds. Router forwarding, public DNS and TLS certificates are outside this package.
 
+## Minimum and balanced hardware
+
+The installer can deploy all 41 projects on a Raspberry Pi 5, but it does not start every container together. Heavy applications stay on demand so the hardware is not overloaded.
+
+| Resource | Minimum workable setup | Balanced setup for this package |
+|---|---|---|
+| CPU | Raspberry Pi 5, Broadcom BCM2712, quad-core 2.4 GHz ARM64 | Same CPU with active cooling |
+| RAM | 4 GB; run light services and one heavy application at a time | 8 GB works well; **16 GB is preferred** for several services and heavy apps |
+| System storage | 128 GB SSD/NVMe with at least 40 GB free after the OS | 512 GB NVMe SSD for Docker images, databases, appdata, logs and caches |
+| Bulk storage | Optional; add a mounted HDD or microSD for large files | About 1 TB HDD for documents/files plus 256 GB microSD for music/videos |
+| Backup storage | Separate disk recommended before storing important data | Separate removable 2 TB-or-larger HDD for portable backups and recovery |
+| Power and cooling | Official 27 W USB-C power supply and active cooling | Official 27 W USB-C power supply, active cooler or fan case |
+| Network | Private Ethernet or Wi-Fi with a private LAN/Tailscale IPv4 address | Gigabit Ethernet preferred for Nextcloud, backups and media transfers |
+
+The minimum profile is suitable for installation, light services and on-demand use. It is not intended to run all heavy applications together. The balanced profile still uses on-demand startup for ONLYOFFICE, Moodle, Jupyter, Stirling PDF, ChangeDetection.io, NetAlertX and Tailscale Homepage.
+
+The storage capacities are recommendations, not fixed requirements. Use the setup wizard to select different mounted devices; databases and application state must remain on a writable SSD, while bulk data can use reviewed HDD or microSD paths.
+
 ## Choose your install path
 
 ### New or different hardware
