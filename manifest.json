@@ -600,7 +600,7 @@
       "Authentication database remains in /configs on NVMe. Pipeline files use HDD. No AI model/inference service is installed."
     ],
     "memory_mib": 768,
-    "default_enabled": false,
+    "default_enabled": true,
     "optional": true,
     "database": {
       "kind": "application-embedded",
@@ -768,7 +768,7 @@
       "Private-IP callbacks are enabled for the LAN/Tailscale Nextcloud integration. Keep this server private and JWT enabled. No AI provider is configured."
     ],
     "optional": true,
-    "default_enabled": false,
+    "default_enabled": true,
     "build": false
   },
   {
@@ -821,7 +821,7 @@
     ],
     "notes": [],
     "memory_mib": 768,
-    "default_enabled": false,
+    "default_enabled": true,
     "optional": true
   },
   {
@@ -2596,3 +2596,4 @@
     }
   }
 ]
+
