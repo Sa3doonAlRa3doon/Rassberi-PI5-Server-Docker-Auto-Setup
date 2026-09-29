@@ -13,6 +13,8 @@ import tempfile
 
 SOURCE = Path(__file__).resolve().parents[1]
 TARGET = Path('/srv/docker')
+RELEASE_FILE = 'RELEASE.json'
+RELEASE_CODE = 'FIXED AND IMPROVED'
 PROTECTED = {
     'configs/storage.json', 'configs/layout.json', 'configs/portable-backup.json',
     'configs/storage-autostart.json', 'configs/storage-review-required.json',
@@ -52,6 +54,32 @@ def load_module(name, path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def read_release(path):
+    path = Path(path)
+    if not path.is_file():
+        return None
+    release = json.loads(path.read_text())
+    if (not isinstance(release, dict) or release.get('release_code') != RELEASE_CODE or
+            release.get('state') != 'published' or
+            not isinstance(release.get('release_id'), int) or release['release_id'] < 1):
+        raise RuntimeError('Invalid release marker; expected a published FIXED AND IMPROVED package')
+    return release
+
+
+def release_gate():
+    """Allow only a published package newer than the installed release."""
+    incoming = read_release(SOURCE / RELEASE_FILE)
+    if incoming is None:
+        raise RuntimeError('Package has no RELEASE.json; code updates require a published release')
+    installed = read_release(TARGET / RELEASE_FILE)
+    if installed and incoming['release_id'] <= installed['release_id']:
+        raise RuntimeError(
+            f"No newer published release: installed {installed['release_id']}, "
+            f"package {incoming['release_id']}. Increment release_id only when the package is fixed and ready."
+        )
+    return incoming, installed
 
 
 def deployed_replacements():
@@ -107,6 +135,15 @@ def plan(stage, index):
         destination = TARGET / Path(rel)
         current = sha256(destination) if destination.is_file() else None
         after = sha256(source)
+        if rel == RELEASE_FILE and current is not None:
+            installed = read_release(destination)
+            incoming = read_release(source)
+            if installed and incoming['release_id'] > installed['release_id']:
+                changes.append({'path': rel, 'action': 'replace', 'before': current, 'after': after})
+            else:
+                preserved.append({'path': rel, 'reason': 'release marker is not newer',
+                                  'current': current, 'incoming': after})
+            continue
         previous = (index.get(rel) or {}).get('previous_sha256')
         if current == after:
             continue
@@ -151,6 +188,7 @@ def main():
         raise RuntimeError('Run this from the new downloaded package against an existing /srv/docker installation')
     if SOURCE.is_symlink() or TARGET.is_symlink():
         raise RuntimeError('Source and installed package must not be symlinks')
+    incoming_release, installed_release = release_gate()
     subprocess.run(['python3', str(TARGET / 'scripts/storage_guard.py'), '--only', 'root'], check=True)
     index = json.loads((SOURCE / 'release-index.json').read_text())['files']
     temporary, stage = prepared_source()
@@ -160,6 +198,9 @@ def main():
         report = {'mode': 'apply' if args.apply else 'dry-run', 'changes': changes,
                   'preserved_local_files': preserved,
                   'systemd_changes': [str(row[0]) for row in units],
+                  'release_id': incoming_release['release_id'],
+                  'release_code': incoming_release['release_code'],
+                  'previous_release_id': installed_release['release_id'] if installed_release else None,
                   'private_state_preserved': sorted(PROTECTED),
                   'next': 'After apply: sudo /srv/docker/install-all.sh'}
         print(json.dumps(report, indent=2))
