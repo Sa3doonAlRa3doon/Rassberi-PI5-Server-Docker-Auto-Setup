@@ -648,7 +648,7 @@
       "previous_sha256": "4a2336f28286596416bf95e53998f7e03f481f91bec605ebfd4f900c76b68996"
     },
     "install-all.sh": {
-      "sha256": "46c78cbac5e4cbf57705e749ffe83e1a255000354da1d2ac54195a61eb53306e",
+      "sha256": "001ec9b98c5f8cd564649a625c903f66147f55187dadd932bc56077264f0758a",
       "previous_sha256": "f2e59813a51112a1af0106a97087b4606f0c52c7c09bdd9a824b2910517ac523"
     },
     "install-server.sh": {
@@ -672,7 +672,7 @@
       "previous_sha256": "3da4c42eeeb9710dbaae5af5301fae97381a8b77505df49c3ab480852946ac02"
     },
     "RELEASE.json": {
-      "sha256": "f5c9638b278c4b45861e73261014573fb4a8c278924b9a007ffc8b1f4fc6b0bf",
+      "sha256": "4f961ba73e6efb8225cb74aafdd36b70296919941056bd1b7ab7abf5f5df95ec",
       "previous_sha256": null
     },
     "scripts/apply-storage-update.py": {

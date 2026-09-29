@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 2,
+  "release_id": 3,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 2 fixes same-project wildcard port detection, waits for the permanent settings key, and requires the temporary storage wizard on fresh installs. Local customizations are preserved for review."
+  "notes": "Release 3 also blocks fresh packages copied directly into /srv/docker until the temporary storage wizard has created a reviewed layout. Local customizations are preserved for review."
 }
