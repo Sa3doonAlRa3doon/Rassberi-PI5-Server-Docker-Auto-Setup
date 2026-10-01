@@ -1,0 +1,56 @@
+name: Validate server package
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validation:
+    name: Python, shell, and package layout
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run the isolated package tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          audit_root="$RUNNER_TEMP/pi-server-validation"
+          mkdir -p "$audit_root/outputs"
+          ln -s "$GITHUB_WORKSPACE" "$audit_root/outputs/Rassberi-PI5-Codes"
+          cp -a tests "$audit_root/tests"
+          cd "$audit_root"
+          for test_file in tests/test_*.py; do
+            python "$test_file"
+          done
+
+      - name: Parse package source and shell files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          for path in root.rglob('*.py'):
+              if '.git' not in path.parts:
+                  ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+          for path in root.rglob('*.json'):
+              if '.git' not in path.parts:
+                  json.loads(path.read_text(encoding='utf-8-sig'))
+          PY
+          find . -path './.git' -prune -o -type f -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+          node --check configs/settings-ui/app.js
