@@ -10,12 +10,15 @@ Applications with web access also join their own frontend network. Every publish
 port requires an explicit `BIND_IP`; the installer supplies the Pi's private
 address. Each bind mount uses `create_host_path: false` and the host installer
 must validate the physical storage UUID before creating or starting HDD paths.
-The replacement Seagate 1 TB drive remains `/mnt/hdd`; its current identity is
-defined by the central storage configuration and documented in `STORAGE.md`.
-Nextcloud, Paperless and Moodle keep their existing content paths. Their guarded
-projects use `on-failure:5`, while NVMe-only projects retain `unless-stopped`.
-If the HDD is unavailable, only dependent projects are skipped/stopped. Gitea,
-n8n, Wiki.js, Vaultwarden and ONLYOFFICE acquire no new HDD dependency.
+The replacement Seagate 1 TB drive remains `/mnt/hdd` in the supplied profile;
+its current identity is defined by the central storage configuration and
+documented in `STORAGE.md`. A custom layout may use different reviewed paths,
+and a deselected application's HDD data group is not a mount requirement for
+the selected stack. Nextcloud, Paperless and Moodle keep their existing content
+paths. Their guarded projects use `on-failure:5`, while NVMe-only projects retain
+`unless-stopped`. If the HDD is unavailable, only dependent selected projects
+are skipped/stopped. Gitea, n8n, Wiki.js, Vaultwarden and ONLYOFFICE acquire no
+new HDD dependency.
 
 ## Allocation and storage
 
@@ -42,7 +45,7 @@ disk and 4 GB swap. Its application container therefore has a 4 GiB ceiling, plu
 Check NVMe free space and host memory before starting it. Stop it when finished.
 [Official ARM64 requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker-arm64.aspx).
 
-ONLYOFFICE, Jupyter and Stirling PDF start automatically after Docker and storage are ready. Use the settings page or `sudo /srv/docker/select-apps.sh` to change the installed-app and boot-start lists. Start or stop any selected application manually with `sudo /srv/docker/start-all.sh APP` and `sudo /srv/docker/stop-all.sh APP`; its persistence remains intact.
+ONLYOFFICE, Jupyter and Stirling PDF receive boot priority after Docker, verified storage and their dependencies are ready. This applies only while they remain in the saved boot-start list; an intentionally empty list stays empty. Use the settings page or `sudo /srv/docker/select-apps.sh` to change the installed-app and boot-start lists. Start or stop any prepared selected application manually with `sudo /srv/docker/start-all.sh APP` and `sudo /srv/docker/stop-all.sh APP`; its persistence remains intact.
 
 ## Initial accounts and URLs
 
@@ -236,8 +239,9 @@ job cron expressions use UTC internally even though container `TZ` is Asia/Dubai
 
 ## Backup and verification
 
-Use the root `BACKUPS.md` procedure. Back up app bind mounts and paired logical
-PostgreSQL dumps; never copy a running database directory as the backup. Redis
+Use the layout-aware `portable-backup.sh` procedure in
+`docs/PORTABLE-BACKUP.md`. It backs up registered selected data groups and paired
+logical PostgreSQL dumps; it never copies a running database directory. Redis
 caches/brokers, Gitea repositories, Wiki.js stored content, Vaultwarden attachments,
 and n8n's key/config need inclusion alongside the database. Stop application writers
 during a consistency-sensitive backup. For ONLYOFFICE, let active edits save and
@@ -262,4 +266,3 @@ Validation performed during generation is recorded separately from runtime healt
 The Pi must still pass database health, HTTP readiness, mount UUID checks, data
 write/read checks, and the documented reboot procedure before this server can be
 called fully installed and verified.
-

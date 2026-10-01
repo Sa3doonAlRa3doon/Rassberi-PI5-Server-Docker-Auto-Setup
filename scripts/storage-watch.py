@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Pause only containers that depend on a missing or unsafe data drive."""
-import fcntl
 import json
 import os
 from pathlib import Path
 import subprocess
 import tempfile
 
+from docker_restart import restart_policy_option
+
 BASE = Path('/srv/docker')
 PAUSED = BASE / 'configs/storage-paused.json'
+LOCK = Path('/run/lock/pi-server.lock')
 
 
 def run(args, **kwargs):
@@ -49,17 +51,19 @@ def inspect_containers():
 def main():
     if os.geteuid() != 0:
         raise RuntimeError('storage-watch.py must run as root')
-    lock = open('/run/lock/pi-server.lock', 'a')
+    import fcntl
+    lock = open(LOCK, 'a')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
+        lock.close()
         return 0
     guard_path = BASE / 'scripts' / 'storage_guard.py'
     import importlib.util
     spec = importlib.util.spec_from_file_location('pi_storage_guard', guard_path)
     guard = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(guard)
-    manifest = json.loads((BASE / 'manifest.json').read_text())
+    manifest = guard.selected_manifest(BASE / 'manifest.json', BASE)
     rows = guard.inspect_storage(manifest=[],
                                  config=BASE / 'configs' / 'storage.json')
     bad = {row['key'] for row in rows if row['errors']}
@@ -67,6 +71,7 @@ def main():
     if root_bad:
         subprocess.run(['logger', '-p', 'daemon.crit', 'NVMe root storage is unsafe; stopping Docker'], check=False)
         subprocess.run(['systemctl', 'stop', 'docker.socket', 'docker.service'], check=False)
+        lock.close()
         return 1
     apps = {app['name']: app for app in manifest}
     paused = read_json(PAUSED, [])
@@ -113,6 +118,9 @@ def main():
                     raise RuntimeError('Application is no longer in manifest')
                 guard.check(required=guard.app_requirements(app), manifest=[app],
                             require_dirs=True, config=BASE / 'configs/storage.json')
+                restart_options = {item['id']: restart_policy_option(item.get('restart')) for item in group}
+                if len(restart_options) != len(group):
+                    raise RuntimeError('Duplicate paused container id')
             except (RuntimeError, OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
                 remaining.extend(group)
                 subprocess.run(['logger', '-p', 'daemon.warning',
@@ -125,7 +133,8 @@ def main():
                 if item['id'] not in {c['Id'] for c in containers}:
                     # It was intentionally removed/recreated; never start a replacement by name.
                     continue
-                result = subprocess.run(['docker', 'update', '--restart=on-failure:5', item['id']], capture_output=True, text=True)
+                result = subprocess.run(['docker', 'update', '--restart=' + restart_options[item['id']], item['id']],
+                                        capture_output=True, text=True)
                 if result.returncode:
                     remaining.append(item)
                     continue
@@ -152,6 +161,7 @@ def main():
         write_json(PAUSED, paused)
     elif PAUSED.exists():
         PAUSED.unlink()
+    lock.close()
     return 0
 
 

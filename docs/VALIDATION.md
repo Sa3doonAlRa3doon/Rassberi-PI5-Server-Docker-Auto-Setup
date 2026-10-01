@@ -1,12 +1,26 @@
-# Validation record
+# Validation scope
 
-Windows-side checks completed on 2026-09-22:
+The Release 7 pre-publish gate validates the generated package on the Windows
+development host. The manifest currently declares 41 Compose projects, 59
+services and 46 unique host-port assignments. The validation suite checks:
 
-- 28 separate Compose projects parsed successfully with Docker Compose v5.5.1 using non-secret test environments.
-- 41 container services were checked for `linux/arm64`, `restart: unless-stopped`, explicit memory/CPU caps, JSON log rotation, private database networks, and long bind mounts with `create_host_path: false`.
-- 33 host protocol/port assignments were unique. Database services have no published host ports.
-- The storage map checked NVMe database roots, HDD document roots, microSD media roots, and read-only media mounts.
-- Bash syntax passed for every `.sh` file, and Python compilation passed for every generated `.py` file.
-- Fourteen safety tests passed for exact mount identity, missing/read-only/full disks, redirected paths, unhealthy containers, port conflicts, and preservation of existing secrets.
+- JSON, Bash, Python and browser JavaScript syntax.
+- Compose rendering with non-secret test environments.
+- ARM64 image declarations/evidence, published-port uniqueness, resource caps,
+  private database networks, logging and guarded bind mounts.
+- NVMe database placement and selected HDD/microSD bulk paths.
+- Missing, wrong, read-only, full, redirected and nested-mount storage cases.
+- App-selection saving, dependency expansion, retained empty boot selections,
+  selected-only custom-layout rendering and deterministic boot priorities.
+- Upgrade preservation, the settings-panel selected-but-unprepared state, and
+  portable-backup layout/selection classification, corruption handling and
+  staged recovery safeguards.
 
-These checks do not claim the Pi is installed. The actual machine must still pull/build the images, inspect the local ARM64 image architecture, pass storage UUID checks, complete first-run app health checks, and pass `verify-after-reboot.sh` after a real reboot. Moodle's source build and application migrations are intentionally verified on the Pi because they cannot be executed on this Windows generation host.
+These development-host checks are valuable regression tests, but they do not
+claim that a Pi is installed or that every service has run. The actual supported
+target must still pull/build the ARM64 images, verify the local image platform,
+pass its real storage UUID and SMART checks, complete application first-run
+health checks, verify a configured backup disk, and pass
+`sudo /srv/docker/verify-after-reboot.sh` after a planned reboot. Moodle's
+source build, USB SMART passthrough, Docker maintenance restart behavior and
+power-loss recovery require target-machine testing.

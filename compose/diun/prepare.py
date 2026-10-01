@@ -37,11 +37,18 @@ def make_images(manifest):
     return list(items.values())
 
 
+def installed_manifest(base, manifest):
+    import app_selection
+    installed = set(app_selection.installed_names(base, manifest))
+    return [app for app in manifest if app['name'] in installed]
+
+
 def main():
     import storage_guard
     from monitoring_devices import atomic_json
     storage_guard.check(required=['root'])
-    rows = make_images(json.loads((BASE/'manifest.json').read_text(encoding='utf-8')))
+    manifest = json.loads((BASE/'manifest.json').read_text(encoding='utf-8'))
+    rows = make_images(installed_manifest(BASE, manifest))
     if not rows:
         raise RuntimeError('No upstream source tags found; refusing an empty image watch list')
     atomic_json(BASE/'configs/diun/images.yml', rows)

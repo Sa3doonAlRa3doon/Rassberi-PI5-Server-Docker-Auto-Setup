@@ -169,12 +169,22 @@ def syntax_check(changes):
                         stdout=subprocess.DEVNULL)
 
 
+def validate_host():
+    """This legacy supplied-Pi migration also requires the supported host family."""
+    command([sys.executable, str(PACKAGE / 'scripts/platform_check.py')])
+    state = command(['systemctl', 'show', 'docker.service', '--property=LoadState', '--value'],
+                    capture_output=True, text=True).stdout.strip()
+    if state != 'loaded':
+        raise RuntimeError('A systemd-managed docker.service is required for storage migration.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dry-run', action='store_true', help='Validate and show plans; leave server files and containers unchanged.')
     args = parser.parse_args()
     if os.name != 'posix' or os.geteuid() != 0:
-        raise RuntimeError('Run on Raspberry Pi Linux with sudo, not on Windows.')
+        raise RuntimeError('Run on a supported Linux ARM64 host with sudo, not on Windows.')
+    validate_host()
     os.umask(0o077)
     import fcntl
     lock = open('/run/lock/pi-server.lock', 'a')

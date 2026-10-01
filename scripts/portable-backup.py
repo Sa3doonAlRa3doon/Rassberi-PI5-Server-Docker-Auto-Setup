@@ -131,6 +131,88 @@ def device_map(config, guard):
     return guard.device_map(config) if hasattr(guard, 'device_map') else config
 
 
+def saved_selection(base, manifest):
+    """Read the install selection without making portable recovery depend on it.
+
+    A package installed before app selection has no file and deliberately keeps
+    the historic all-app behavior.  A saved selection is validated through the
+    same helper used by the permanent settings panel.
+    """
+    base = Path(base)
+    # Modern installations commit both installed and startup choices in one
+    # atomic JSON file.  The legacy text file is only a compatibility copy and
+    # may be absent after an interrupted compatibility refresh.
+    if not ((base / 'installed-apps.txt').is_file() or
+            (base / 'configs' / 'app-selection.json').is_file()):
+        return {app['name'] for app in manifest}
+    helper = base / 'scripts' / 'app_selection.py'
+    if not helper.is_file():
+        helper = Path(__file__).resolve().with_name('app_selection.py')
+    spec = importlib.util.spec_from_file_location('portable_app_selection', helper)
+    selection = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(selection)
+    try:
+        return set(selection.installed_names(base, manifest))
+    except ValueError as error:
+        raise RuntimeError('Saved application selection is invalid: ' + str(error)) from error
+
+
+def configured_key(guard, config, devices, path):
+    """Return the configured storage key for a path, or None when it is retired."""
+    try:
+        key = guard.path_key(str(path), config)
+    except RuntimeError:
+        return None
+    return key if key in devices else None
+
+
+def backup_manifest(base, manifest, config, guard):
+    """Use current apps plus safe evidence of deselected historical app state.
+
+    Old app data is retained when its config or a directory still exists on a
+    storage device that remains in the user's current storage profile.  Paths
+    from a retired device are never accessed through an unmounted mountpoint.
+    """
+    base = Path(base)
+    devices = device_map(config, guard)
+    selected = saved_selection(base, manifest)
+    active = []
+    historical = []
+    unavailable = []
+    for app in manifest:
+        if app['name'] in selected:
+            active.append(app)
+            continue
+        configured_directories = []
+        retired_directories = []
+        for item in app.get('directories', []):
+            path = Path(item['path'])
+            if configured_key(guard, config, devices, path) is None:
+                retired_directories.append(str(path))
+            elif path.is_dir():
+                configured_directories.append(item)
+        configured_env = (base / 'compose' / app['name'] / '.env').is_file()
+        if configured_env or configured_directories:
+            # Keep the original entry immutable.  Historical paths on retired
+            # storage are omitted, while its remaining NVMe/config state stays
+            # protected by the same database and container checks as active apps.
+            historical_entry = {**app, 'directories': configured_directories}
+            database = app.get('database') or {}
+            database_path = database.get('path')
+            # A historical compose environment is useful recovery evidence,
+            # but its database cannot be included through an unconfigured
+            # (possibly unplugged) path.  Keeping that database declaration
+            # would make data_groups() add the retired path back into the plan.
+            if database_path and configured_key(guard, config, devices, database_path) is None:
+                historical_entry['database'] = None
+                unavailable.append((app['name'], str(database_path)))
+            active.append(historical_entry)
+            historical.append(app['name'])
+            if retired_directories:
+                unavailable.extend((app['name'], path) for path in retired_directories)
+    return active, sorted(selected), historical, unavailable
+
+
 def data_groups(base, manifest):
     """Identify data by its original placement, even after an SSD/HDD migration."""
     layout = read_json(base / 'configs/layout.json') if (base / 'configs/layout.json').is_file() else {}
@@ -138,8 +220,9 @@ def data_groups(base, manifest):
                      key=lambda pair: len(pair[0]), reverse=True)
     groups = {}
     for app in manifest:
-        sql = app.get('database', {}).get('type') in {'postgres', 'mariadb'}
-        db_path = app.get('database', {}).get('path') if sql else None
+        database = app.get('database') or {}
+        sql = database.get('type') in {'postgres', 'mariadb'}
+        db_path = database.get('path') if sql else None
         for item in app.get('directories', []):
             path = item['path']
             original = next((old + path[len(current):] for current, old in reverse
@@ -166,7 +249,33 @@ def database_paths(base, manifest, app=None):
             if row['kind'] == 'database' and (app is None or row['app'] == app)]
 
 
-def source_list(base, manifest, devices, bulk):
+def backup_storage_keys(groups, storage, guard):
+    """Return only devices that contain selected or retained backup data.
+
+    A storage profile can intentionally retain a disconnected, deselected
+    device.  It must not make a backup fail, but every device used by an
+    active or retained application remains a checked source even when bulk
+    payloads are excluded from this snapshot.
+    """
+    devices = device_map(storage, guard)
+    keys = {'root'}
+    for row in groups:
+        key = configured_key(guard, storage, devices, row['path'])
+        if key is None:
+            raise RuntimeError('Backup source is outside the configured storage profile: ' + str(row['path']))
+        keys.add(key)
+    return [key for key in devices if key in keys]
+
+
+def validate_backup_groups(groups):
+    """Fail closed if selected/retained state has disappeared since setup."""
+    for row in groups:
+        path = no_symlink(row['path'])
+        if not path.is_dir():
+            raise RuntimeError('Required selected or retained backup directory is missing: ' + str(path))
+
+
+def source_list(base, manifest, devices, bulk, groups=None):
     roots = []
     for name in ['configs', 'compose', 'scripts', 'docs', 'systemd']:
         if (base / name).exists():
@@ -174,12 +283,15 @@ def source_list(base, manifest, devices, bulk):
     roots += [p for p in base.iterdir() if p.is_file() and not p.is_symlink()]
     # Select registered data groups, never an entire user drive. App state on an
     # external SSD is still required when bulk documents/media are excluded.
-    for row in data_groups(base, manifest):
+    for row in groups if groups is not None else data_groups(base, manifest):
         path = Path(row['path'])
         if row['kind'] == 'database' or (row['kind'] == 'bulk' and not bulk):
             continue
-        if path.exists():
-            roots.append(path)
+        # The plan must never call a snapshot successful while skipping an
+        # application directory that was selected for backup.
+        if not path.is_dir():
+            raise RuntimeError('Required selected or retained backup directory is missing: ' + str(path))
+        roots.append(path)
     unique = []
     for path in sorted(set(roots), key=lambda p: (len(p.parts), str(p))):
         no_symlink(path)
@@ -217,16 +329,23 @@ def make_plan(config, base=BASE):
         guard = storage_guard(base)
         storage = guard.load_config(base / 'configs/storage.json')
         devices = device_map(storage, guard)
-        manifest = read_json(base / 'manifest.json')
-        roots = source_list(base, manifest, devices, config['include_bulk'])
-        raw_databases = database_paths(base, manifest)
-        required = sorted({'root'} | {guard.path_key(str(path), storage) for path in roots + raw_databases})
-        guard.check(required=required, manifest=manifest, config=storage)
+        manifest_all = read_json(base / 'manifest.json')
+        manifest, selected, historical, unavailable = backup_manifest(base, manifest_all, storage, guard)
+        groups = data_groups(base, manifest)
+        required = backup_storage_keys(groups, storage, guard)
+        # Mount identity is checked before any source path is accessed. The
+        # directory requirement catches a selected app that was never fully
+        # prepared instead of silently omitting its state from a backup.
+        guard.check(required=required, manifest=manifest, config=storage, require_dirs=True)
+        validate_backup_groups(groups)
+        roots = source_list(base, manifest, devices, config['include_bulk'], groups)
+        raw_databases = [Path(row['path']) for row in groups if row['kind'] == 'database']
         destination = exact_mount(config['mount'], config['uuid'], writable=True)
         if destination['fstype'] not in {'ext4', 'xfs', 'btrfs', 'exfat', 'ntfs', 'ntfs3', 'fuseblk'}:
             raise RuntimeError('Unsupported backup filesystem: ' + destination['fstype'])
         target_disks = physical_disks(destination['source'])
-        for key, row in devices.items():
+        for key in required:
+            row = devices[key]
             # Even when bulk is omitted the backup cannot be another partition of a production disk.
             source = exact_mount(row['mount'], row.get('uuid'))
             if target_disks & physical_disks(source['source']):
@@ -244,7 +363,15 @@ def make_plan(config, base=BASE):
                 estimate += 2 * sum(s.st_size for _, s in walk_source(raw, raw.stat().st_dev) if stat.S_ISREG(s.st_mode))
         free = shutil.disk_usage(config['mount']).free
         plan.update(destination=destination, physical_disks=sorted(target_disks),
+                    backup_apps=[app['name'] for app in manifest], selected_apps=selected,
+                    historical_apps=historical,
                     estimated_bytes=estimate, available_bytes=free)
+        if historical:
+            plan['warnings'].append('Preserving configured data from deselected applications: ' +
+                                    ', '.join(historical))
+        if unavailable:
+            plan['warnings'].append('Historical paths on retired/unconfigured storage were not accessed: ' +
+                                    ', '.join(f'{app}:{path}' for app, path in unavailable))
         if free < estimate + config['reserve_gib'] * 1024 ** 3:
             raise RuntimeError('Backup disk needs estimated input size plus the configured free-space reserve.')
         if not config['include_bulk']:
@@ -364,7 +491,7 @@ def dump_databases(manifest, managed, destination, temporarily_started, base):
     rows = []
     destination.mkdir(mode=0o700)
     for app in manifest:
-        db = app.get('database', {})
+        db = app.get('database') or {}
         if db.get('type') not in {'postgres', 'mariadb'}:
             continue
         for value in [app['name'], db['name'], db['user'], db['service']]:
@@ -372,6 +499,11 @@ def dump_databases(manifest, managed, destination, temporarily_started, base):
                 raise RuntimeError('Invalid database metadata.')
         matches = [c for c in managed if container_app(c) == app['name'] and service_name(c) == db['service']]
         if not matches:
+            # The database's raw directory is intentionally excluded from
+            # file copying. Re-check its selected storage immediately before
+            # accepting an absent container as an uninitialized database, so
+            # an unplugged custom SSD cannot look like an empty mountpoint.
+            guard_app(base, app['name'])
             stored = database_paths(base, manifest, app['name'])
             if any(path.is_dir() and any(path.iterdir()) for path in stored):
                 raise RuntimeError('Database files exist without their original database container: ' + app['name'])
@@ -482,7 +614,14 @@ def create(config, base=BASE):
         plan = make_plan(config, base)
         if not plan['ready']:
             raise RuntimeError('; '.join(plan['reasons']))
-        manifest = read_json(base / 'manifest.json')
+        manifest_all = read_json(base / 'manifest.json')
+        selected_names = plan.get('backup_apps')
+        if selected_names is None:
+            manifest = manifest_all  # compatibility with older callers/tests
+        else:
+            manifest = [app for app in manifest_all if app['name'] in set(selected_names)]
+            if {app['name'] for app in manifest} != set(selected_names):
+                raise RuntimeError('Backup plan references applications missing from the current manifest.')
         managed = inventory(manifest, [Path(r['path']) for r in plan['sources']])
         original = [c for c in managed if running(c)]
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + secrets.token_hex(4)
@@ -493,7 +632,7 @@ def create(config, base=BASE):
             partial.mkdir(mode=0o700)
             write_json(partial / 'original-containers.json',
                        [{'id': c['Id'], 'app': container_app(c), 'service': service_name(c)} for c in original])
-            write_json(partial / 'manifest.json', manifest)
+            write_json(partial / 'manifest.json', manifest_all)
             write_json(partial / 'plan.json', plan)
             try:
                 if original:
@@ -508,6 +647,8 @@ def create(config, base=BASE):
                 info = {'format': FORMAT, 'created_utc': stamp, 'files': count, 'databases': dbs,
                         'source_roots': [r['path'] for r in plan['sources']],
                         'include_bulk': config['include_bulk'], 'warnings': plan['warnings'],
+                        'selected_apps': plan.get('selected_apps'),
+                        'historical_apps': plan.get('historical_apps', []),
                         'backup_uuid': config['uuid'], 'consistent_managed_containers': True,
                         'plain_files': True, 'raw_sql_server_databases_included': False}
                 write_json(partial / 'backup.json', info)

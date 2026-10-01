@@ -14,6 +14,14 @@ sudo /srv/docker/portable-backup.sh verify --backup SNAPSHOT_NAME --json
 
 `plan` and `verify` are read-only. `create` takes the server operation lock, stops the managed containers that were running, briefly starts each original SQL database container alone to export its database, stops it, and copies the selected state. The restart in `finally` uses exactly the previously running container IDs. Each application's storage identity is checked again before restart, and database/Redis readiness is checked before its application starts. A missing drive prevents affected services from resuming; the resulting `resume.json` records errors. The program never uses Compose recreation to recover from a backup outage.
 
+## Selection and custom-layout coverage
+
+The plan reads the saved storage layout and the atomic installed-app selection in `configs/app-selection.json` (or the compatibility app list on older installations). It backs up the registered data groups for selected applications and does not make an SSD-only server touch an unselected app's example HDD or microSD path.
+
+If an application was deselected but still has configuration or data on a filesystem that remains in the saved layout, the plan records it under `historical_apps` and warns that its configured data is being retained. Data on a retired or unconfigured path is not accessed through a bare mountpoint; the plan reports that omission in its warnings instead. Deselecting an app never deletes its data, and a backup plan is the place to review this distinction before creating a snapshot.
+
+`backup_apps`, `selected_apps`, `historical_apps`, source roots and warnings are included in `plan.json` and `backup.json`. Inspect the JSON plan before the first run after changing the app selection or storage layout.
+
 Allow a maintenance window: copying large media libraries can take hours, and applications stay stopped while their data is copied. Avoid edits from host programs or other computers during the snapshot. Unmanaged running containers with writable mounts overlapping the selected data are rejected. The derived storage-metrics status file is omitted. A file that changes while being read makes the snapshot fail.
 
 Each successful run creates a new timestamped folder. It never synchronizes deletions, replaces an old backup, or prunes earlier versions. Before copying, the estimate includes all selected files, twice the raw SQL database size for dumps, a 1 GiB margin and the configured free-space reserve. Raw PostgreSQL/MariaDB data directories are excluded; they are represented by SQL dumps. Application state on a relocated SSD is included even when `include_bulk` is false. Only registered server data groups are selected, so unrelated files already on your drives are left out.
@@ -46,4 +54,6 @@ The destination's parent must already be on the intended mounted recovery filesy
 
 Recovery produces a staged file tree, SQL dumps and `STAGING-RESTORE.json`. Links and runtime sockets remain in `links-and-runtime-files.json` for review. It does not start applications, overwrite production paths, recreate symlinks to arbitrary locations or import SQL automatically. Moving the recovered state into service requires selecting prepared empty data locations, matching image/database versions, importing the SQL dumps into empty databases and configuring the new host's actual mount UUIDs before the normal guarded start. Checksums detect accidental corruption; use backups you trust.
 
-Validation in this package covers fixture snapshots, corruption, path traversal, missing dumps, partial-run handling, exact-ID restart behavior, metadata/link staging and remapped storage classification. Actual USB disk, Linux metadata restoration, Docker maintenance and power-loss recovery still need testing on the Pi.
+`backup.sh` is a legacy convenience entry point in Release 7 that routes to this portable workflow. `scripts/restore.sh` verifies or stages portable snapshots and deliberately refuses old hard-coded tar archives, so it cannot treat an unmounted or custom path as the supplied Pi profile.
+
+Validation in this package covers fixture snapshots, corruption, path traversal, missing dumps, partial-run handling, exact-ID restart behavior, metadata/link staging, selection-aware layout classification and retired-path avoidance. Actual USB disk, Linux metadata restoration, Docker maintenance and power-loss recovery still need testing on the Pi.

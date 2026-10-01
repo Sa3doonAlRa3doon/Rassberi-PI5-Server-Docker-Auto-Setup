@@ -51,4 +51,3 @@ if __name__ == '__main__':
     except (OSError, ValueError, KeyboardInterrupt) as exc:
         print('ERROR: ' + str(exc), file=sys.stderr)
         raise SystemExit(1)
-
