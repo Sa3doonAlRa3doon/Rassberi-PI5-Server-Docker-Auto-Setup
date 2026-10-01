@@ -7,12 +7,13 @@ it can perform any maintenance action.
 """
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1] / 'outputs/Rassberi-PI5-Codes'
-BASH = r'C:\Program Files\Git\bin\bash.exe'
+BASH = shutil.which('bash') or r'C:\Program Files\Git\bin\bash.exe'
 COUNT = 0
 
 
