@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import tempfile
 
+from docker_restart import restart_policy_option
 import storage_guard as guard
 
 BASE = Path(__file__).resolve().parents[1]
@@ -40,6 +41,53 @@ def overlaps(first, second):
 
 def run(args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
+
+
+def container_identity(container):
+    labels = container.get('Config', {}).get('Labels', {})
+    project = labels.get('com.docker.compose.project')
+    service = labels.get('com.docker.compose.service')
+    if not isinstance(project, str) or not project.startswith('pi-') or not isinstance(service, str) or not service:
+        raise RuntimeError('Saved container has no managed Compose identity')
+    return project, service
+
+
+def live_containers():
+    """Read current container IDs after Compose may have recreated a service."""
+    ids = run(['docker', 'ps', '-aq'], capture_output=True, text=True).stdout.split()
+    return json.loads(run(['docker', 'inspect', *ids], capture_output=True, text=True).stdout) if ids else []
+
+
+def restore_restart_policies(saved_containers, current_containers=None):
+    """Undo temporary restart=no, including containers recreated by Compose."""
+    current_containers = list(saved_containers if current_containers is None else current_containers)
+    policies = {}
+    for container in saved_containers:
+        identity = container_identity(container)
+        policy = restart_policy_option(container.get('HostConfig', {}).get('RestartPolicy'))
+        if identity in policies and policies[identity] != policy:
+            raise RuntimeError('Conflicting saved Docker restart policies for ' + '/'.join(identity))
+        policies[identity] = policy
+    current = {}
+    for container in current_containers:
+        try:
+            current.setdefault(container_identity(container), []).append(container)
+        except RuntimeError:
+            continue
+    failures = []
+    for identity, policy in policies.items():
+        targets = current.get(identity, [])
+        if not targets:
+            failures.append(('/'.join(identity), RuntimeError('container no longer exists')))
+            continue
+        for container in targets:
+            try:
+                run(['docker', 'update', '--restart=' + policy, container['Id']], stdout=subprocess.DEVNULL)
+            except (RuntimeError, KeyError, subprocess.SubprocessError) as exc:
+                failures.append((container.get('Id', '<unknown>'), exc))
+    if failures:
+        ids = ', '.join(identifier for identifier, _ in failures)
+        raise RuntimeError('Could not restore Docker restart policy for: ' + ids) from failures[0][1]
 
 
 def read_json(path, default=None):
@@ -285,14 +333,23 @@ def plan(placements, base=BASE, disks=None):
     # Unchanged data on old mounts is included above; optional unused drives are not dependencies.
     config = {'version': 2, 'devices': devices}
     guard.load_config(config)
-    manifest = copy.deepcopy(read_json(base / 'manifest.json'))
+    manifest = copy.deepcopy(manifest_all)
+    selected_names = set(selected) if selected is not None else None
     for app in manifest:
+        # A custom fresh install deliberately has no placement or configured
+        # mount for apps the owner did not select.  Leave those entries
+        # completely unchanged: changing their paths or deriving requirements
+        # against the selected-only storage config would either adopt data that
+        # was never reviewed or fail on an intentionally absent mount.
+        if selected_names is not None and app['name'] not in selected_names:
+            continue
         for directory in app.get('directories', []):
             directory['path'] = mapped_path(directory['path'], replacements)
         if (app.get('database') or {}).get('path'):
             app['database']['path'] = mapped_path(app['database']['path'], replacements)
         app['mounts'] = [k for k in guard.app_requirements(app, config) if k != 'root']
     return dict(changes=changes, storage=config, manifest=manifest, replacements=replacements,
+                selected_apps=sorted(selected_names) if selected_names is not None else None,
                 placements=placements, requires_copy=any(c['populated'] for c in changes),
                 note='No source files are deleted. New destinations never adopt existing data.')
 
@@ -348,11 +405,12 @@ def python_paths(source, replacements):
     return source
 
 
-def render_files(base, replacements):
-    """Rewrite typed host-path fields only; never arbitrary config or secret text."""
+def render_files(base, replacements, selected_apps=None):
+    """Rewrite reviewed host paths without changing unselected app projects."""
     result = {}
     if not replacements:
         return result
+    selected_apps = None if selected_apps is None else set(selected_apps)
     for folder in ('compose', 'configs'):
         root = base / folder
         if root.is_symlink() or root.resolve() != root.absolute():
@@ -364,6 +422,13 @@ def render_files(base, replacements):
                 raise RuntimeError('Symlinked deployment file: ' + str(path))
             if path.name not in {'compose.yml', 'compose.yaml', '.env', '.env.example'} and not (folder == 'compose' and path.suffix == '.py'):
                 continue
+            # Compose projects are app-specific. An unselected app may refer
+            # to a child of a selected app's data tree, so an ancestor path
+            # replacement must not silently edit its inactive configuration.
+            if folder == 'compose' and selected_apps is not None:
+                relative = path.relative_to(root)
+                if relative.parts and relative.parts[0] not in selected_apps:
+                    continue
             old = path.read_text(encoding='utf-8')
             new = old
             if path.name in {'compose.yml', 'compose.yaml'}:
@@ -441,8 +506,7 @@ def apply(placements, migrate=False, base=BASE):
     affected = set(a for change in proposal['changes'] for a in change['apps'])
     saved_containers = []
     if deployed:
-        ids = run(['docker', 'ps', '-aq'], capture_output=True, text=True).stdout.split()
-        all_containers = json.loads(run(['docker', 'inspect', *ids], capture_output=True, text=True).stdout) if ids else []
+        all_containers = live_containers()
         for container in all_containers:
             project = container.get('Config', {}).get('Labels', {}).get('com.docker.compose.project', '')
             managed = project.startswith('pi-') and project[3:] in affected
@@ -453,7 +517,7 @@ def apply(placements, migrate=False, base=BASE):
                     raise RuntimeError('Another running container uses migration data: ' + container['Id'])
         if any(c.get('State', {}).get('Status') == 'paused' for c in saved_containers):
             raise RuntimeError('Unpause or stop affected containers before migrating their data')
-    files = render_files(base, proposal['replacements'])
+    files = render_files(base, proposal['replacements'], proposal['selected_apps'])
     files[base / 'manifest.json'] = (json.dumps(proposal['manifest'], indent=2) + '\n').encode()
     files[base / 'configs/storage.json'] = (json.dumps(proposal['storage'], indent=2) + '\n').encode()
     files[base / 'configs/layout.json'] = (json.dumps({'placements': placements}, indent=2) + '\n').encode()
@@ -516,26 +580,42 @@ def apply(placements, migrate=False, base=BASE):
                     atomic_bytes(path, saved.read_bytes(), saved.stat().st_mode & 0o777)
                 else:
                     path.unlink(missing_ok=True)
+            restore_restart_policies(saved_containers)
             for c in saved_containers:
-                policy = c['HostConfig']['RestartPolicy']
-                restart = policy['Name'] + (':' + str(policy['MaximumRetryCount']) if policy.get('MaximumRetryCount') else '')
-                run(['docker', 'update', '--restart=' + restart, c['Id']], stdout=subprocess.DEVNULL)
                 if c['State']['Status'] in {'running', 'restarting'}:
                     app = c['Config']['Labels']['com.docker.compose.project'][3:]
                     run(['python3', str(base / 'scripts/storage_guard.py'), '--app', app, '--directories'])
                     run(['docker', 'start', c['Id']], stdout=subprocess.DEVNULL)
     restarted = []
-    if deployed:
-        run(['python3', str(base / 'scripts/prepare.py'), str(base)])
-        for app in sorted(affected):
-            running = sorted({c['Config']['Labels']['com.docker.compose.service'] for c in saved_containers
-                if c['Config']['Labels']['com.docker.compose.project'] == 'pi-' + app and c['State']['Status'] in {'running', 'restarting'}})
-            if running:
-                run(['python3', str(base / 'scripts/storage_guard.py'), '--app', app, '--directories'])
-                run(['docker', 'compose', '--project-name', 'pi-' + app, '--project-directory', str(base / 'compose' / app),
-                     '--env-file', str(base / 'compose' / app / '.env'), '-f', str(base / 'compose' / app / 'compose.yml'),
-                     'up', '-d', '--no-deps', '--wait', '--wait-timeout', '1200', *running])
-                restarted.append(app)
+    def reconcile_restart_policies():
+        if saved_containers:
+            restore_restart_policies(saved_containers, live_containers())
+
+    try:
+        if deployed:
+            run(['python3', str(base / 'scripts/prepare.py'), str(base)])
+            for app in sorted(affected):
+                running = sorted({c['Config']['Labels']['com.docker.compose.service'] for c in saved_containers
+                    if c['Config']['Labels']['com.docker.compose.project'] == 'pi-' + app and c['State']['Status'] in {'running', 'restarting'}})
+                if running:
+                    run(['python3', str(base / 'scripts/storage_guard.py'), '--app', app, '--directories'])
+                    run(['docker', 'compose', '--project-name', 'pi-' + app, '--project-directory', str(base / 'compose' / app),
+                         '--env-file', str(base / 'compose' / app / '.env'), '-f', str(base / 'compose' / app / 'compose.yml'),
+                         'up', '-d', '--no-deps', '--wait', '--wait-timeout', '1200', *running])
+                    restarted.append(app)
+    except Exception as failure:
+        try:
+            reconcile_restart_policies()
+        except Exception as restore_failure:
+            raise RuntimeError(
+                'Restart failed: ' + str(failure) + '; Docker restart-policy reconciliation also failed: ' +
+                str(restore_failure)
+            ) from failure
+        raise
+    else:
+        # Compose may recreate a service whose bind source changed. Apply the
+        # saved restart intent to the live project/service identity rather
+        # than the now-gone old container ID.
+        reconcile_restart_policies()
     return dict(applied=True, recovery=str(recovery), restarted=restarted,
                 message='Layout saved. Original data kept. Non-running services stay stopped; use Install on a new server.')
-

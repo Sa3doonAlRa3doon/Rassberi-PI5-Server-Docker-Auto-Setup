@@ -8,6 +8,7 @@ import secrets
 import shutil
 import subprocess
 import sys
+import app_selection
 
 BASE = Path('/srv/docker')
 AUTO_START_APPS = ('onlyoffice', 'jupyter', 'stirling-pdf')
@@ -40,23 +41,42 @@ def storage_state(manifest):
 def storage_key(guard, path):
     return guard.path_key(str(path))
 
+
+def synchronize_selection_copies(manifest):
+    """Refresh missing legacy selection files from authoritative saved state.
+
+    The JSON state is written first by the settings panel.  If the process is
+    interrupted while updating its compatibility text files, preparation must
+    never recreate those files using defaults because that would make an
+    intentionally empty startup selection look enabled to older tools.
+    """
+    state = app_selection.selection_state(BASE)
+    installed_path = BASE / 'installed-apps.txt'
+    enabled_path = BASE / 'enabled-apps.txt'
+    if state is not None:
+        # Refresh both derived copies. A prior interrupted settings save (or a
+        # hand edit of an old compatibility file) must not leave a reader with
+        # a different selection than the atomically committed state.
+        app_selection.atomic_names(installed_path, app_selection.installed_names(BASE, manifest))
+        app_selection.atomic_names(enabled_path, app_selection.startup_names(BASE, manifest))
+        return True
+    if not installed_path.exists():
+        app_selection.atomic_names(installed_path, [a['name'] for a in sorted(
+            manifest, key=lambda a: a.get('order', 50))])
+    write_new(enabled_path, ''.join(a['name']+'\n' for a in sorted(
+        manifest, key=lambda a: a.get('order', 50))
+        if a.get('default_enabled', True) and not a.get('blocked_reason')))
+    return False
+
 def main(source):
     manifest = json.loads((source / 'manifest.json').read_text())
     # The temporary setup page writes this file in the downloaded package before
     # install. Existing installations without it retain the complete manifest.
-    selected = None
-    selection_file = source / 'installed-apps.txt'
-    if selection_file.is_file():
-        selected = [line.strip() for line in selection_file.read_text().splitlines()
-                    if line.strip() and not line.lstrip().startswith('#')]
-    if selected is None:
-        selection_file = BASE / 'installed-apps.txt'
-        if selection_file.is_file():
-            selected = [line.strip() for line in selection_file.read_text().splitlines()
-                        if line.strip() and not line.lstrip().startswith('#')]
-    import app_selection
-    selected_names = set(app_selection.ordered_names(selected, manifest) if selected is not None
-                         else app_selection.installed_names(BASE, manifest))
+    # A fresh wizard selection lives beside the downloaded source. Existing
+    # deployments retain their installed selection under /srv/docker.
+    selection_base = source if ((source / 'installed-apps.txt').is_file() or
+                                (source / 'configs/app-selection.json').is_file()) else BASE
+    selected_names = set(app_selection.installed_names(selection_base, manifest))
     manifest = [app for app in manifest if app['name'] in selected_names]
     existed = {d['path']: Path(d['path']).exists() for app in manifest for d in app.get('directories', [])}
     for app in manifest:
@@ -163,15 +183,12 @@ def main(source):
                 with envfile.open('a') as handle:
                     handle.write(('\n' if existing and not existing.endswith('\n') else '') + ''.join(missing))
         envfile.chmod(0o600)
-    installed_path = BASE / 'installed-apps.txt'
-    if not installed_path.exists():
-        app_selection.atomic_names(installed_path, [a['name'] for a in sorted(manifest, key=lambda a:a.get('order',50))])
+    state_is_authoritative = synchronize_selection_copies(manifest_all)
     enabled_path = BASE / 'enabled-apps.txt'
-    write_new(enabled_path, ''.join(a['name']+'\n' for a in sorted(manifest,key=lambda a:a.get('order',50)) if a.get('default_enabled', True) and not a.get('blocked_reason')))
     # Release 5 makes these three requested services start at boot. Apply that
     # migration once to older installations, while keeping later UI choices.
     marker = BASE / 'configs' / 'autostart-heavy-v1.done'
-    if not marker.exists():
+    if not marker.exists() and not state_is_authoritative:
         current = app_selection.read_names(enabled_path)
         current += [name for name in AUTO_START_APPS if name in selected_names and name not in current]
         app_selection.atomic_names(enabled_path, app_selection.ordered_names(current, manifest_all))
@@ -197,4 +214,3 @@ def main(source):
 
 if __name__ == '__main__':
     main(Path(sys.argv[1]).resolve())
-

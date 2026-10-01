@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Stage a reviewed package expansion without replacing private/runtime state."""
 import argparse
+import copy
 from datetime import datetime, timezone
 import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
+import sys
 import tempfile
 
 SOURCE = Path(__file__).resolve().parents[1]
@@ -19,6 +22,7 @@ PROTECTED = {
     'configs/storage.json', 'configs/layout.json', 'configs/portable-backup.json',
     'configs/storage-autostart.json', 'configs/storage-review-required.json',
     'configs/storage-paused.json', 'enabled-apps.txt', 'installed-apps.txt', 'server.env',
+    'configs/app-selection.json',
 }
 RUNTIME_PARTS = {'appdata', 'databases', 'backups', 'logs', '__pycache__', '.git'}
 
@@ -29,6 +33,10 @@ def sha256(path):
         while block := handle.read(1024 * 1024):
             value.update(block)
     return value.hexdigest()
+
+
+def sha256_bytes(content):
+    return hashlib.sha256(content).hexdigest()
 
 
 def atomic(path, content, mode):
@@ -93,27 +101,60 @@ def deployed_replacements():
     return placements
 
 
+def staged_storage_helpers(stage):
+    """Load the staged layout helpers without importing an installed release."""
+    guard = load_module('release_storage_guard', stage / 'scripts/storage_guard.py')
+    restart = load_module('release_docker_restart', stage / 'scripts/docker_restart.py')
+    # storage_setup imports these helpers by their normal module names. Bind
+    # staged copies just while it is imported so a downloaded release is
+    # rendered by its own reviewed helper, not by an older installed copy.
+    previous_guard = sys.modules.get('storage_guard')
+    previous_restart = sys.modules.get('docker_restart')
+    sys.modules['storage_guard'] = guard
+    sys.modules['docker_restart'] = restart
+    try:
+        setup = load_module('release_storage_setup', stage / 'scripts/storage_setup.py')
+    finally:
+        if previous_guard is None:
+            sys.modules.pop('storage_guard', None)
+        else:
+            sys.modules['storage_guard'] = previous_guard
+        if previous_restart is None:
+            sys.modules.pop('docker_restart', None)
+        else:
+            sys.modules['docker_restart'] = previous_restart
+    return setup, guard
+
+
 def prepared_source():
     temporary = tempfile.TemporaryDirectory(prefix='pi-release-')
     stage = Path(temporary.name) / 'package'
     shutil.copytree(SOURCE, stage, ignore=shutil.ignore_patterns('logs', '__pycache__', '.git'))
     replacements = deployed_replacements()
     if replacements:
-        setup = load_module('release_storage_setup', stage / 'scripts/storage_setup.py')
-        files = setup.render_files(stage, replacements)
+        setup, guard = staged_storage_helpers(stage)
+        manifest = json.loads((stage / 'manifest.json').read_text())
+        selection = load_module('release_app_selection', stage / 'scripts/app_selection.py')
+        # Layout v2 is intentionally allowed to describe only the apps that
+        # are installed.  Keep an inactive app's shipped paths intact so an
+        # upgrade never requires its old example HDD/media mount.
+        selected_names = set(selection.installed_names(TARGET, manifest))
+        files = setup.render_files(stage, replacements, selected_apps=selected_names)
         for path, content in files.items():
             path.write_bytes(content)
-        manifest = json.loads((stage / 'manifest.json').read_text())
         config_path = TARGET / 'configs/storage.json'
         config = json.loads(config_path.read_text())
         for app in manifest:
+            if app['name'] not in selected_names:
+                continue
             for item in app.get('directories', []):
                 item['path'] = setup.mapped_path(item['path'], replacements)
             database = app.get('database') or {}
             if database.get('path'):
                 database['path'] = setup.mapped_path(database['path'], replacements)
-        guard = load_module('release_storage_guard', stage / 'scripts/storage_guard.py')
         for app in manifest:
+            if app['name'] not in selected_names:
+                continue
             app['mounts'] = [key for key in guard.app_requirements(app, config) if key != 'root']
         (stage / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return temporary, stage
@@ -129,8 +170,134 @@ def files(stage):
         yield rel, path
 
 
+def custom_layout_context(stage):
+    """Return safe reverse rendering state for a deployed custom layout.
+
+    Custom layout application files are generated from reviewed canonical
+    package files, so their literal hashes differ from release-index hashes.
+    Reversing *only* the declared storage substitutions lets the updater
+    recognize that generated state while still preserving any unrelated local
+    edit.  Releases before the layout fingerprint existed use this path too.
+    """
+    replacements = deployed_replacements()
+    manifest_path = TARGET / 'manifest.json'
+    config_path = TARGET / 'configs/storage.json'
+    if not replacements or not manifest_path.is_file() or not config_path.is_file():
+        return None
+    setup, guard = staged_storage_helpers(stage)
+    target_manifest = json.loads(manifest_path.read_text())
+    selection = load_module('release_app_selection_for_plan', stage / 'scripts/app_selection.py')
+    selected = set(selection.installed_names(TARGET, target_manifest))
+    return {
+        'setup': setup,
+        'guard': guard,
+        'replacements': replacements,
+        'inverse': {target: source for source, target in replacements.items()},
+        'selected': selected,
+        'target_storage': json.loads(config_path.read_text()),
+        'canonical_manifest': json.loads((SOURCE / 'manifest.json').read_text()),
+    }
+
+
+def normalize_manifest_for_layout(content, context):
+    """Undo only generated paths and generated mount keys in manifest bytes."""
+    try:
+        manifest = json.loads(content)
+    except (UnicodeDecodeError, ValueError):
+        return None
+    if not isinstance(manifest, list):
+        return None
+    canonical = {app.get('name'): app for app in context['canonical_manifest'] if isinstance(app, dict)}
+    setup, guard = context['setup'], context['guard']
+    for app in manifest:
+        if not isinstance(app, dict) or app.get('name') not in context['selected']:
+            continue
+        # Calculate the expected generated mount keys while paths still refer
+        # to the deployed storage profile.  After reverse rendering those
+        # paths, the custom profile would no longer recognize them and a
+        # genuine generated manifest could be mistaken for a manual edit.
+        try:
+            expected = [key for key in guard.app_requirements(copy.deepcopy(app), context['target_storage'])
+                        if key != 'root']
+        except RuntimeError:
+            return None
+        for directory in app.get('directories', []):
+            if isinstance(directory, dict) and isinstance(directory.get('path'), str):
+                directory['path'] = setup.mapped_path(directory['path'], context['inverse'])
+        database = app.get('database') or {}
+        if isinstance(database, dict) and isinstance(database.get('path'), str):
+            database['path'] = setup.mapped_path(database['path'], context['inverse'])
+        # Mount keys are derived from the saved storage profile. Replace them
+        # only when they exactly match that derived result; a hand-edited mount
+        # list therefore remains different and is preserved for manual review.
+        if app.get('mounts', []) == expected and app.get('name') in canonical:
+            app['mounts'] = canonical[app['name']].get('mounts', [])
+    return (json.dumps(manifest, indent=2) + '\n').encode()
+
+
+def normalize_compose_for_layout(content, context):
+    try:
+        value = json.loads(content)
+    except (UnicodeDecodeError, ValueError):
+        return None
+    if not isinstance(value, dict):
+        return None
+    for service in value.get('services', {}).values():
+        if not isinstance(service, dict):
+            return None
+        for volume in service.get('volumes', []):
+            if isinstance(volume, dict) and isinstance(volume.get('source'), str):
+                volume['source'] = context['setup'].mapped_path(volume['source'], context['inverse'])
+    return (json.dumps(value, indent=2) + '\n').encode()
+
+
+def normalize_env_for_layout(content, context):
+    try:
+        text = content.decode()
+    except UnicodeDecodeError:
+        return None
+    lines = []
+    for line in text.splitlines(keepends=True):
+        entry = re.fullmatch(r'([A-Z][A-Z0-9_]*(?:_PATH|_DIR|_ROOT))=(.*?)(\r?\n|$)', line)
+        if entry and not re.search(r'PASS|TOKEN|SECRET|KEY|CREDENTIAL', entry[1]):
+            value = entry[2]
+            quote = value[0] if len(value) > 1 and value[0] in "\"'" and value[-1] == value[0] else ''
+            raw = value[1:-1] if quote else value
+            line = entry[1] + '=' + quote + context['setup'].mapped_path(raw, context['inverse']) + quote + entry[3]
+        lines.append(line)
+    return ''.join(lines).encode()
+
+
+def normalized_layout_hash(rel, destination, context):
+    """Return the canonical hash for a generated custom-layout file, if any."""
+    if context is None or not Path(destination).is_file():
+        return None
+    content = Path(destination).read_bytes()
+    if rel == 'manifest.json':
+        normalized = normalize_manifest_for_layout(content, context)
+    elif rel.startswith('compose/'):
+        parts = Path(rel).parts
+        if len(parts) < 3 or parts[1] not in context['selected']:
+            return None
+        if Path(rel).name in {'compose.yml', 'compose.yaml'}:
+            normalized = normalize_compose_for_layout(content, context)
+        elif Path(rel).name in {'.env.example'}:
+            normalized = normalize_env_for_layout(content, context)
+        elif Path(rel).suffix == '.py':
+            try:
+                normalized = context['setup'].python_paths(content.decode(), context['inverse']).encode()
+            except (SyntaxError, UnicodeDecodeError):
+                normalized = None
+        else:
+            normalized = None
+    else:
+        normalized = None
+    return sha256_bytes(normalized) if normalized is not None else None
+
+
 def plan(stage, index):
     changes, preserved = [], []
+    layout = custom_layout_context(stage)
     for rel, source in files(stage):
         destination = TARGET / Path(rel)
         current = sha256(destination) if destination.is_file() else None
@@ -151,7 +318,8 @@ def plan(stage, index):
             accepted.add(previous)
         if current == after:
             continue
-        if current is None or current in accepted:
+        rendered_current = normalized_layout_hash(rel, destination, layout) if current is not None else None
+        if current is None or current in accepted or rendered_current in accepted:
             changes.append({'path': rel, 'action': 'add' if current is None else 'replace',
                             'before': current, 'after': after})
         else:
@@ -183,6 +351,15 @@ def host_units(stage, index):
     return result
 
 
+def validate_host():
+    """Reject an unsupported host before a release can stage package files."""
+    subprocess.run([sys.executable, str(SOURCE / 'scripts/platform_check.py')], check=True)
+    result = subprocess.run(['systemctl', 'show', 'docker.service', '--property=LoadState', '--value'],
+                            capture_output=True, text=True, check=True)
+    if result.stdout.strip() != 'loaded':
+        raise RuntimeError('A systemd-managed docker.service is required for package upgrades.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true', help='Apply the exact dry-run plan')
@@ -191,7 +368,8 @@ def main():
     if args.apply and args.dry_run:
         raise RuntimeError('Choose --dry-run or --apply')
     if os.geteuid() != 0 or os.name != 'posix':
-        raise RuntimeError('Run with sudo on the Raspberry Pi')
+        raise RuntimeError('Run with sudo on a supported Linux ARM64 host')
+    validate_host()
     if SOURCE == TARGET or not (TARGET / 'manifest.json').is_file():
         raise RuntimeError('Run this from the new downloaded package against an existing /srv/docker installation')
     if SOURCE.is_symlink() or TARGET.is_symlink():
@@ -260,4 +438,3 @@ if __name__ == '__main__':
     except (RuntimeError, OSError, ValueError, KeyError, subprocess.SubprocessError, BlockingIOError) as exc:
         print('ERROR: ' + str(exc), file=__import__('sys').stderr)
         raise SystemExit(1)
-

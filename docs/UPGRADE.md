@@ -1,5 +1,9 @@
 # Upgrade an existing 28-app installation
 
+This upgrade path targets the same supported host as the installer: 64-bit ARM
+Raspberry Pi OS, Debian or Ubuntu with systemd, `apt`, Docker Engine and Docker
+Compose v2. x86 and non-Debian-family hosts are rejected before installation.
+
 Copy this complete updated package to a new folder on the Pi. Do not copy it over `/srv/docker` by hand. From the new folder, run:
 
 ```bash
@@ -26,9 +30,10 @@ The package is manual-release only. `update-all.sh` updates pinned container ima
 
 The dry run is read-only. It accepts an installed file for replacement only when it is absent, already current, or exactly matches the recorded previous package. Unknown/customized files are listed and preserved. Customized systemd units stop the upgrade for review. Apply repeats the plan under the server lock, backs up every replaced file under `/srv/docker/backups/package-upgrade-<UTC>/`, stages the new package, reloads systemd without restarting Docker, and prints the next command.
 
-The updater always preserves storage identity/layout, application `.env` files and credentials, appdata, databases, bulk files, logs, backup settings, review holds, and the user's `enabled-apps.txt` and `installed-apps.txt`. `install-all.sh` then installs required host tools, creates only missing guarded directories and environment fields, pulls/verifies new ARM64 images, and reconciles enabled projects. The installed-app list is retained. Release 5 adds ONLYOFFICE, Jupyter and Stirling PDF to the startup selection once for older installations; later Settings choices are preserved. The remaining heavy and network-scanning apps stay on demand unless selected.
+The updater always preserves storage identity/layout, application `.env` files and credentials, appdata, databases, bulk files, logs, backup settings, review holds, and the user's application selection. The selection is stored atomically in `configs/app-selection.json`; `enabled-apps.txt` and `installed-apps.txt` remain compatibility copies. This preserves a deliberately empty boot-start list instead of silently restoring defaults. `install-all.sh` then installs required host tools, creates only missing guarded directories and environment fields, pulls/verifies new ARM64 images, and reconciles selected projects. The installed-app list is retained. Release 5 adds ONLYOFFICE, Jupyter and Stirling PDF to the startup selection once for older installations; Release 7 gives those selected boot apps deterministic priority after their dependencies and verified storage. Later Settings choices are preserved. The remaining heavy and network-scanning apps stay on demand unless selected.
 
-If the deployment uses a custom storage layout, incoming Compose bind sources and manifest paths are rendered through the saved placements before comparison or staging. New applications initially use NVMe paths; use the permanent Settings panel to move their data after installation if desired.
+If the deployment uses a custom storage layout, incoming Compose bind sources and manifest paths are rendered through the saved placements before comparison or staging. In Release 7 that rendering and its mount checks are scoped to the installed-app selection: an SSD-only deployment does not acquire a requirement for a deselected app's example HDD or microSD path. Existing data for deselected apps remains untouched. New selected applications initially use NVMe paths; use the permanent Settings panel to move their data after installation if desired.
+
+Use `portable-backup.sh` for a configured recovery disk or any custom-layout backup after the upgrade. In Release 7, `backup.sh` routes through that portable workflow and `scripts/restore.sh` only verifies/stages portable snapshots; the restore wrapper refuses old hard-coded tar archives.
 
 The operation does not format, repartition, delete source data, prune backups or restart the Docker daemon. Review `/srv/docker/logs/installation-report.txt`, open the applications, and run `sudo /srv/docker/verify-after-reboot.sh` after the next planned reboot.
-

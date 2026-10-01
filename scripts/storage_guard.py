@@ -38,6 +38,29 @@ def device_map(config=None):
     return data.get('devices', data)
 
 
+def selected_manifest(manifest=DEFAULT_MANIFEST, base=None):
+    """Load only installed apps when the caller supplies a manifest path.
+
+    The manifest intentionally retains every supported application so later
+    selections do not lose their configuration. A custom layout, however,
+    configures storage only for the apps the owner selected. Root/status checks
+    must therefore not inspect a deselected app's example HDD or media path.
+    Explicit manifest lists are left unchanged so a caller can deliberately
+    validate one known application.
+    """
+    if isinstance(manifest, list):
+        return manifest
+    path = Path(manifest)
+    apps = json.loads(path.read_text()) if path.is_file() else []
+    selection_base = Path(base) if base is not None else path.parent
+    if not ((selection_base / 'installed-apps.txt').is_file() or
+            (selection_base / 'configs/app-selection.json').is_file()):
+        return apps
+    import app_selection
+    installed = set(app_selection.installed_names(selection_base, apps))
+    return [app for app in apps if app.get('name') in installed]
+
+
 def mounted(path):
     # --mountpoint is exact: unlike --target, it cannot silently return root.
     result = subprocess.run(['findmnt', '--json', '--mountpoint', path,
@@ -133,7 +156,7 @@ def inspect_storage(required=None, minimum=False, manifest=DEFAULT_MANIFEST,
     keys = required if required is not None else list(cfg)
     if set(keys) - set(cfg):
         raise RuntimeError('Unconfigured storage: ' + ', '.join(sorted(set(keys) - set(cfg))))
-    apps = manifest if isinstance(manifest, list) else json.loads(Path(manifest).read_text()) if Path(manifest).is_file() else []
+    apps = selected_manifest(manifest)
     paths = {key: [] for key in cfg}
     paths['root'] = ['/srv/docker', '/var/lib/docker', '/var/lib/containerd']
     for app in apps:
@@ -235,7 +258,7 @@ def main():
     parser.add_argument('--json', action='store_true')
     parser.add_argument('--allow-degraded', action='store_true')
     args = parser.parse_args()
-    manifest = json.loads(Path(args.manifest).read_text()) if Path(args.manifest).is_file() else []
+    manifest = selected_manifest(args.manifest)
     required = args.only
     if args.app:
         app = next((a for a in manifest if a['name'] == args.app), None)

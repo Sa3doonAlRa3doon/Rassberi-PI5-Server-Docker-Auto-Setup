@@ -1,10 +1,9 @@
 {
   "format": 1,
-  "release_id": 6,
+  "release_id": 7,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 6 stops removed app containers immediately when app selection changes, while preserving all app data and storage state."
+  "notes": "Release 7 hardens custom storage selection, portable backups, boot startup, and Debian-family ARM64 installation while preserving existing server data."
 }
-

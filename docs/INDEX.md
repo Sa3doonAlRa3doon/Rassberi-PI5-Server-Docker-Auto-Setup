@@ -1,26 +1,41 @@
 # Documentation index
 
-Use this page as the map for the Raspberry Pi 5 server package.
+Start with the [package overview](../README.md). The supported installation
+target is a 64-bit ARM Debian-family Linux host with systemd, `apt`, Docker
+Engine and Docker Compose v2: Raspberry Pi OS, Debian or Ubuntu. The supplied
+storage profile is for a Raspberry Pi 5; x86 and non-Debian-family hosts are
+rejected before installation.
 
-## Install and configure
+## Install, selection and storage
 
-- [Storage customization](STORAGE-CUSTOMIZATION.md) — choose or review disks and application locations on a new machine.
-- [Application state and first logins](APPS-STATEFUL.md) — secrets, initialization, and stateful service notes.
-- [Utility applications](APPS-UTILITIES.md) — lightweight services and their setup details.
-- [Published ports](../PORTS.md) — host port assignments and binding notes.
+- [Storage setup and later customization](STORAGE-CUSTOMIZATION.md) explains
+  the temporary wizard, selected-app storage groups, SSD-only layouts and the
+  permanent Settings panel.
+- [Upgrade guide](UPGRADE.md) covers safe package upgrades and preserved
+  selection/layout state.
+- [Existing Pi storage update](STORAGE-UPDATE.md) is only for the supplied
+  replacement-HDD profile.
+- [Historical storage migration report](STORAGE-MIGRATION-REPORT.md) records
+  that supplied profile and is not a custom-layout recipe.
 
-## Storage and recovery
+## Applications and operations
 
-- [Storage map](../STORAGE.md) — the default NVMe, HDD, and microSD contract.
-- [Replacement HDD update](STORAGE-UPDATE.md) — guarded migration for the 1 TB replacement drive.
-- [Migration report](STORAGE-MIGRATION-REPORT.md) — recorded storage identity and fstab expectations.
-- [Portable backup](PORTABLE-BACKUP.md) — backup to a future removable or replacement HDD.
-- [Recovery](RECOVERY.md) — restore order and safety checks.
-- [Backup notes](../BACKUPS.md) — database dump and appdata rules.
+- [Stateful applications](APPS-STATEFUL.md) covers databases, first logins and
+  the requested boot-priority apps.
+- [Utility, media and file services](APPS-UTILITIES.md) covers libraries,
+  transfers and file-access boundaries.
+- [Additional Raspberry Pi applications](UTILITY-ADDITIONS.md) covers the
+  newer optional projects.
+- [Monitoring applications](MONITORING-APPS.md) covers Beszel, Scrutiny,
+  Autoheal, Diun and the filtered Docker access path.
+- [Tailscale Homepage](TAILSCALE-HOMEPAGE.md) covers the separate tailnet
+  dashboard configuration.
 
-## Monitoring and maintenance
+## Backup, recovery and validation
 
-- [Monitoring applications](MONITORING-APPS.md) — Beszel, Scrutiny, Autoheal, Diun, and the Docker Socket Proxy.
-- [Tailscale Homepage](TAILSCALE-HOMEPAGE.md) — the separate private Homepage instance.
-- [Upgrade guide](UPGRADE.md) — add this release to an earlier 28-project installation.
-- [Validation notes](VALIDATION.md) — static validation scope and target-device checks.
+- [Portable backup](PORTABLE-BACKUP.md) is the supported layout-aware snapshot
+  and future-backup-disk path.
+- [Recovery](RECOVERY.md) describes checksum verification and explicit staging
+  recovery. It does not automatically overwrite a server or start apps.
+- [Validation scope](VALIDATION.md) distinguishes development-host checks from
+  target-Pi verification still required before relying on a deployment.

@@ -12,6 +12,8 @@ import sys
 import tempfile
 
 BASE = Path('/srv/docker')
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import app_selection
 EXCLUDED = {'homepage', 'homepage-tailscale', 'docker-socket-proxy', 'autoheal', 'diun'}
 
 
@@ -99,6 +101,12 @@ def routes(manifest, info, base=BASE):
     return output
 
 
+def installed_manifest(base=BASE):
+    manifest = json.loads((base / 'manifest.json').read_text())
+    installed = set(app_selection.installed_names(base, manifest))
+    return [app for app in manifest if app['name'] in installed]
+
+
 def conflict(config, route, hostname):
     """Only an identical, private root handler is reusable. Preserve all other state."""
     port = str(route['port'])
@@ -134,7 +142,9 @@ def main():
     if os.name != 'posix':
         raise RuntimeError('Run this helper on the Raspberry Pi, not Windows.')
     info = identity()
-    manifest = json.loads((BASE / 'manifest.json').read_text())
+    manifest = installed_manifest(BASE)
+    if 'homepage-tailscale' not in {app['name'] for app in manifest}:
+        raise RuntimeError('Select homepage-tailscale in the settings page before configuring Tailscale routes.')
     entries = routes(manifest, info)
     before = json.loads(command(['tailscale', 'serve', 'status', '--json']) or '{}')
     errors = [dict(app=r['app'], error=reason) for r in entries

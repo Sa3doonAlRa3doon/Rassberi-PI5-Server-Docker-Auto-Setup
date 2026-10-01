@@ -156,6 +156,11 @@ def main():
     else:
         print('WARNING: SMART passthrough unavailable; this alone does not mean the HDD failed.')
     subprocess.run(['systemctl', 'daemon-reload'], check=True)
+    # Release 1-6 scheduled a fixed-layout pi-backup.timer. The service is
+    # now portable-safe for manual compatibility use, but keeping its old
+    # schedule enabled would create a duplicate daily backup beside the new
+    # explicit portable-backup timer.
+    subprocess.run(['systemctl', 'disable', '--now', 'pi-backup.timer'], check=False)
     subprocess.run(['systemctl', 'enable', 'pi-storage-start.service', 'pi-storage-watch.timer',
                     'pi-storage-metrics.timer'], check=True)
     print('PASS: atomic HDD fstab handling and selective storage startup configured; OS/media fstab entries preserved.')

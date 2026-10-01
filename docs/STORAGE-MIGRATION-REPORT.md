@@ -3,6 +3,11 @@
 **Prepared:** 2026-09-23  
 **Scope:** replace the retired HDD identity while keeping the NVMe root and microSD roles unchanged.
 
+> This is the historical migration record for the supplied Pi profile. For a
+> different selected-app or SSD-only layout, use the setup/settings storage
+> workflow instead; Release 7 does not require a deselected app's `/mnt/hdd` or
+> `/mnt/media` path.
+
 ## Result
 
 The active package now expects the Seagate ST1000LM035-1RK172 at `/mnt/hdd` with ext4 UUID `a8293b36-2c0e-4852-84fd-92ac7503f4db`. The existing microSD remains `/mnt/media` with UUID `17e44bc7-f360-45c4-878b-a7fe7aa45f6e`. The root filesystem remains `/dev/nvme0n1p2`. The expected HDD fstab row is `UUID=a8293b36-2c0e-4852-84fd-92ac7503f4db /mnt/hdd ext4 defaults,nofail 0 2`.
@@ -39,4 +44,3 @@ NVMe-only projects are **Portainer, Homepage, Uptime Kuma, Dozzle, ONLYOFFICE, W
 ## Live-Pi checks still required
 
 Run the updater on the Pi and retain its `migration-report.json`. The Pi must still confirm `findmnt` identities, the candidate `/etc/fstab`, real UID/GID ownership, free space, SMART visibility through the USB bridge, Docker container health and one reboot recovery. USB SMART passthrough may report `UNSUPPORTED`; that is a visibility warning rather than proof of disk failure.
-

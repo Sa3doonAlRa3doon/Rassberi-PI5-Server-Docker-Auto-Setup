@@ -3,6 +3,15 @@ set -Eeuo pipefail
 umask 077
 SOURCE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 if [[ $EUID -ne 0 ]]; then exec sudo --preserve-env=BIND_IP bash "$SOURCE/install-all.sh" "$@"; fi
+for tool in docker python3 findmnt mountpoint ip ss systemctl flock apt-get timedatectl lsblk openssl tee; do command -v "$tool" >/dev/null; done
+python3 "$SOURCE/scripts/platform_check.py"
+systemctl show --property=Version --value >/dev/null || { echo 'CRITICAL: this installer requires a running systemd host.'; exit 1; }
+[[ $(systemctl show docker.service --property=LoadState --value 2>/dev/null) == loaded ]] || {
+  echo 'CRITICAL: this installer requires a systemd-managed Docker Engine service (docker.service), not rootless or Snap-only Docker.' >&2
+  exit 1
+}
+docker info >/dev/null
+docker compose version
 if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/configs/layout.json" ]]; then
   cat >&2 <<'MSG'
 CRITICAL: this is a fresh install and no storage layout has been selected.
@@ -12,7 +21,7 @@ This guard prevents a new machine from silently adopting the supplied example pa
 MSG
   exit 2
 fi
-if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/installed-apps.txt" ]]; then
+if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/installed-apps.txt" && ! -f "$SOURCE/configs/app-selection.json" ]]; then
   cat >&2 <<'MSG'
 CRITICAL: this is a fresh install and no Docker application selection has been saved.
 Run ./setup-server.sh, open the temporary panel, choose the applications to install,
@@ -26,21 +35,13 @@ exec > >(tee -a "$LOG") 2>&1
 trap 'rc=$?; echo "CRITICAL: installer stopped at line $LINENO (exit $rc). Log: $LOG"; exit "$rc"' ERR
 exec 9>/run/lock/pi-server.lock
 flock -n 9 || { echo 'CRITICAL: another Pi server operation is running'; exit 1; }
-[[ $(uname -s) == Linux && $(uname -m) == aarch64 ]] || { echo 'CRITICAL: requires ARM64 Raspberry Pi Linux, not Windows/x86.'; exit 1; }
-[[ -f /etc/os-release ]] || exit 1
-. /etc/os-release
-[[ ${VERSION_CODENAME:-} == trixie ]] || { echo 'CRITICAL: this installer targets Debian Trixie-based Raspberry Pi OS.'; exit 1; }
-for tool in docker python3 findmnt mountpoint ip ss systemctl flock; do command -v "$tool" >/dev/null; done
-docker info >/dev/null
-docker compose version
 python3 "$SOURCE/scripts/storage_guard.py" --installation --manifest "$SOURCE/manifest.json" --only root
 echo 'Storage preflight (HDD/media are reported and gated per application):'
 python3 "$SOURCE/scripts/storage_guard.py" --manifest "$SOURCE/manifest.json" --json --allow-degraded || true
 python3 "$SOURCE/scripts/preflight.py"
-echo 'Installing Pi host utilities (no Docker Engine replacement).'
-apt-get update
-DEBIAN_FRONTEND=noninteractive apt-get install -y smartmontools nvme-cli unattended-upgrades apt-listchanges curl jq rsync restic dnsutils ca-certificates openssh-client openssl
-timedatectl set-timezone Asia/Dubai
+echo 'Installing host utilities (no Docker Engine replacement).'
+apt-get -o DPkg::Lock::Timeout=300 update
+DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=300 install -y smartmontools nvme-cli unattended-upgrades apt-listchanges curl jq rsync restic dnsutils ca-certificates openssh-client openssl
 timedatectl set-ntp true
 python3 "$SOURCE/scripts/prepare.py" "$SOURCE"
 python3 /srv/docker/scripts/storage_guard.py --only root
@@ -63,4 +64,3 @@ fi
 echo "Logs: $SOURCE/logs; report: $SOURCE/logs/installation-report.txt"
 echo 'Reboot verification: sudo /srv/docker/verify-after-reboot.sh'
 exit "$result"
-

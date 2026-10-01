@@ -26,6 +26,10 @@ LAST_ACCESS = time.monotonic()
 DEMO = False
 
 
+def deployed():
+    return BASE.resolve() == Path('/srv/docker')
+
+
 def private_ipv4(value):
     address = ipaddress.ip_address(value)
     return address.version == 4 and any(address in ipaddress.ip_network(net) for net in
@@ -44,9 +48,12 @@ def configured_ip():
 
 def selected_apps():
     manifest = layout.read_json(BASE / 'manifest.json')
-    saved = app_selection.startup_names(BASE, manifest)
-    if saved:
-        return saved
+    # An empty enabled-apps.txt is a deliberate "start nothing at boot" choice.
+    # Only installations that predate the startup-selection file receive the
+    # legacy default-enabled fallback.
+    if ((BASE / 'enabled-apps.txt').is_file() or
+            (BASE / app_selection.STATE_FILE).is_file()):
+        return app_selection.startup_names(BASE, manifest)
     return [a['name'] for a in manifest if a.get('default_enabled', True) and
             a['name'] in app_selection.installed_names(BASE, manifest)]
 
@@ -67,9 +74,12 @@ def snapshot():
     installed = installed_apps()
     return dict(disks=disks, placements=layout.catalog(BASE, installed), enabled=selected_apps(), installed=installed,
         apps=[{**{k: a.get(k) for k in ('name', 'memory_mib', 'default_enabled', 'setup', 'ports', 'optional', 'blocked_reason')},
-               'installed': a['name'] in installed} for a in manifest],
+               'installed': a['name'] in installed,
+               # A selected app becomes startable after Install package has
+               # created its guarded directories and private environment.
+               'prepared': (BASE / 'compose' / a['name'] / '.env').is_file()} for a in manifest],
         backup=layout.read_json(BASE / 'configs/portable-backup.json', dict(mount='/mnt/backup', uuid='', folder='pi-server', include_bulk=True)),
-        demo=DEMO, deployed=BASE.resolve() == Path('/srv/docker'), job=STATE.copy())
+        demo=DEMO, deployed=deployed(), job=STATE.copy())
 
 
 def external(args, timeout=7200):
@@ -127,7 +137,7 @@ def save_backup(data):
         raise ValueError('Backup folder must be a single plain name')
     config = dict(mount=disk['mount'], uuid=uuid, folder=folder, include_bulk=bool(data.get('include_bulk', True)), daily=bool(data.get('daily')))
     layout.atomic_json(BASE / 'configs/portable-backup.json', config)
-    if BASE.resolve() == Path('/srv/docker'):
+    if deployed():
         external(['systemctl', 'enable' if data.get('daily') else 'disable', '--now', 'pi-portable-backup.timer'])
     return {'saved': True, 'daily': bool(data.get('daily')), 'config': config}
 
@@ -138,7 +148,7 @@ def dispatch(action, data):
     if action == 'layout-apply':
         return with_lock(lambda: layout.apply(data.get('placements'), bool(data.get('migrate'))))
     if action == 'install':
-        if BASE.resolve() == Path('/srv/docker'):
+        if deployed():
             return external(['bash', str(BASE / 'install-all.sh')])
         return external(['bash', str(BASE / 'install-all.sh')])
     if action == 'save-apps':
@@ -149,14 +159,25 @@ def dispatch(action, data):
                 not isinstance(startup, list) or not all(isinstance(n, str) for n in startup)):
             raise ValueError('Application selections must be lists of names')
         before = set(installed_apps())
+        planned_installed = app_selection.ordered_names(installed, manifest)
+        if not planned_installed:
+            raise ValueError('Select at least one application to install')
+        planned_startup = app_selection.ordered_names(startup, manifest)
+        if not set(planned_startup).issubset(planned_installed):
+            raise ValueError('Every application selected for startup must also be selected for installation')
+        order = {app['name']: app.get('order', 50) for app in manifest}
+        removed = sorted(before - set(planned_installed), key=lambda name: order[name], reverse=True)
         def save():
-            result = app_selection.save_selection(BASE, manifest, installed, startup)
-            removed = sorted(before - set(result['installed']))
             stopped = []
-            if BASE.resolve() == Path('/srv/docker'):
+            if deployed():
+                # Keep the existing authoritative selection until every
+                # removed stack has stopped. A stop failure must leave the
+                # old app in storage-watch/guard scope rather than creating
+                # an untracked writer on a later-missing drive.
                 for name in removed:
                     external(['python3', str(BASE / 'scripts' / 'manage.py'), 'stop', name])
                     stopped.append(name)
+            result = app_selection.save_selection(BASE, manifest, planned_installed, planned_startup)
             result['stopped'] = stopped
             return result
         return with_lock(save)
@@ -164,7 +185,7 @@ def dispatch(action, data):
         name = data.get('app')
         if name not in {a['name'] for a in layout.read_json(BASE / 'manifest.json')}:
             raise ValueError('Unknown application')
-        if BASE.resolve() != Path('/srv/docker'):
+        if not deployed():
             raise ValueError('Install the package first')
         return external(['bash', str(BASE / ('start-all.sh' if action == 'app-start' else 'stop-all.sh')), name])
     if action == 'save-backup':
@@ -360,4 +381,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

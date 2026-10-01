@@ -1,110 +1,121 @@
-# Recovery procedure
+# Recovery from a portable snapshot
 
-Use trusted backups only. These archives contain executable scripts, Compose files, passwords and private application data. A checksum detects corruption; it does not authenticate a malicious backup.
+Use a trusted portable snapshot only. It contains Compose files, passwords,
+private application data and SQL exports. A SHA-256 check detects accidental
+corruption; it does not make an untrusted snapshot safe to execute.
 
-The automatic restore supports a **fresh empty `/srv/docker`**, preserved original `.env` credentials, the same database image major versions, and already prepared/mounted production disks. It will not delete or overwrite an existing deployment. It restores logical databases into freshly initialized database containers, then leaves all application stacks stopped. It does not reinstall the OS or overwrite `/etc`.
+Release 7 uses the portable snapshot format for recovery because it carries the
+saved layout and application-selection information with it. `backup.sh` now
+routes to portable backup; `scripts/restore.sh` is a compatibility wrapper for
+portable verification/staging and deliberately refuses the earlier hard-coded
+`/mnt/hdd` and `/mnt/media` recovery path. Do not use an old canonical-layout
+archive as though it were a portable custom-layout snapshot.
 
-## 1. Obtain and verify the backup
+## 1. Verify the snapshot without changing a server
 
-Use a backup directory containing `COMPLETE`, `SHA256SUMS`, `nvme.tar.gz`, `database-map.tsv`, `manifest.json`, and `databases/`. `bulk.tar.gz` exists only when the run included HDD/media data. Read `backup-info.txt` to confirm coverage. Do not recover an `.incomplete-*` directory as a successful backup.
-
-If the copy is in restic, configure the original repository and password on the replacement host, inspect `restic snapshots`, and restore the selected snapshot to an empty recovery folder. Restic reproduces the archive's original path underneath the target; locate the timestamp directory before continuing.
+Attach the backup disk to a Linux system and identify the complete snapshot
+folder, which contains `COMPLETE`, `checksums.json`, `plan.json`,
+`backup.json`, `manifest.json`, `files/` and, when initialized databases were
+present, `databases/`.
 
 ```bash
-sudo bash -c 'source /root/pi-backup.conf; export RESTIC_REPOSITORY RESTIC_PASSWORD_FILE; restic snapshots'
-# Replace SNAPSHOT_ID with the selected snapshot; keep its matching config and keys.
-sudo bash -c 'source /root/pi-backup.conf; export RESTIC_REPOSITORY RESTIC_PASSWORD_FILE; restic restore SNAPSHOT_ID --target /mnt/recovery'
-sudo bash /path/to/project/scripts/restore.sh /path/to/backup/timestamp
+python3 /path/to/portable-backup.py verify \
+  --snapshot /mnt/backup/pi-server/SNAPSHOT_NAME
 ```
 
-The last command validates archives without restoring. Use the original generated project scripts if `/srv/docker` was lost. A standalone copied `restore.sh` can perform the first recovery stage; restored runtime scripts supply the common functions afterward. Run it from outside `/srv/docker` so preserving an old server directory cannot move the script you need.
+Do not recover an `incomplete-*` folder. Read `plan.json` before proceeding:
+`selected_apps` records the app selection when the backup ran;
+`historical_apps` identifies deselected applications whose still-configured
+data was retained; warnings identify retired/unconfigured paths that were not
+accessed. A missing path is not proof that the data was deleted.
 
-## 2. Prepare the Pi and preserve any surviving state
+## 2. Stage to a new empty Linux filesystem
 
-Install 64-bit Trixie-based Raspberry Pi OS and working ARM64 Docker Engine/Compose on the NVMe as in the original deployment. Install Python 3 and GNU tar/util-linux tools. Mount the existing HDD at `/mnt/hdd` and microSD at `/mnt/media`. Confirm exact filesystems:
+The staging destination must be an unused absolute path below a mounted Linux
+filesystem. It must not be the active server path, a source path, or an
+existing directory. Obtain its actual filesystem UUID with `findmnt`.
 
 ```bash
-findmnt -o TARGET,SOURCE,FSTYPE,UUID --target /
-findmnt -o TARGET,SOURCE,FSTYPE,UUID --mountpoint /mnt/hdd
-findmnt -o TARGET,SOURCE,FSTYPE,UUID --mountpoint /mnt/media
+findmnt -no UUID --target /mnt/recovery
+
+# Read-only explanation of the planned staging restore.
+python3 /path/to/portable-backup.py restore-plan \
+  --snapshot /mnt/backup/pi-server/SNAPSHOT_NAME \
+  --destination /mnt/recovery/pi-staging
+
+# This creates the new staging directory; it never overwrites an existing one.
+sudo python3 /path/to/portable-backup.py restore \
+  --snapshot /mnt/backup/pi-server/SNAPSHOT_NAME \
+  --destination /mnt/recovery/pi-staging \
+  --destination-uuid RECOVERY_FILESYSTEM_UUID
 ```
 
-Expected root is `/dev/nvme0n1p2`. The replacement HDD is expected to have UUID `a8293b36-2c0e-4852-84fd-92ac7503f4db`; the existing microSD UUID remains `17e44bc7-f360-45c4-878b-a7fe7aa45f6e`. Confirm both with `findmnt` before recovery. Do not disable the mount guard just to bypass an error.
+Staging validates every indexed checksum before copying, rejects path traversal
+and physical symlinks, verifies each copied file and restores the recorded POSIX
+metadata where the filesystem supports it. It produces the recovered `files/`
+tree, SQL dumps and `STAGING-RESTORE.json`. Runtime sockets and links are kept
+as review metadata rather than activated links.
 
-If old state exists, stop the backup timer and the managed applications first. Remove old containers using Compose `down` without volume deletion, before moving their bind-mounted data directories. The code below preserves the old directory under a timestamped name; it does not remove any database/user files:
+The command does **not** start Docker, overwrite `/srv/docker`, import SQL,
+recreate arbitrary links or format/mount a disk. Keep the original backup and
+the staging tree until a separate recovery validation has succeeded.
 
-```bash
-sudo systemctl stop pi-backup.timer 2>/dev/null || true
-sudo /srv/docker/stop-all.sh
-sudo bash -c '
-  source /srv/docker/scripts/common.sh
-  root_required
-  lock_server
-  for folder in /srv/docker/compose/*; do
-    [[ -f "$folder/compose.yml" ]] || continue
-    compose "${folder##*/}" down
-  done
-  mv /srv/docker "/srv/docker-before-restore-$(date -u +%Y%m%dT%H%M%SZ)"
-'
-```
+## 3. Prepare the replacement Pi deliberately
 
-Recheck the backup source path after moving `/srv/docker`; backups stored underneath it move too. Ensure enough NVMe space for both the preserved copy and the restored deployment. On a completely new server these stop/move steps are unnecessary. Keep preserved state until the restored system passes all checks and a second verified backup exists.
+The supported deployment target is a 64-bit ARM Raspberry Pi OS, Debian or
+Ubuntu host with systemd, `apt`, Docker Engine and Docker Compose v2. Install
+Docker/Compose and mount the production filesystems yourself before using the
+package. x86 and non-Debian-family hosts are rejected before installation.
 
-For bulk recovery, each destination below must be absent or empty: `/mnt/hdd/Nextcloud`, `Paperless`, `Books`, `Kiwix`, `Shared`, `Uploads`, `/mnt/media/Music`, and `Videos`. Move any existing folders to deliberately chosen preservation locations on their original disks, checking available capacity first. Do not merge an old live library with a database from another point in time automatically.
+Use the temporary setup wizard on the replacement Pi to select the applications
+you want and review fresh storage placements. The wizard does not adopt files,
+format disks, or edit fstab. Match each required filesystem to the actual
+replacement device and UUID; do not copy an old UUID into the new layout just
+to pass a check.
 
-## 3. Restore the matching files and databases
+Before moving any staged data into a production path:
 
-```bash
-# Full backup with HDD and microSD data:
-sudo bash /path/to/project/scripts/restore.sh /path/to/backup/timestamp --confirm-restore --restore-bulk
+1. Keep all application stacks stopped and preserve any surviving data under a
+   clearly named separate location.
+2. Review `files/` and `databases/` in the staging tree, plus `plan.json`,
+   `backup.json` and `STAGING-RESTORE.json`.
+3. Choose empty prepared destinations through the storage workflow. Do not
+   merge a live library with a database from a different backup point.
+4. Use matching application/database image major versions and import each
+   logical SQL dump into an empty initialized database under a planned
+   maintenance procedure.
+5. Preserve the recovered `.env` files and encryption keys with root-only
+   permissions. They are needed for services such as n8n, Syncthing,
+   Paperless and Vaultwarden to read their prior data.
 
-# NVMe/database recovery while retaining independently verified matching HDD/media files:
-sudo bash /path/to/project/scripts/restore.sh /path/to/backup/timestamp --confirm-restore
-```
+This package intentionally leaves the final placement and SQL import explicit:
+the correct decision depends on the replacement disks, selected apps and the
+backup's point in time. Do not start Nextcloud, Paperless, Moodle, Syncthing or
+media services until the corresponding database and file data come from the
+same consistent snapshot or have been independently verified.
 
-The script refuses nonempty server targets, existing managed containers, incorrect/missing mounts, unsafe archive paths and insufficient free space. It retains numeric ownership and permissions, including `.env` mode 600. It creates fresh database directories from the manifest, starts only each database service, imports its dump, and stops the service again. PostgreSQL uses `pg_restore --no-owner --no-acl --exit-on-error`; MariaDB imports through the matching `mariadb` client. No raw live database files are copied. Do not change database major versions during recovery.
+## 4. Validate before relying on the recovered server
 
-Missing dumps for applications that were never initialized are reported as warnings. Those applications must be initialized separately before being enabled. On any failure, preserve the partial recovery for inspection and inspect `docker compose logs db`; the script never retries by deleting database files. Move that partial recovery aside before attempting a fresh restore.
-
-Do not start Nextcloud, Paperless or Moodle until their database and HDD files are from the same consistent backup or the surviving files have been validated. A restore without `--restore-bulk` does not reconstruct documents, courses, books or media. Do not create empty replacement libraries and assume their contents can be regenerated from database metadata.
-
-## 4. Reapply host protection, then start deliberately
-
-Inspect the restored `.env` files locally with a root-only editor. If the Pi's LAN address changed, update `BIND_IP`, `SERVER_IP` and any application-specific trusted URL/domain configuration without changing saved passwords or encryption keys. Restored appdata may also store URLs independently of `.env`. Avoid printing secret files into shared logs.
-
-On the replacement OS, install the same host utilities and reinstate the mount guards/security updates before starting applications:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y smartmontools nvme-cli unattended-upgrades apt-listchanges curl jq rsync restic dnsutils ca-certificates
-sudo timedatectl set-timezone Asia/Dubai
-sudo timedatectl set-ntp true
-sudo python3 /srv/docker/scripts/storage_guard.py
-sudo python3 /srv/docker/scripts/host-setup.py
-sudo systemctl daemon-reload
-sudo systemctl enable docker.service
-sudo systemctl enable --now pi-storage-watch.timer pi-storage-metrics.timer
-sudo systemctl enable pi-storage-start.service
-```
-
-Host setup preserves existing settings and can stop for an existing conflicting managed file; inspect that conflict rather than overwriting it. Reconfigure Tailscale on the host separately if the OS was replaced. The backup does not contain Tailscale login state, host SSH keys, or host DNS configuration.
-
-Moodle has a local ARM64 image; rebuild it from its restored Dockerfile before starting that application if the image was lost:
+After the planned import/placement, use the guarded controls and test real
+data:
 
 ```bash
-sudo bash -c 'source /srv/docker/scripts/common.sh; compose moodle build app'
-```
-
-Review `/srv/docker/enabled-apps.txt`. Restore does not automatically resume applications that were deliberately stopped. `start-all.sh` starts the configured enabled set; compare it with the backup's `original-containers.txt` and your maintenance records before using it.
-
-```bash
-sudo /srv/docker/start-all.sh
+sudo /srv/docker/scripts/storage_guard.py
 sudo /srv/docker/status.sh
 sudo /srv/docker/verify-after-reboot.sh
 ```
 
-## 5. Verify actual recovery before retiring old copies
+Open an existing Nextcloud file and Paperless document; inspect a Gitea
+repository, Moodle course/file and n8n credential without exposing keys; check
+Syncthing identity/folder paths; and play an existing video and music track.
+Confirm the exact mounts, free space, database health and backup-disk plan.
+Then create and verify a new portable snapshot, perform one planned reboot, and
+run `verify-after-reboot.sh` again before retiring preserved source data.
 
-Log into the restored applications. Download and open an existing Nextcloud file; open a Paperless document and archive; check a Moodle course/file, Gitea repository, and n8n credentials without exposing keys. Confirm Syncthing device identity and folder paths before resuming synchronizations. Play an existing Jellyfin video and Navidrome track. Check Pi-hole DNS from another LAN client and confirm the Pi itself can resolve domains independently. Verify container health, disk free space, the exact mounts and the backup location.
+## Older non-portable archives
 
-Take a new external backup after successful recovery, validate it, reboot once during a maintenance window, then run `sudo /srv/docker/verify-after-reboot.sh` again. Re-enable the optional backup timer only after its destination, credentials, schedule and space reserve are verified. Keep a written record of the restore test and the backup timestamp tested.
+If the only copy is an archive made by a release before Release 7, preserve it
+unchanged. Recover it only with the matching release's documented tools in an
+isolated staging environment after identifying its original storage layout.
+Do not point it at a new custom layout or an unmounted directory. Create a new
+portable snapshot as soon as the recovered data has been reviewed.

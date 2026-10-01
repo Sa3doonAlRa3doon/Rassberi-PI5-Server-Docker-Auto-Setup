@@ -1,7 +1,8 @@
 [Unit]
-Description=Consistent Pi configuration and database backup
-RequiresMountsFor=/srv/docker /mnt/hdd /mnt/media
+Description=Retired Pi backup compatibility service (portable snapshots only)
+RequiresMountsFor=/srv/docker
 After=docker.service
+
 [Service]
 Type=oneshot
 ExecStart=/srv/docker/scripts/backup.sh

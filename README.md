@@ -2,7 +2,7 @@
 
 A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 41 ARM64 projects with guarded storage, generated per-app secrets, monitoring, backups, a private setup wizard, and a permanent settings panel.
 
-> **Platform:** Raspberry Pi OS/Debian Trixie on ARM64. These are Linux deployment files. They are not a Windows installer and they are not intended for x86 systems.
+> **Supported targets:** 64-bit ARM Debian-family Linux with systemd, `apt`, Docker Engine and Docker Compose v2: Raspberry Pi OS, Debian, or Ubuntu. The supplied profile is a Raspberry Pi 5. x86 and non-Debian-family Linux hosts are rejected before installation.
 
 ## What this package does
 
@@ -11,12 +11,28 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 - Keeps large documents, books, ZIM files, shared files, music and videos on selected bulk-storage mounts.
 - Verifies filesystem identity, mount points, free space and writable state before creating paths or starting dependent projects.
 - Generates root-only `.env` files without replacing existing credentials.
-- Starts ONLYOFFICE, Jupyter and Stirling PDF at boot as requested; other heavy or scanning applications remain on demand so the host can be tuned.
+- Starts ONLYOFFICE, Jupyter and Stirling PDF at boot as requested, with their dependencies and verified storage ready first; other heavy or scanning applications remain on demand so the host can be tuned.
 - Provides guarded update, backup, restore, storage migration and upgrade tools.
 - Uses a manual release gate so code changes are applied only from a published, newer package.
 - Supports a different machine with a different combination of SSDs, HDDs, microSD cards and additional ext4 filesystems.
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
+
+## Release 7 changes
+
+Release 7 closes custom-selection and recovery edge cases without deleting existing server data:
+
+- **Selected-only storage:** an SSD-only or otherwise custom layout now checks, renders and creates paths only for selected apps. A deselected app's example HDD or microSD path is ignored rather than becoming a requirement for the selected stack.
+- **Deterministic boot order:** ONLYOFFICE, Jupyter and Stirling PDF receive the requested startup priority after Docker and each app's verified storage; dependencies still start before the app that requires them. An intentionally empty boot-start list remains empty.
+- **Atomic selection preservation:** the installed-app and startup choices are saved together in `configs/app-selection.json`, with the text lists retained for compatibility. Upgrades preserve this state, including an empty startup selection, as well as app data, databases, `.env` files and storage choices.
+- **Safe panel controls:** a selected app that has not yet been prepared by the installer is labelled as needing installation and cannot be started from Settings until its Compose environment exists.
+- **Layout-aware recovery:** the portable-backup plan follows the saved layout and app selection, preserves still-configured data from deselected apps for review, and does not touch retired or unconfigured storage paths. It is the supported backup and staged-recovery route for custom layouts and a future backup disk.
+- **Legacy archive guard:** `backup.sh` now routes through the portable workflow. `scripts/restore.sh` accepts portable verification/staging commands and refuses unsafe old fixed-layout tar archives instead of extracting them into a custom layout.
+- **Linux ARM64 preflight:** fresh installs now accept Raspberry Pi OS, Debian and Ubuntu ARM64 hosts with `systemd` and `apt`; the installer still rejects x86, non-Debian-family hosts and an unavailable Docker daemon.
+- **Complete-source backup gate:** the portable backup plan now checks every selected or retained data group, including a bulk drive excluded from file copying, before it creates a snapshot. A missing selected directory or a backup disk that shares any active source disk stops the plan clearly.
+- **Restart intent preserved:** storage migration and temporary drive-loss recovery restore every affected container's saved Docker restart policy. A temporary `restart=no` cannot leave an always-on service disabled after the next reboot.
+- **Atomic app removal:** Settings stops a removed application's running stack before committing the new selection. If stopping fails, the old selection remains authoritative, so storage monitoring continues to protect that stack.
+- **Late database guard:** portable backup rechecks each SQL application's selected storage immediately before treating an absent database container as uninitialized, closing a custom-SSD unplug race.
 
 ## Release 6 changes
 
@@ -32,7 +48,7 @@ Release 6 fixes app-selection cleanup: when an installed app is removed from the
 
 ## Officially fixed in Release 4
 
-Release 4 is the published **FIXED AND IMPROVED** release. The following issues from the earlier installer and upgrade path are now officially fixed in the code on `main`:
+Release 4 was the first published **FIXED AND IMPROVED** release. The following issues from the earlier installer and upgrade path remain fixed in the code on `main`:
 
 - **Fresh-install storage selection:** a new machine must use the temporary setup wizard before installation. The installer refuses an unreviewed layout, so it cannot silently write to example `/mnt/hdd` or `/mnt/media` paths.
 - **Changeable storage profiles:** the wizard and permanent settings panel support different SSDs, HDDs, microSD cards, additional mounted filesystems, SSD-only machines, and a separate future backup drive. Destinations can be selected manually or proposed by a fresh auto-select profile.
@@ -53,7 +69,7 @@ The release marker, upgrade history and source code are committed in this public
 
 You need:
 
-- A Raspberry Pi 5 running a Debian Trixie-based ARM64 Raspberry Pi OS.
+- A 64-bit ARM Debian-family Linux host: Raspberry Pi OS, Debian or Ubuntu. It needs `systemd`, `apt`, Docker Engine and Docker Compose v2. The supplied profile is for a Raspberry Pi 5; x86 and non-Debian-family hosts are rejected.
 - Docker Engine and Docker Compose already installed and working.
 - A private LAN or Tailscale IPv4 address for `BIND_IP`.
 - Internet access for apt packages and container images.
@@ -90,7 +106,7 @@ The setup wizard is the recommended first step when the machine does not match t
 
 ```bash
 cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup
-chmod +x setup-server.sh install-all.sh start-all.sh stop-all.sh update-all.sh backup.sh verify-after-reboot.sh select-apps.sh scripts/*.sh
+chmod +x setup-server.sh install-all.sh start-all.sh stop-all.sh update-all.sh backup.sh portable-backup.sh verify-after-reboot.sh select-apps.sh scripts/*.sh
 sudo ./setup-server.sh
 ```
 
@@ -100,11 +116,14 @@ sudo ./setup-server.sh
    permanent settings panel.
 5. Open **Applications**, select only the Docker apps you need, choose which
    installed apps start at boot, and save the selection. Dependencies are included
-   automatically.
+   automatically. An empty boot-start list is valid when you want every app to
+   start manually.
 6. Review each destination, or choose auto-select, then apply the reviewed
    layout. The storage table now covers only the selected applications. The installer
    refuses a fresh install until both the app selection and `configs/layout.json`
-   exist, so a new machine cannot silently use the example profile.
+   exist, so a new machine cannot silently use the example profile. Deselecting an
+   HDD or microSD app means its example path is not created or required on an
+   SSD-only machine.
 7. Run the installer with the Pi's private address:
 
 ```bash
@@ -143,7 +162,7 @@ sudo ./upgrade-server.sh --apply
 sudo /srv/docker/install-all.sh
 ```
 
-The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings, the installed-app selection and the startup selection. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
+The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings, and the complete installed/boot selection state in `configs/app-selection.json` (including a deliberately empty boot list). It does not delete old Nextcloud, Paperless or other application data. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
 
 ```bash
 sudo python3 /srv/docker/scripts/install-settings-service.py
@@ -190,9 +209,11 @@ The setup wizard and permanent settings panel can use:
 
 With only an SSD and a larger microSD, databases and appdata remain on the SSD while media and bulk data can use the selected microSD.
 
+Storage review is scoped to the installed-app selection. If an app is not selected, its default data group is not rendered into the active Compose files or used as a mount requirement. Its old data remains where it is; reselect the app and review its saved/current placement before using it again.
+
 ### What remains a safety rule
 
-Databases and application state must stay on a writable SSD. Bulk data can use an HDD or microSD. Every selected drive must already be mounted, writable, have the expected UUID, and have enough free space.
+Databases and application state must stay on a writable SSD. Bulk data can use an HDD or microSD. Every selected drive must already be mounted, writable, have the expected UUID, and have enough free space. A drive used only by a deselected app is not required for the selected stack.
 
 Auto-select proposes fresh timestamped `PiServer` directories. It does not scan user folders, adopt existing folders, import files, format disks, partition disks, edit fstab, or delete data. Moving a populated location requires the visible copy-and-verify action; originals are retained.
 
@@ -216,13 +237,13 @@ The second Homepage instance is `homepage-tailscale`. It stays disabled until a 
 
 ### Startup defaults
 
-These three requested services now start automatically after Docker and storage are ready:
+These three requested services receive boot priority after Docker, verified storage and their dependencies are ready:
 
 - ONLYOFFICE
 - Jupyter
 - Stirling PDF
 
-Moodle, ChangeDetection.io, NetAlertX and Tailscale Homepage remain on demand by default. You can change both the installed-app list and the boot-start list in the permanent settings page.
+Moodle, ChangeDetection.io, NetAlertX and Tailscale Homepage remain on demand by default. You can change both the installed-app list and the boot-start list in the permanent settings page. If you clear the boot-start list, Settings preserves that deliberate choice and no selected application is started automatically.
 
 The manager checks the current aggregate memory budget before starting a project. The app page and select-apps.sh never delete existing data when an application is deselected. Read [docs/APPS-STATEFUL.md](docs/APPS-STATEFUL.md) and [docs/UTILITY-ADDITIONS.md](docs/UTILITY-ADDITIONS.md) for first-login and application-specific notes.
 
@@ -234,7 +255,7 @@ Use the wrappers so storage and dependency checks are applied:
 # Inspect health, mounts, ports and enabled projects
 sudo /srv/docker/status.sh
 
-# Start or stop selected projects
+# Start or stop prepared selected projects
 sudo /srv/docker/start-all.sh [app ...]
 sudo /srv/docker/stop-all.sh [app ...]
 
@@ -253,20 +274,17 @@ sudo /srv/docker/verify-after-reboot.sh
 
 Direct `docker compose up`, `docker start`, or Portainer actions can bypass the host storage wrapper. Use the management scripts for storage-dependent applications.
 
+When a Settings app card says **Install package before starting**, save the app selection and run `install-all.sh` first. The panel does not invent its Compose environment or bind directories during a manual start.
+
 ## Backups and recovery
 
-There are two backup paths:
+The portable backup is the supported backup and staged-recovery path for the current package, especially for custom storage layouts and a future external recovery disk. It takes a consistency outage, exports PostgreSQL/MariaDB logically, captures stopped application state and selected bulk data, and never copies a live database directory.
 
-1. The standard backup takes a consistency outage, logically dumps PostgreSQL/MariaDB, captures stopped appdata and configuration, and never copies a live database directory.
-2. The portable backup creates a self-contained archive that can be recovered on another compatible machine or after connecting a replacement drive.
-
-Before treating backups as disaster protection, configure a separate destination or encrypted restic repository. The default same-NVMe staging copy does not protect against loss of the NVMe.
+Before treating a snapshot as disaster protection, configure a separate physical backup disk. A backup disk must be different from the production SSD, HDD and microSD. `backup.sh` is a convenience entry point for the portable workflow. `scripts/restore.sh` stages portable snapshots and refuses the old fixed-layout tar archive procedure.
 
 ```bash
-# Standard managed backup
-sudo /srv/docker/backup.sh
-
-# Portable backup
+# Read-only portable backup plan, then create a snapshot
+sudo /srv/docker/portable-backup.sh plan --config /srv/docker/configs/portable-backup.json
 sudo /srv/docker/portable-backup.sh create --config /srv/docker/configs/portable-backup.json
 
 # Read the portable backup and restore procedures
@@ -274,7 +292,7 @@ less docs/PORTABLE-BACKUP.md
 less docs/RECOVERY.md
 ```
 
-A fresh-target restore is deliberately explicit and refuses to overwrite existing application data without confirmation. Read [BACKUPS.md](BACKUPS.md), [docs/PORTABLE-BACKUP.md](docs/PORTABLE-BACKUP.md), and [docs/RECOVERY.md](docs/RECOVERY.md).
+A portable restore stages into a new empty destination and refuses to overwrite existing application data. It does not start applications or import SQL automatically. Read [docs/PORTABLE-BACKUP.md](docs/PORTABLE-BACKUP.md) and [docs/RECOVERY.md](docs/RECOVERY.md).
 
 ## Replacement HDD and future backup drive
 
@@ -308,7 +326,7 @@ After installation:
 /srv/docker/
 ├── RELEASE.json             # published release marker and release_id
 ├── compose/<app>/          # Compose files and root-only generated .env files
-├── configs/                # storage profile, Homepage, monitoring and app configuration
+├── configs/                # storage profile, app-selection state, Homepage, monitoring and app configuration
 ├── appdata/                # application state on the selected SSD
 ├── databases/              # PostgreSQL/MariaDB and other database state on the selected SSD
 ├── scripts/                # guarded management, storage, backup and restore tools
@@ -332,7 +350,6 @@ The public repository contains examples and deployment code. Runtime secrets and
 - [Upgrade guide](docs/UPGRADE.md)
 - [Tailscale Homepage](docs/TAILSCALE-HOMEPAGE.md)
 - [Published ports](PORTS.md)
-- [Backup notes](BACKUPS.md)
 - [Validation notes](docs/VALIDATION.md)
 
 ## Validation boundary
@@ -340,7 +357,5 @@ The public repository contains examples and deployment code. Runtime secrets and
 Windows-side validation checks the 41 Compose projects and manifest declarations, Bash/Python/JavaScript syntax, 46 unique ports, ARM64 image evidence, resource limits, guarded bind mounts, database isolation, storage-layout safety, backup/recovery behavior, and Docker-socket boundaries.
 
 That is configuration validation. The target Pi still needs live checks for filesystem read/write behavior, SMART passthrough, network discovery, real file transfers, alerts, Home Assistant onboarding, NetAlertX discovery, Tailscale Serve, container health, and reboot recovery.
-
-The existing dashboard archive remains in [dashboard types/IT SIMPLI+.zip](<dashboard%20types/IT%20SIMPLI%2B.zip>).
 
 

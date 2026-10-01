@@ -45,6 +45,24 @@ def storage(app=None, write_test=False):
         command.append('--write-test')
     subprocess.run(command, check=True)
 
+
+def selected_apps(manifest, installed, enabled, action, requested=(), all_apps=False):
+    """Return only applications that the requested operation may touch.
+
+    Installation prepares every selected app, including on-demand ones. It
+    must never walk every supported manifest entry: a custom install has no
+    private environment or reviewed storage for apps that were not selected.
+    """
+    if requested:
+        names = set(requested)
+    elif action == 'install':
+        names = set(installed)
+    elif all_apps:
+        names = {app['name'] for app in manifest}
+    else:
+        names = set(enabled)
+    return [app for app in manifest if app['name'] in names]
+
 def verify_ports(app, cfg):
     manifest_path = BASE / 'manifest.json'
     manifest = json.loads(manifest_path.read_text()) if manifest_path.is_file() else []
@@ -158,7 +176,7 @@ def main():
     if os.geteuid()!=0: raise RuntimeError('Run with sudo.')
     subprocess.run(['docker','info'],stdout=subprocess.DEVNULL,check=True)
     if args.action!='stop': storage()
-    selected=[a for a in manifest if a['name'] in args.apps] if args.apps else [a for a in manifest if args.action=='install' or args.all or a['name'] in enabled]
+    selected=selected_apps(manifest, installed, enabled, args.action, args.apps, args.all)
     if args.action in {'start', 'install', 'update'}:
         names = {a['name'] for a in selected}
         changed = True
@@ -174,7 +192,7 @@ def main():
     if args.action=='stop': selected.reverse()
     configs={}
     declared={}
-    for app in manifest:
+    for app in selected:
         if app.get('blocked_reason'): continue
         try: cfg=config(app['name'])
         except Exception:
@@ -293,4 +311,3 @@ if __name__=='__main__':
     try: sys.exit(main())
     except (RuntimeError,subprocess.SubprocessError,OSError,ValueError) as exc:
         print('CRITICAL: '+str(exc),file=sys.stderr); sys.exit(1)
-
