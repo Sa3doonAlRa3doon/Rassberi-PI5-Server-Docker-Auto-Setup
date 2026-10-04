@@ -37,6 +37,9 @@ def private_ipv4(value):
 
 
 def configured_ip():
+    requested = os.environ.get('BIND_IP', '').strip()
+    if requested:
+        return requested
     path = BASE / 'server.env'
     if path.exists():
         for line in path.read_text().splitlines():
@@ -148,8 +151,14 @@ def dispatch(action, data):
     if action == 'layout-apply':
         return with_lock(lambda: layout.apply(data.get('placements'), bool(data.get('migrate'))))
     if action == 'install':
-        if deployed():
-            return external(['bash', str(BASE / 'install-all.sh')])
+        if not deployed():
+            missing = []
+            if not (BASE / 'configs' / 'app-selection.json').is_file() and not (BASE / 'installed-apps.txt').is_file():
+                missing.append('save your application selection')
+            if not (BASE / 'configs' / 'layout.json').is_file():
+                missing.append('apply the reviewed storage layout')
+            if missing:
+                raise ValueError('Before installing, ' + ' and '.join(missing) + '. No Docker images have been pulled.')
         return external(['bash', str(BASE / 'install-all.sh')])
     if action == 'save-apps':
         manifest = layout.read_json(BASE / 'manifest.json')

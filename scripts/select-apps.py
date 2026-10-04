@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Interactive terminal selector for installed and boot-start applications."""
+import argparse
 import json
 from pathlib import Path
+import os
 import sys
 
 import app_selection
-
-BASE = Path('/srv/docker')
-
 
 def ask(prompt, names, default):
     print(prompt)
@@ -29,25 +28,31 @@ def ask(prompt, names, default):
     return result
 
 
-def main():
-    if __import__('os').geteuid() != 0:
+def main(base):
+    if getattr(os, 'geteuid', lambda: 0)() != 0:
         raise SystemExit('Run with sudo.')
-    manifest = json.loads((BASE / 'manifest.json').read_text())
+    manifest_path = base / 'manifest.json'
+    if not manifest_path.is_file():
+        raise SystemExit('No server package found at ' + str(base))
+    manifest = json.loads(manifest_path.read_text())
     names = [app['name'] for app in sorted(manifest, key=lambda item: item.get('order', 50))
              if not app.get('blocked_reason')]
-    installed = app_selection.installed_names(BASE, manifest)
-    startup = app_selection.startup_names(BASE, manifest)
+    installed = app_selection.installed_names(base, manifest)
+    startup = app_selection.startup_names(base, manifest)
     selected = ask('Applications to install and keep available:', names, installed)
     selected = app_selection.ordered_names(selected, manifest)
     boot = ask('Applications to start automatically at boot:', selected, [name for name in startup if name in selected])
-    result = app_selection.save_selection(BASE, manifest, selected, boot)
+    result = app_selection.save_selection(base, manifest, selected, boot)
     print(json.dumps(result, indent=2))
-    print('Next: review Storage & placement in the settings page, then run sudo /srv/docker/install-all.sh')
+    print('Next: review Storage & placement in the settings page, then run install-all.sh')
 
 
 if __name__ == '__main__':
     try:
-        main()
+        parser = argparse.ArgumentParser(description=__doc__)
+        parser.add_argument('--base', default='/srv/docker', help='downloaded or installed package directory')
+        args = parser.parse_args()
+        main(Path(args.base).resolve())
     except (OSError, ValueError, KeyboardInterrupt) as exc:
         print('ERROR: ' + str(exc), file=sys.stderr)
         raise SystemExit(1)

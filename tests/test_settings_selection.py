@@ -93,6 +93,23 @@ class SettingsSelectionTests(unittest.TestCase):
             self.assertEqual(result['stopped'], ['removed'])
             self.assertEqual(settings.app_selection.selection_state(base)['installed'], ['core'])
 
+    def test_temporary_panel_requires_selection_and_storage_before_install(self):
+        manifest = [{'name': 'core', 'order': 1, 'default_enabled': True}]
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            (base / 'manifest.json').write_text(json.dumps(manifest))
+            with patch.object(settings, 'BASE', base), \
+                 patch.object(settings, 'deployed', return_value=False), \
+                 patch.object(settings, 'external') as external:
+                with self.assertRaisesRegex(ValueError, 'save your application selection'):
+                    settings.dispatch('install', {})
+                external.assert_not_called()
+                settings.app_selection.save_selection(base, manifest, ['core'], [])
+                (base / 'configs' / 'layout.json').write_text('{}')
+                external.return_value = {'completed': True}
+                self.assertEqual(settings.dispatch('install', {}), {'completed': True})
+                external.assert_called_once_with(['bash', str(base / 'install-all.sh')])
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -1,6 +1,6 @@
 # Raspberry Pi 5 Server Docker Auto Setup
 
-A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 41 ARM64 projects with guarded storage, generated per-app secrets, monitoring, backups, a private setup wizard, and a permanent settings panel.
+A storage-aware Docker Compose server package for a Raspberry Pi 5. It offers 41 ARM64 projects, but a new installation pulls and prepares only the apps the owner selects. It also provides guarded storage, generated per-app secrets, monitoring, backups, a private setup wizard, and a permanent settings panel.
 
 > **Supported targets:** 64-bit ARM Debian-family Linux with systemd, `apt`, Docker Engine and Docker Compose v2: Raspberry Pi OS, Debian, or Ubuntu. The supplied profile is a Raspberry Pi 5. x86 and non-Debian-family Linux hosts are rejected before installation.
 
@@ -13,6 +13,14 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It installs 
 - Generates root-only `.env` files without replacing existing credentials.
 - Starts ONLYOFFICE, Jupyter and Stirling PDF at boot as requested, with their dependencies and verified storage ready first; other heavy or scanning applications remain on demand so the host can be tuned.
 - Provides guarded update, backup, restore, storage migration and upgrade tools.
+
+## Release 8 changes
+
+Release 8 makes the first download select-only by default:
+
+- Running `sudo ./install-all.sh` from an interactive terminal on a new machine now opens the temporary setup panel before Docker is required, pulled, or started. Choose only the apps you want, save the selection, review storage, and press **Install package** in that panel.
+- `sudo ./select-apps.sh` also works directly in the downloaded folder if you prefer the terminal. It writes the same saved selection used by the panel; app dependencies are included automatically.
+- The temporary panel rejects **Install package** until both the app selection and reviewed storage layout are saved, with a clear in-page message instead of a hidden installer-log failure.
 - Uses a manual release gate so code changes are applied only from a published, newer package.
 - Supports a different machine with a different combination of SSDs, HDDs, microSD cards and additional ext4 filesystems.
 
@@ -102,7 +110,17 @@ The setup wizard is the recommended first step when the machine does not match t
 
 1. Mount the filesystems yourself at stable paths below `/mnt` or `/media`. The wizard does not mount drives or edit `/etc/fstab`.
 2. Copy this repository to the Pi.
-3. Start the temporary private setup panel:
+3. Choose only the apps you want **before any Docker images are pulled**. The
+   easiest route is to start the installer from an interactive terminal; when
+   no selection or layout exists, it opens the temporary private setup panel
+   instead of installing every app:
+
+```bash
+cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup
+sudo ./install-all.sh
+```
+
+   Or start the same temporary panel yourself:
 
 ```bash
 cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup

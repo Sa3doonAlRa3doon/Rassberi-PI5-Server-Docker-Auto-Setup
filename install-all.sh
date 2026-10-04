@@ -3,8 +3,37 @@ set -Eeuo pipefail
 umask 077
 SOURCE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 if [[ $EUID -ne 0 ]]; then exec sudo --preserve-env=BIND_IP bash "$SOURCE/install-all.sh" "$@"; fi
-for tool in docker python3 findmnt mountpoint ip ss systemctl flock apt-get timedatectl lsblk openssl tee; do command -v "$tool" >/dev/null; done
+for tool in python3 findmnt mountpoint ip ss systemctl flock apt-get timedatectl lsblk openssl tee; do command -v "$tool" >/dev/null; done
 python3 "$SOURCE/scripts/platform_check.py"
+if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/configs/layout.json" ]]; then
+  cat >&2 <<'MSG'
+CRITICAL: this is a fresh install and no storage layout has been selected.
+Choose only the apps you want and their storage in the temporary panel before any
+Docker image is pulled. Mount the existing filesystems, review or auto-select the
+destinations, and apply the layout.
+This guard prevents a new machine from silently adopting the supplied example paths.
+MSG
+  if [[ -t 0 && -t 1 ]]; then
+    echo 'Opening the temporary setup panel now. Select apps and storage, then use Install package in the panel.' >&2
+    exec "$SOURCE/setup-server.sh"
+  fi
+  echo 'Run ./setup-server.sh from an interactive terminal to choose apps and storage first.' >&2
+  exit 2
+fi
+if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/installed-apps.txt" && ! -f "$SOURCE/configs/app-selection.json" ]]; then
+  cat >&2 <<'MSG'
+CRITICAL: this is a fresh install and no Docker application selection has been saved.
+Choose only the applications to install in the temporary panel, save that selection,
+then review storage for those applications before installing.
+MSG
+  if [[ -t 0 && -t 1 ]]; then
+    echo 'Opening the temporary setup panel now. Nothing has been pulled or installed.' >&2
+    exec "$SOURCE/setup-server.sh"
+  fi
+  echo 'Run ./setup-server.sh from an interactive terminal to choose apps first.' >&2
+  exit 2
+fi
+for tool in docker; do command -v "$tool" >/dev/null; done
 systemctl show --property=Version --value >/dev/null || { echo 'CRITICAL: this installer requires a running systemd host.'; exit 1; }
 [[ $(systemctl show docker.service --property=LoadState --value 2>/dev/null) == loaded ]] || {
   echo 'CRITICAL: this installer requires a systemd-managed Docker Engine service (docker.service), not rootless or Snap-only Docker.' >&2
@@ -12,23 +41,6 @@ systemctl show --property=Version --value >/dev/null || { echo 'CRITICAL: this i
 }
 docker info >/dev/null
 docker compose version
-if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/configs/layout.json" ]]; then
-  cat >&2 <<'MSG'
-CRITICAL: this is a fresh install and no storage layout has been selected.
-Run ./setup-server.sh first, mount the existing filesystems, review or auto-select
-the destinations in the temporary panel, apply the layout, then rerun install-all.sh.
-This guard prevents a new machine from silently adopting the supplied example paths.
-MSG
-  exit 2
-fi
-if [[ ! -f /srv/docker/server.env && ! -f "$SOURCE/installed-apps.txt" && ! -f "$SOURCE/configs/app-selection.json" ]]; then
-  cat >&2 <<'MSG'
-CRITICAL: this is a fresh install and no Docker application selection has been saved.
-Run ./setup-server.sh, open the temporary panel, choose the applications to install,
-save that selection, review storage for those applications, and then rerun install-all.sh.
-MSG
-  exit 2
-fi
 mkdir -p "$SOURCE/logs"
 LOG="$SOURCE/logs/install-$(date +%Y%m%d-%H%M%S).log"
 exec > >(tee -a "$LOG") 2>&1
