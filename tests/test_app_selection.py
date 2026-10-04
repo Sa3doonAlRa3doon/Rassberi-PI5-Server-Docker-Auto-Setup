@@ -1,13 +1,20 @@
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / 'outputs/Rassberi-PI5-Codes/scripts'
+sys.path.insert(0, str(SCRIPTS))
 spec = importlib.util.spec_from_file_location('app_selection_tests', ROOT / 'outputs/Rassberi-PI5-Codes/scripts/app_selection.py')
 selection = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(selection)
+selector_spec = importlib.util.spec_from_file_location('select_apps_tests', SCRIPTS / 'select-apps.py')
+selector = importlib.util.module_from_spec(selector_spec)
+selector_spec.loader.exec_module(selector)
 
 
 class AppSelectionTests(unittest.TestCase):
@@ -39,6 +46,29 @@ class AppSelectionTests(unittest.TestCase):
             self.assertEqual(result['installed'], ['base', 'optional'])
             self.assertEqual(selection.read_names(Path(tmp) / 'installed-apps.txt'), ['base', 'optional'])
             self.assertEqual(selection.read_names(Path(tmp) / 'enabled-apps.txt'), ['base', 'optional'])
+
+    def test_fresh_install_opens_the_selector_before_docker_checks(self):
+        installer = (ROOT / 'outputs/Rassberi-PI5-Codes/install-all.sh').read_text(encoding='utf-8')
+        self.assertIn('exec "$SOURCE/setup-server.sh"', installer)
+        self.assertLess(installer.index('no Docker application selection has been saved'),
+                        installer.index('docker info >/dev/null'))
+        selector = (ROOT / 'outputs/Rassberi-PI5-Codes/select-apps.sh').read_text(encoding='utf-8')
+        self.assertIn('--base "$BASE"', selector)
+        self.assertIn("parser.add_argument('--base'", (ROOT / 'outputs/Rassberi-PI5-Codes/scripts/select-apps.py').read_text(encoding='utf-8'))
+
+    def test_terminal_selector_saves_a_downloaded_package_selection(self):
+        manifest = [
+            {'name': 'core', 'order': 1},
+            {'name': 'optional', 'order': 2, 'requires': ['core']},
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            (base / 'manifest.json').write_text(json.dumps(manifest))
+            with patch.object(selector.os, 'geteuid', return_value=0, create=True), \
+                 patch('builtins.input', side_effect=['2', '2']):
+                selector.main(base)
+            self.assertEqual(selection.selection_state(base),
+                             {'version': 1, 'installed': ['core', 'optional'], 'startup': ['core', 'optional']})
 
 
 if __name__ == '__main__':
