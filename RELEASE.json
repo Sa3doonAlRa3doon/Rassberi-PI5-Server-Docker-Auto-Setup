@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 13,
+  "release_id": 14,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 13 adds one-command fresh-install and existing-installation upgrade instructions while preserving Release 12 automatic storage-return startup behavior."
+  "notes": "Release 14 documents one-command updates from the current main branch and preserves the guarded Release 13 installation and Release 12 storage-return startup behavior."
 }
