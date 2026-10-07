@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 9,
+  "release_id": 10,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 9 makes storage roles the first setup step and shows each selected app's purpose, planning footprint, storage class and destination before any image pull."
+  "notes": "Release 10 adds a root-only app passwords inventory with unique bootstrap credentials and first-login change instructions for selected applications."
 }

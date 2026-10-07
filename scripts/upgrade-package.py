@@ -22,6 +22,7 @@ PROTECTED = {
     'configs/storage.json', 'configs/layout.json', 'configs/portable-backup.json',
     'configs/storage-autostart.json', 'configs/storage-review-required.json',
     'configs/storage-paused.json', 'configs/storage-preferences.json', 'enabled-apps.txt', 'installed-apps.txt', 'server.env',
+    'app passwords.txt',
     'configs/app-selection.json',
 }
 RUNTIME_PARTS = {'appdata', 'databases', 'backups', 'logs', '__pycache__', '.git'}

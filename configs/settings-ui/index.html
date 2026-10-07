@@ -126,7 +126,7 @@
 <input id="search" class="search" placeholder="Find an application" aria-label="Search apps">
 <div id="app-grid" class="app-grid">
 </div>
-<p class="hint">Dependencies are included automatically. Unselected applications are not prepared, pulled, or started. Exact Docker image size is only known after a selected image is pulled; the panel never downloads every image just to estimate it.</p>
+<p class="hint">Dependencies are included automatically. Unselected applications are not prepared, pulled, or started. Exact Docker image size is only known after a selected image is pulled; the panel never downloads every image just to estimate it. After preparation, selected-app bootstrap credentials are written to the root-only <code>app passwords.txt</code> file in the download and under <code>/srv/docker</code>; change first-login entries immediately.</p>
 </section>
 <section id="backup" class="tab">
 <div class="section-top">
