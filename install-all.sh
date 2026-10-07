@@ -60,7 +60,7 @@ python3 /srv/docker/scripts/storage_guard.py --only root
 python3 /srv/docker/scripts/host-setup.py
 systemctl daemon-reload
 systemctl enable docker.service
-systemctl enable --now pi-storage-watch.timer pi-storage-metrics.timer
+systemctl enable --now pi-storage-watch.timer pi-storage-resume.timer pi-storage-metrics.timer
 systemctl enable pi-storage-start.service
 # Reload applies new dependencies without disrupting existing Docker containers.
 # The new ExecStartPre executes on the next Docker start, including normal reboot.

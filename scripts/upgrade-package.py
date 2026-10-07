@@ -21,7 +21,8 @@ RELEASE_CODE = 'FIXED AND IMPROVED'
 PROTECTED = {
     'configs/storage.json', 'configs/layout.json', 'configs/portable-backup.json',
     'configs/storage-autostart.json', 'configs/storage-review-required.json',
-    'configs/storage-paused.json', 'configs/storage-preferences.json', 'enabled-apps.txt', 'installed-apps.txt', 'server.env',
+    'configs/storage-paused.json', 'configs/storage-start-pending.json',
+    'configs/storage-preferences.json', 'enabled-apps.txt', 'installed-apps.txt', 'server.env',
     'app passwords.txt',
     'configs/app-selection.json',
 }
@@ -425,7 +426,8 @@ def main():
         atomic(backup / 'report.json', (json.dumps(report, indent=2) + '\n').encode(), 0o600)
         subprocess.run(['systemctl', 'daemon-reload'], check=True)
         subprocess.run(['systemctl', 'enable', 'pi-storage-start.service',
-                        'pi-storage-watch.timer', 'pi-storage-metrics.timer'], check=True)
+                        'pi-storage-watch.timer', 'pi-storage-resume.timer',
+                        'pi-storage-metrics.timer'], check=True)
         print('STAGED: package files upgraded; secrets, enabled-apps, storage identity and data were preserved.')
         print('NEXT: sudo /srv/docker/install-all.sh')
         return 0

@@ -58,6 +58,25 @@ passwords and must not be changed casually.
 
 The re-verification pass corrected the planning metadata for the eight multi-container applications whose cards previously showed an unknown RAM budget. Their declared values now match the sum of the Compose memory caps (Nextcloud 1,504 MiB, ONLYOFFICE 4,352 MiB, Wiki.js 640 MiB, Moodle 1,280 MiB, Gitea 640 MiB, n8n 1,152 MiB, Paperless 1,376 MiB and Vaultwarden 320 MiB). Every application card now shows a concrete planning value before an image is pulled; this is a cap for scheduling, not a promise of actual runtime usage. The credential inventory now also states clearly that its values are bootstrap values; changing a password inside an app requires updating or removing the old inventory line manually.
 
+## Release 12 changes
+
+Selected applications that need a data drive now recover automatically after a
+drive was missing during boot. The storage-aware boot service records only the
+selected startup applications whose verified directories could not be reached.
+`pi-storage-resume.timer` checks the UUID, exact mount point, filesystem,
+writability and required directories about once a minute. When those checks
+pass, it starts the queued applications in dependency order and removes them
+from the queue. Applications that were not selected for installation or boot
+are never pulled or started, and an application on a review hold stays stopped.
+
+If a drive is unplugged while an application is already running, the existing
+storage watcher still pauses its containers and restores their original Docker
+restart policy when the drive returns. No fake `/mnt/hdd` or `/mnt/media`
+directory is created on the NVMe root filesystem. If a queued application
+still has a port, memory or configuration error after its drive returns, the
+attempt is logged for review rather than retried forever; the normal manual
+fallback remains `sudo /srv/docker/start-all.sh APP`.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:
@@ -271,7 +290,7 @@ Databases and application state must stay on a writable SSD. Bulk data can use a
 
 Auto-select proposes fresh timestamped `PiServer` directories. It does not scan user folders, adopt existing folders, import files, format disks, partition disks, edit fstab, or delete data. Moving a populated location requires the visible copy-and-verify action; originals are retained.
 
-The guard checks storage before directory creation, installation, configuration commits, managed starts, and resume after a disk returns. If a drive is missing, only projects that need it remain stopped. The package never creates a fake `/mnt/hdd` or `/mnt/media` directory on the root filesystem and writes into it.
+The guard checks storage before directory creation, installation, configuration commits, managed starts, and resume after a disk returns. If a drive is missing, only projects that need it remain stopped. Selected boot applications are queued and resumed automatically after the verified drive returns; unselected applications remain stopped. The package never creates a fake `/mnt/hdd` or `/mnt/media` directory on the root filesystem and writes into it.
 
 Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md), [STORAGE.md](STORAGE.md), and [docs/STORAGE-UPDATE.md](docs/STORAGE-UPDATE.md).
 
@@ -324,6 +343,10 @@ sudo /srv/docker/scripts/disk-health.sh
 
 # Recheck boot, mounts, containers and health probes
 sudo /srv/docker/verify-after-reboot.sh
+
+# Inspect the automatic storage-return queue (normally empty)
+sudo test -f /srv/docker/configs/storage-start-pending.json && sudo cat /srv/docker/configs/storage-start-pending.json || echo 'storage-return queue is empty'
+sudo tail -n 50 /srv/docker/logs/storage-resume.log
 ```
 
 Direct `docker compose up`, `docker start`, or Portainer actions can bypass the host storage wrapper. Use the management scripts for storage-dependent applications.

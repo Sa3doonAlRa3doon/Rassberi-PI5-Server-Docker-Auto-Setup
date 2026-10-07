@@ -49,6 +49,13 @@ class PlatformSupportTests(unittest.TestCase):
         self.assertIn('DPkg::Lock::Timeout=300', installer)
         self.assertNotIn('set-timezone', installer)
 
+    def test_storage_resume_timer_is_installed_and_managed(self):
+        installer = (ROOT / 'outputs/Rassberi-PI5-Codes/install-all.sh').read_text()
+        setup = (ROOT / 'outputs/Rassberi-PI5-Codes/scripts/host-setup.py').read_text()
+        self.assertIn('pi-storage-resume.timer', installer)
+        self.assertIn('pi-storage-resume.timer', setup)
+        self.assertIn('pi-storage-resume.service', setup)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -93,6 +93,7 @@ def atomic_write(path, content, backup_dir=None, mode=None):
 def managed_files(base=BASE):
     mapping = {'/etc/systemd/system/docker.service.d/20-pi-storage.conf': 'systemd/docker-storage.conf'}
     for name in ('pi-storage-watch.service', 'pi-storage-watch.timer', 'pi-storage-start.service',
+                 'pi-storage-resume.service', 'pi-storage-resume.timer',
                  'pi-storage-metrics.service', 'pi-storage-metrics.timer',
                  'pi-portable-backup.service', 'pi-portable-backup.timer'):
         mapping['/etc/systemd/system/' + name] = 'systemd/' + name
@@ -162,7 +163,7 @@ def main():
     # explicit portable-backup timer.
     subprocess.run(['systemctl', 'disable', '--now', 'pi-backup.timer'], check=False)
     subprocess.run(['systemctl', 'enable', 'pi-storage-start.service', 'pi-storage-watch.timer',
-                    'pi-storage-metrics.timer'], check=True)
+                    'pi-storage-resume.timer', 'pi-storage-metrics.timer'], check=True)
     print('PASS: atomic HDD fstab handling and selective storage startup configured; OS/media fstab entries preserved.')
 
 

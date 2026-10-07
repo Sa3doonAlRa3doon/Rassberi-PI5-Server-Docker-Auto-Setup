@@ -1,18 +1,19 @@
 {
   "format": 1,
-  "from": "release-10",
-  "to": "release-11",
-  "release_id": 11,
+  "from": "release-11",
+  "to": "release-12",
+  "release_id": 12,
   "files": {
     ".gitignore": {
-      "sha256": "41738d9c72b2afaf760f9678d6550b5f7c66dfeb3de7acf478197f1e486c0bbe",
+      "sha256": "e7cb817fc2ae35f6c36f6e6b9daae2a5f916421c28706c64bec68b743215e1ef",
       "accepted_sha256": [
         "29f1b95a70a46321fb87b1a8dbc513ebbaa59fa1f78a7fddb0ca32bd8252d724",
         "eb063753f6f1cd80a1c3fa0f984284be4327318da8fb2454581f05d82db3eeba",
         "1435049af8de171b6b51913cb1fd294895489dc3395861c394f6fc09fdb73988",
-        "41738d9c72b2afaf760f9678d6550b5f7c66dfeb3de7acf478197f1e486c0bbe"
+        "41738d9c72b2afaf760f9678d6550b5f7c66dfeb3de7acf478197f1e486c0bbe",
+        "e7cb817fc2ae35f6c36f6e6b9daae2a5f916421c28706c64bec68b743215e1ef"
       ],
-      "previous_sha256": "eb063753f6f1cd80a1c3fa0f984284be4327318da8fb2454581f05d82db3eeba"
+      "previous_sha256": "41738d9c72b2afaf760f9678d6550b5f7c66dfeb3de7acf478197f1e486c0bbe"
     },
     "BACKUPS.md": {
       "sha256": "f6def1b9edc8ac6114aa0ed26e3f08a380192bc13b045843c839dde08dce646f",
@@ -33,7 +34,7 @@
       "previous_sha256": "1112ec4dda536950bdfbd40e20f7cbb9867374291422f04de939e91f92e72be9"
     },
     "README.md": {
-      "sha256": "52f53782b8a2da120a6ec69701e6d531f9c627d3362f27ca3b1918314c11866b",
+      "sha256": "998b6ece192b49fd36c6cd7538e74605acc120dae6ed62273ce8343d73e9fabf",
       "accepted_sha256": [
         "13c9dabad36218b00c7a39e3d7a2134fc4aa7485bcf86dc9753554f784bfc54a",
         "1ad237f211839380f38db670fd1e64d018f7f4ac753130d8c779942223a8ac84",
@@ -61,12 +62,14 @@
         "896a5606a9facea13ee667ea0e1857805df378b298cf935da73c0bab20afd577",
         "bf5356186f24496163827f4c7d0bf356643753b62ff73fb5fd746c2009ff13ed",
         "09eb6b4dce8f26b3b0e1f1d42d0793d75c43d2d5949a1329db0262589231ea00",
-        "52f53782b8a2da120a6ec69701e6d531f9c627d3362f27ca3b1918314c11866b"
+        "52f53782b8a2da120a6ec69701e6d531f9c627d3362f27ca3b1918314c11866b",
+        "5d34340da5f14268ed6d8b31171f4d6415b7d75cc9f3d72afd188831cbb65290",
+        "998b6ece192b49fd36c6cd7538e74605acc120dae6ed62273ce8343d73e9fabf"
       ],
-      "previous_sha256": "09eb6b4dce8f26b3b0e1f1d42d0793d75c43d2d5949a1329db0262589231ea00"
+      "previous_sha256": "5d34340da5f14268ed6d8b31171f4d6415b7d75cc9f3d72afd188831cbb65290"
     },
     "RELEASE.json": {
-      "sha256": "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356",
+      "sha256": "8d460fda8557aee7b5f64e8c3ae13984fb1fd53ec966701412c6ebfb8cf923fb",
       "accepted_sha256": [
         "032da0d86532e4f583eab419853f586695cb0c5708d66e499ea519d58b6803a7",
         "1b74a2bafe5d75cb6511c2633b8cace329496d542804b316d2c133883f52198b",
@@ -80,7 +83,8 @@
         "f5c9638b278c4b45861e73261014573fb4a8c278924b9a007ffc8b1f4fc6b0bf",
         "27e88dcea8609e989f62f5ba62e37887b10d80e360dab1da84dcb1dc2e5f3bbe",
         "88d1d0ede83bdba7c6428ffc08fd5178ced606889ea23420dfacf5cacfa0ab0c",
-        "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356"
+        "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356",
+        "8d460fda8557aee7b5f64e8c3ae13984fb1fd53ec966701412c6ebfb8cf923fb"
       ],
       "previous_sha256": "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356"
     },
@@ -1384,12 +1388,13 @@
       "previous_sha256": "31e438865c629661de1058fbd0f4d31fad70fccda378ee708225c08bd0cea6c2"
     },
     "docs/STORAGE-UPDATE.md": {
-      "sha256": "062b720255e809a549296bc760f0d13756e6c41870843e37e0553f44bc681e66",
+      "sha256": "581bea8d9674fbb961971b68b3c26f8aa78fbf6bbf4567d05ac4c303a5f96ecb",
       "accepted_sha256": [
         "ce5ca47838ebe784b841fa94ee1cb6787122ff2cc6d3ed0ab7e13016e6bf24f4",
-        "062b720255e809a549296bc760f0d13756e6c41870843e37e0553f44bc681e66"
+        "062b720255e809a549296bc760f0d13756e6c41870843e37e0553f44bc681e66",
+        "581bea8d9674fbb961971b68b3c26f8aa78fbf6bbf4567d05ac4c303a5f96ecb"
       ],
-      "previous_sha256": "ce5ca47838ebe784b841fa94ee1cb6787122ff2cc6d3ed0ab7e13016e6bf24f4"
+      "previous_sha256": "062b720255e809a549296bc760f0d13756e6c41870843e37e0553f44bc681e66"
     },
     "docs/TAILSCALE-HOMEPAGE.md": {
       "sha256": "12bee324957f1870eb1afd86ae9709b6610e7c754b0c101863d4243b3fa3a69a",
@@ -1400,7 +1405,7 @@
       "previous_sha256": "abe75814f69ba0cbc8ac0e925bb0a40f0ea770567af78f13191c137d15a27751"
     },
     "docs/UPGRADE.md": {
-      "sha256": "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5",
+      "sha256": "4c3a2e4b0dd59ec90472605ecfba64a1f7e940fdf7da5118b968230a79054a6c",
       "accepted_sha256": [
         "42e94c039f37b690e29d07c44ae1ba5b1471b8cd6de08ecd60b49833c53465c7",
         "4e5c7424b8ccde7e94a0706b433f126586cb6fd513148ce39f5c737f9f4c5dd8",
@@ -1409,9 +1414,10 @@
         "bf73509c3083424e9c19a755b1a580e5ccb5da0bcf4c0ad6c0f9aa4852233791",
         "dbd97f149f0d920f26617066797cca2375e5db21cc5a9b1fb2111e7fc5a6e250",
         "e93b07f6c1501bfe37259154dad37d0bbd4ed50b1d48e8276c4d2b34ec07bbf3",
-        "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5"
+        "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5",
+        "4c3a2e4b0dd59ec90472605ecfba64a1f7e940fdf7da5118b968230a79054a6c"
       ],
-      "previous_sha256": "a551458c209caea5389761117f3b0e1afff6eda080e4edba9f036b5b435dbbd4"
+      "previous_sha256": "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5"
     },
     "docs/UTILITIES-IMAGE-EVIDENCE.json": {
       "sha256": "e3707e3352913197c2ea78aed23647d51b5c6adc1918a98fc9d923d2d2e00a33",
@@ -1450,7 +1456,7 @@
       "previous_sha256": "1aa86b3c5b83a7e8f29c63942da5dfe93c58bd0444251c1b5246dd93e067a938"
     },
     "install-all.sh": {
-      "sha256": "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be",
+      "sha256": "53754c8620ac877b0d0d4c349bbc8022efabe2a26119c00cdee250833fc976de",
       "accepted_sha256": [
         "001ec9b98c5f8cd564649a625c903f66147f55187dadd932bc56077264f0758a",
         "332e2f4f84a415463e594e60517651ee155cd408dd9a1e009bfed83a51fcc57f",
@@ -1460,9 +1466,10 @@
         "7e03a2749ad57685151c2de307ccfb602ddcff0716a71ada999e65a6f5fea0a4",
         "b1f1ef1ab9c01cc7eb28560a0b83fd8fe239d206df20eea2363498a281939fa8",
         "f2e59813a51112a1af0106a97087b4606f0c52c7c09bdd9a824b2910517ac523",
-        "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be"
+        "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be",
+        "53754c8620ac877b0d0d4c349bbc8022efabe2a26119c00cdee250833fc976de"
       ],
-      "previous_sha256": "7e03a2749ad57685151c2de307ccfb602ddcff0716a71ada999e65a6f5fea0a4"
+      "previous_sha256": "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be"
     },
     "install-server.sh": {
       "sha256": "d9ac503cb5abdf5d4229a591b238a508cab108e169c77f1dc7801a6f10930aa8",
@@ -1513,13 +1520,14 @@
       "previous_sha256": "be60b6e4ed48d5d9dc07b8b1ff81408978cd4178e28054c14f6f6ad2f742ba54"
     },
     "scripts/apply-storage-update.py": {
-      "sha256": "cccf1bcc5f2c388f3c7d8e1a4ec6dab9862f400e187b0a901e97eafe05d12555",
+      "sha256": "9917a6166edc36b92f46f68cb36f0471880bcfb405484ba72827fdec84603149",
       "accepted_sha256": [
         "1d35d96664e66252e75a6555f0a895202bd0cf30abc1832650455a4de2f17e19",
         "626d1506c2248828700c89286ad307004f351eba33735d33abbcd131111f08d2",
-        "cccf1bcc5f2c388f3c7d8e1a4ec6dab9862f400e187b0a901e97eafe05d12555"
+        "cccf1bcc5f2c388f3c7d8e1a4ec6dab9862f400e187b0a901e97eafe05d12555",
+        "9917a6166edc36b92f46f68cb36f0471880bcfb405484ba72827fdec84603149"
       ],
-      "previous_sha256": "626d1506c2248828700c89286ad307004f351eba33735d33abbcd131111f08d2"
+      "previous_sha256": "cccf1bcc5f2c388f3c7d8e1a4ec6dab9862f400e187b0a901e97eafe05d12555"
     },
     "scripts/backup.sh": {
       "sha256": "8590b76d0189f8dbd5da8bbcaee3bc0b489765cbe0cac33f89641c84d74d3584",
@@ -1531,7 +1539,7 @@
       "previous_sha256": "4a3291d2ba4321e6f8bc2ae59bac65659e819075fcd82c5328ada16b6e7873bc"
     },
     "scripts/boot-storage.py": {
-      "sha256": "def9310336feda2e36b82e57e67ff8db41fb759649fa715c603ad6b294dd6b14",
+      "sha256": "19aa978aa0ff62fc704cad877523ba36874d1de7147aaa7f2f758e8eadf56560",
       "accepted_sha256": [
         "1787575fcbe4da2d40568a2833d754b8d6262a5369831aba6501bbd22891c564",
         "2c4ab665bb253bac32d80dec5541ab19f0a6c4f0ce9f9e2b53548947bd64336c",
@@ -1539,9 +1547,11 @@
         "9a7f73e58914d5565a66bafcf6e6edccac90f5b2452ac93d59b254149484e81a",
         "c6fbfe7ca0ed4e336b62f3abbd038d895c2da6d606d6c87425a697cdfd48aee4",
         "f62ab10249a308f053f393f309e4a8c15d415026f9a31a85fec573ccac193682",
-        "def9310336feda2e36b82e57e67ff8db41fb759649fa715c603ad6b294dd6b14"
+        "def9310336feda2e36b82e57e67ff8db41fb759649fa715c603ad6b294dd6b14",
+        "7b99e43eaefdfc3c81bf27f6cca7d5e62ef03d13f5a1c67afc7babdfa89c7509",
+        "19aa978aa0ff62fc704cad877523ba36874d1de7147aaa7f2f758e8eadf56560"
       ],
-      "previous_sha256": "c6fbfe7ca0ed4e336b62f3abbd038d895c2da6d606d6c87425a697cdfd48aee4"
+      "previous_sha256": "7b99e43eaefdfc3c81bf27f6cca7d5e62ef03d13f5a1c67afc7babdfa89c7509"
     },
     "scripts/check-storage.sh": {
       "sha256": "18fd994749074cbd9434a22b3a0bf89bead6fef7b9f72ca2228c105a7a00134e",
@@ -1584,14 +1594,15 @@
       "previous_sha256": "7f9f4f8bd4f71b1119bb6d1a3eb505a8842363b385895de0be533545f6ba3e6c"
     },
     "scripts/host-setup.py": {
-      "sha256": "760665cdd3f269867285b6b2802d77aa6c9d158f6c63785f16b7760266631d7b",
+      "sha256": "7bca4e369ebd8375fe6575d5fcbc1a16c55c5a6993bd253d6333e94a1384d735",
       "accepted_sha256": [
         "0285b9ea1bc56916b69d43e32d6251e96c1437216369fe8020e5c608022dad5f",
         "74579cebd052f4760b96bbd1b97604bb5afb43c97df6b139e1758f97990410af",
         "7a673ea9f91e3ab3aafcd62655e4a3f7d9714cffd1b7de127b7c7a1a9fe5c1e1",
-        "760665cdd3f269867285b6b2802d77aa6c9d158f6c63785f16b7760266631d7b"
+        "760665cdd3f269867285b6b2802d77aa6c9d158f6c63785f16b7760266631d7b",
+        "7bca4e369ebd8375fe6575d5fcbc1a16c55c5a6993bd253d6333e94a1384d735"
       ],
-      "previous_sha256": "0285b9ea1bc56916b69d43e32d6251e96c1437216369fe8020e5c608022dad5f"
+      "previous_sha256": "760665cdd3f269867285b6b2802d77aa6c9d158f6c63785f16b7760266631d7b"
     },
     "scripts/install-settings-service.py": {
       "sha256": "7e5f1f7830b89741789fc29d78e41481bd322762151d53d0a3f64dcab094ea8d",
@@ -1770,7 +1781,7 @@
       "previous_sha256": "a1c354b6e0f087685543d906130d83d271e224b1e8084b5d047bf022f5ad87c0"
     },
     "scripts/upgrade-package.py": {
-      "sha256": "27c48c1fed83642f90a670680885391ac3acd1e11c2c17a5468f25daf724e83b",
+      "sha256": "227b09bb242442e5aae33e86922e3ced53f68ed7aea93ea2072c2688916d1583",
       "accepted_sha256": [
         "0c711ee3f3a36566195bd29ab6e7359fcf22f3063c5d1848045a24a3daf75094",
         "0e781c3394988972df844c80948d9b38852fefd4915b6131a968e1cf11c1b52c",
@@ -1780,9 +1791,11 @@
         "7a29c3900068010dbdd837dd5d0873671b38a6c619508913ec78d978c93e4fa3",
         "99f929e2932371320e569670b7d48cdd62877824155e05fc1263796622223197",
         "3be6094519f4d5edc06b8ac7fc00aa371e04f7d83ed9deff0955836417e01752",
-        "27c48c1fed83642f90a670680885391ac3acd1e11c2c17a5468f25daf724e83b"
+        "27c48c1fed83642f90a670680885391ac3acd1e11c2c17a5468f25daf724e83b",
+        "aaa67ef707b6312c893beeba8c97071a0f90317843b316825a25c8bbcccf6944",
+        "227b09bb242442e5aae33e86922e3ced53f68ed7aea93ea2072c2688916d1583"
       ],
-      "previous_sha256": "7a29c3900068010dbdd837dd5d0873671b38a6c619508913ec78d978c93e4fa3"
+      "previous_sha256": "aaa67ef707b6312c893beeba8c97071a0f90317843b316825a25c8bbcccf6944"
     },
     "scripts/watch-storage.sh": {
       "sha256": "5309dc157f4072741b0056ae0b2182dfb581d4c448194ed94b88331f28165263",
@@ -1968,6 +1981,24 @@
         "5712895ee174421137ba27913a63fa0231f3f4a4f46f29ed2d7d59dabf84aa60"
       ],
       "previous_sha256": "2382dba2c41963ce5124aea104b2a215fa2381c309af44d5e31b92569c90d5ac"
+    },
+    "scripts/storage-resume.py": {
+      "sha256": "57a2e7bc4bb59e7c0349b28e6c6d6fc83eca2d86c8859a8cc2cf29789a9945d0",
+      "accepted_sha256": [
+        "57a2e7bc4bb59e7c0349b28e6c6d6fc83eca2d86c8859a8cc2cf29789a9945d0"
+      ]
+    },
+    "systemd/pi-storage-resume.service": {
+      "sha256": "aa2f51a5ea68c3baab49c0d8e06f91a078aaccc020b2321d38e7673d0b2eefa6",
+      "accepted_sha256": [
+        "aa2f51a5ea68c3baab49c0d8e06f91a078aaccc020b2321d38e7673d0b2eefa6"
+      ]
+    },
+    "systemd/pi-storage-resume.timer": {
+      "sha256": "879258520cd27975f8bf19b1f369136b49aa579a80faf4d9a2427c1efb2769e9",
+      "accepted_sha256": [
+        "879258520cd27975f8bf19b1f369136b49aa579a80faf4d9a2427c1efb2769e9"
+      ]
     }
   }
 }

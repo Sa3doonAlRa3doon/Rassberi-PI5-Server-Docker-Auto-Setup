@@ -2,6 +2,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+import tempfile
 import types
 import unittest
 
@@ -18,6 +19,20 @@ SPEC.loader.exec_module(boot_storage)
 
 
 class BootStartupOrderTests(unittest.TestCase):
+    def test_pending_queue_is_limited_to_current_startup_selection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'storage-start-pending.json'
+            path.write_text(json.dumps(['nextcloud', 'removed', 12]))
+            self.assertEqual(boot_storage.pending_names(path, {'nextcloud', 'new'}), {'nextcloud'})
+
+    def test_empty_pending_queue_is_removed_atomically(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'storage-start-pending.json'
+            boot_storage.write_pending(path, {'nextcloud'})
+            self.assertEqual(json.loads(path.read_text()), ['nextcloud'])
+            boot_storage.write_pending(path, set())
+            self.assertFalse(path.exists())
+
     def test_requested_heavy_apps_start_before_other_selected_apps(self):
         manifest = json.loads(
             (ROOT / 'outputs/Rassberi-PI5-Codes/manifest.json').read_text(encoding='utf-8-sig'))
