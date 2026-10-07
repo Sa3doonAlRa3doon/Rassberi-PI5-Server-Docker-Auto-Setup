@@ -56,6 +56,15 @@ class AppSelectionTests(unittest.TestCase):
         self.assertIn('--base "$BASE"', selector)
         self.assertIn("parser.add_argument('--base'", (ROOT / 'outputs/Rassberi-PI5-Codes/scripts/select-apps.py').read_text(encoding='utf-8'))
 
+    def test_setup_panel_explains_storage_first_and_never_pulls_while_browsing(self):
+        html = (ROOT / 'outputs/Rassberi-PI5-Codes/configs/settings-ui/index.html').read_text(encoding='utf-8')
+        script = (ROOT / 'outputs/Rassberi-PI5-Codes/configs/settings-ui/app.js').read_text(encoding='utf-8')
+        self.assertIn('Choose storage roles first', html)
+        self.assertIn('Nothing is pulled while you browse', html)
+        self.assertIn('save-storage-preferences', script)
+        self.assertIn('state.selection_saved', script)
+        self.assertIn('state.layout_saved', script)
+
     def test_terminal_selector_saves_a_downloaded_package_selection(self):
         manifest = [
             {'name': 'core', 'order': 1},

@@ -20,6 +20,7 @@ import app_selection
 
 BASE = Path(__file__).resolve().parents[1]
 WEB = BASE / 'configs/settings-ui'
+STORAGE_PREFERENCES = Path('configs/storage-preferences.json')
 STATE = dict(running=False, name=None, result=None, error=None)
 JOB_LOCK = threading.Lock()
 LAST_ACCESS = time.monotonic()
@@ -62,7 +63,45 @@ def selected_apps():
 
 
 def installed_apps():
-    return app_selection.installed_names(BASE, layout.read_json(BASE / 'manifest.json'))
+    manifest = layout.read_json(BASE / 'manifest.json')
+    # A downloaded package has no implicit app set.  Keeping this empty until
+    # the owner saves a selection prevents the storage table from presenting
+    # the supplied example profile as if every app were already chosen.
+    if not deployed() and not ((BASE / 'installed-apps.txt').is_file() or
+                               (BASE / app_selection.STATE_FILE).is_file()):
+        return []
+    return app_selection.installed_names(BASE, manifest)
+
+
+def storage_preferences():
+    return layout.read_json(BASE / STORAGE_PREFERENCES, {
+        'version': 1, 'system_uuid': '', 'bulk_uuid': '', 'media_uuid': ''})
+
+
+def app_storage_class(app):
+    classes = ['SSD / NVMe']
+    paths = [d.get('path', '') for d in app.get('directories', [])]
+    database = app.get('database') or {}
+    if database.get('path'):
+        paths.append(database['path'])
+    mounts = set(app.get('mounts', []))
+    if 'hdd' in mounts or any(p.startswith('/mnt/hdd/') for p in paths):
+        classes.append('HDD / bulk files')
+    if 'media' in mounts or any(p.startswith('/mnt/media/') for p in paths):
+        classes.append('microSD / media')
+    return ' + '.join(dict.fromkeys(classes))
+
+
+def app_storage_estimate(app):
+    """Explain the pre-pull disk estimate without downloading an image."""
+    paths = [d.get('path', '') for d in app.get('directories', [])]
+    if (app.get('database') or {}).get('path'):
+        paths.append(app['database']['path'])
+    if not paths:
+        return 'No persistent server data; image size is shown after install'
+    if any(p.startswith('/mnt/') for p in paths):
+        return 'Data-dependent bulk storage; image size is shown after install'
+    return 'Appdata/config only; image size is shown after install'
 
 
 def snapshot():
@@ -75,12 +114,34 @@ def snapshot():
         dict(name='/dev/mmcblk0p1', uuid='demo-media', mount='/mnt/media', eligible=True, kind='microSD',
              model='256 GB microSD (preview)', size=256*1024**3, free_bytes=210*1024**3)]
     installed = installed_apps()
-    return dict(disks=disks, placements=layout.catalog(BASE, installed), enabled=selected_apps(), installed=installed,
-        apps=[{**{k: a.get(k) for k in ('name', 'memory_mib', 'default_enabled', 'setup', 'ports', 'optional', 'blocked_reason')},
-               'installed': a['name'] in installed,
-               # A selected app becomes startable after Install package has
-               # created its guarded directories and private environment.
-               'prepared': (BASE / 'compose' / a['name'] / '.env').is_file()} for a in manifest],
+    placements = layout.catalog(BASE, installed)
+    paths_by_app = {a['name']: [] for a in manifest}
+    for row in placements:
+        for name in row.get('apps', []):
+            paths_by_app.setdefault(name, []).append({'kind': row['kind'], 'path': row['current']})
+    apps = []
+    for app in manifest:
+        declared = []
+        for directory in app.get('directories', []):
+            declared.append({'kind': 'bulk' if directory.get('path', '').startswith('/mnt/') else 'appdata',
+                             'path': directory.get('path', '')})
+        if (app.get('database') or {}).get('path'):
+            declared.append({'kind': 'database', 'path': app['database']['path']})
+        apps.append({**{k: app.get(k) for k in ('name', 'memory_mib', 'default_enabled', 'setup', 'ports', 'optional', 'blocked_reason')},
+            'description': app.get('description') or app.get('setup') or 'Managed by the Pi server package.',
+            'storage_class': app_storage_class(app),
+            'storage_estimate': app_storage_estimate(app),
+            'storage_paths': paths_by_app.get(app['name']) or declared,
+            'installed': app['name'] in installed,
+            # A selected app becomes startable after Install package has
+            # created its guarded directories and private environment.
+            'prepared': (BASE / 'compose' / app['name'] / '.env').is_file()})
+    selection_saved = ((BASE / 'installed-apps.txt').is_file() or
+                       (BASE / app_selection.STATE_FILE).is_file())
+    layout_saved = (BASE / 'configs/layout.json').is_file()
+    return dict(disks=disks, placements=placements, enabled=selected_apps(), installed=installed,
+        apps=apps, storage_preferences=storage_preferences(), selection_saved=selection_saved,
+        layout_saved=layout_saved, fresh_setup=not deployed() and not selection_saved,
         backup=layout.read_json(BASE / 'configs/portable-backup.json', dict(mount='/mnt/backup', uuid='', folder='pi-server', include_bulk=True)),
         demo=DEMO, deployed=deployed(), job=STATE.copy())
 
@@ -150,6 +211,23 @@ def dispatch(action, data):
         raise ValueError('Preview is read-only. Run the setup wizard on your Pi to apply changes.')
     if action == 'layout-apply':
         return with_lock(lambda: layout.apply(data.get('placements'), bool(data.get('migrate'))))
+    if action == 'save-storage-preferences':
+        values = data if isinstance(data, dict) else {}
+        requested = {key: values.get(key, '') for key in ('system_uuid', 'bulk_uuid', 'media_uuid')}
+        if not requested['system_uuid'] or not all(isinstance(value, str) for value in requested.values()):
+            raise ValueError('Choose a primary SSD before continuing')
+        def save_preferences():
+            disks = layout.discover()
+            eligible = {d.get('uuid'): d for d in disks if d.get('eligible')}
+            for key, uuid in requested.items():
+                if uuid and uuid not in eligible:
+                    raise ValueError('Selected storage is not mounted and writable: ' + key)
+            if eligible[requested['system_uuid']].get('kind') != 'SSD':
+                raise ValueError('Primary application and database storage must be an SSD/NVMe filesystem')
+            config = {'version': 1, **requested}
+            layout.atomic_json(BASE / STORAGE_PREFERENCES, config)
+            return {'saved': True, 'preferences': config}
+        return with_lock(save_preferences)
     if action == 'install':
         if not deployed():
             missing = []
@@ -295,7 +373,7 @@ class Handler(BaseHTTPRequestHandler):
             action = urlsplit(self.path).path.removeprefix('/api/')
             if action == 'auto-select':
                 state = snapshot()
-                return self.reply(200, {'placements': layout.auto_select(state['disks'], state['placements'], state['backup'].get('uuid'))})
+                return self.reply(200, {'placements': layout.auto_select(state['disks'], state['placements'], state['backup'].get('uuid'), state['storage_preferences'])})
             if action == 'layout-plan':
                 if DEMO:
                     raise ValueError('Preview is read-only; live mount checks run on your Pi')

@@ -51,6 +51,9 @@ class UpgradePlanTests(unittest.TestCase):
         (self.stage / 'compose/app/.env').write_text('SECRET=value')
         self.assertEqual(list(upgrade.files(self.stage)), [])
 
+    def test_storage_role_preferences_are_preserved_across_upgrade(self):
+        self.assertIn('configs/storage-preferences.json', upgrade.PROTECTED)
+
     def test_custom_selected_only_layout_stages_without_unselected_hdd_requirement(self):
         """Release staging must retain inactive paths on an SSD-only install."""
         source = Path(self.temporary.name) / 'incoming'

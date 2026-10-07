@@ -110,6 +110,44 @@ class SettingsSelectionTests(unittest.TestCase):
                 self.assertEqual(settings.dispatch('install', {}), {'completed': True})
                 external.assert_called_once_with(['bash', str(base / 'install-all.sh')])
 
+    def test_fresh_panel_does_not_adopt_every_manifest_app(self):
+        manifest = [
+            {'name': 'core', 'order': 1, 'default_enabled': True,
+             'directories': [{'path': '/srv/docker/appdata/core'}],
+             'setup': 'Core service.'},
+            {'name': 'optional', 'order': 2, 'default_enabled': False,
+             'directories': [{'path': '/mnt/hdd/optional'}],
+             'setup': 'Optional bulk service.'},
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            (base / 'manifest.json').write_text(json.dumps(manifest))
+            with patch.object(settings, 'BASE', base), patch.object(settings, 'DEMO', True):
+                state = settings.snapshot()
+            self.assertEqual(state['installed'], [])
+            self.assertEqual(state['placements'], [])
+            self.assertTrue(state['fresh_setup'])
+            self.assertEqual(state['apps'][0]['storage_class'], 'SSD / NVMe')
+            self.assertIn('image size is shown after install', state['apps'][1]['storage_estimate'])
+
+    def test_storage_preferences_are_saved_and_require_primary_ssd(self):
+        manifest = [{'name': 'core', 'order': 1}]
+        disks = [
+            {'uuid': 'ssd', 'kind': 'SSD', 'mount': '/', 'eligible': True},
+            {'uuid': 'hdd', 'kind': 'HDD', 'mount': '/mnt/hdd', 'eligible': True},
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            (base / 'manifest.json').write_text(json.dumps(manifest))
+            with patch.object(settings, 'BASE', base), patch.object(settings, 'deployed', return_value=False), \
+                 patch.object(settings.layout, 'discover', return_value=disks), \
+                 patch.object(settings, 'with_lock', side_effect=lambda callback: callback()):
+                with self.assertRaisesRegex(ValueError, 'primary SSD'):
+                    settings.dispatch('save-storage-preferences', {'system_uuid': '', 'bulk_uuid': 'hdd', 'media_uuid': ''})
+                result = settings.dispatch('save-storage-preferences', {'system_uuid': 'ssd', 'bulk_uuid': 'hdd', 'media_uuid': ''})
+            self.assertTrue(result['saved'])
+            self.assertEqual(json.loads((base / 'configs/storage-preferences.json').read_text())['bulk_uuid'], 'hdd')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
