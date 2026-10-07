@@ -84,6 +84,12 @@ existing installation. The fresh command still opens the storage and app
 selection panel before Docker checks or image pulls, so it remains select-only
 and safe for different SSD, HDD and microSD layouts.
 
+## Release 14 changes
+
+The update instructions now follow the repository's current `main` branch
+instead of a release-specific download folder. The guarded release gate still
+requires a newer published `RELEASE.json` before changing `/srv/docker`.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:
@@ -169,14 +175,14 @@ opens the temporary setup panel, and starts the guarded installer. Replace the
 example address with the Pi's private LAN or Tailscale IPv4 address:
 
 ```bash
-cd ~/Downloads && (test -d Rassberi-release13/.git && git -C Rassberi-release13 pull --ff-only || git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-release13) && cd Rassberi-release13 && chmod +x install-all.sh setup-server.sh && sudo BIND_IP=192.168.4.123 ./install-all.sh
+cd ~/Downloads && (if test -d Rassberi-PI5-Server-Docker-Auto-Setup/.git; then git -C Rassberi-PI5-Server-Docker-Auto-Setup checkout main && git -C Rassberi-PI5-Server-Docker-Auto-Setup pull --ff-only; else git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-PI5-Server-Docker-Auto-Setup; fi) && cd Rassberi-PI5-Server-Docker-Auto-Setup && chmod +x install-all.sh setup-server.sh && sudo BIND_IP=192.168.4.123 ./install-all.sh
 ```
 
 If the machine has no saved selection or layout, the command pauses at the
 temporary panel before Docker checks or image pulls. Select the storage roles,
 choose only the applications you want, review the destinations, and press
 **Install package**. It never downloads all application images just to show
-their choices. If `Rassberi-release13` already exists, the command fast-forwards
+their choices. If `Rassberi-PI5-Server-Docker-Auto-Setup` already exists, the command fast-forwards
 that checkout instead of deleting it.
 
 ### New or different hardware
@@ -259,10 +265,25 @@ sudo ./upgrade-server.sh --apply
 sudo /srv/docker/install-all.sh
 ```
 
+### Update to the newest published version
+
+Use this command on an existing installation. It follows `main`, performs a
+read-only dry run first, applies only the reviewed newer release, preserves
+application data and credentials, and then reconciles the selected projects:
+
+```bash
+cd ~/Downloads && (if test -d Rassberi-PI5-Server-Docker-Auto-Setup/.git; then git -C Rassberi-PI5-Server-Docker-Auto-Setup checkout main && git -C Rassberi-PI5-Server-Docker-Auto-Setup pull --ff-only; else git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-PI5-Server-Docker-Auto-Setup; fi) && cd Rassberi-PI5-Server-Docker-Auto-Setup && chmod +x upgrade-server.sh && sudo ./upgrade-server.sh --dry-run && sudo ./upgrade-server.sh --apply && sudo /srv/docker/install-all.sh
+```
+
+If the dry run reports a locally customized file, stop and review that report;
+the updater will not silently overwrite it. It rejects the same or an older
+release and never deletes Nextcloud, Paperless, database, bulk-file or backup
+data.
+
 The same existing-installation upgrade as one copy-paste command is:
 
 ```bash
-cd ~/Downloads && git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-release13 && cd Rassberi-release13 && chmod +x upgrade-server.sh && sudo ./upgrade-server.sh --dry-run && sudo ./upgrade-server.sh --apply && sudo /srv/docker/install-all.sh
+cd ~/Downloads && (if test -d Rassberi-PI5-Server-Docker-Auto-Setup/.git; then git -C Rassberi-PI5-Server-Docker-Auto-Setup checkout main && git -C Rassberi-PI5-Server-Docker-Auto-Setup pull --ff-only; else git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-PI5-Server-Docker-Auto-Setup; fi) && cd Rassberi-PI5-Server-Docker-Auto-Setup && chmod +x upgrade-server.sh && sudo ./upgrade-server.sh --dry-run && sudo ./upgrade-server.sh --apply && sudo /srv/docker/install-all.sh
 ```
 
 The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings, and the complete installed/boot selection state in `configs/app-selection.json` (including a deliberately empty boot list). It does not delete old Nextcloud, Paperless or other application data. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
