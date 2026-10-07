@@ -12,3 +12,7 @@ logs/
 .env
 *.env.local
 configs/settings-private/
+
+# Generated bootstrap credential inventory (root-only on the Pi)
+app passwords.txt
+app-passwords.txt

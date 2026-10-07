@@ -11,6 +11,7 @@ A storage-aware Docker Compose server package for a Raspberry Pi 5. It offers 41
 - Keeps large documents, books, ZIM files, shared files, music and videos on selected bulk-storage mounts.
 - Verifies filesystem identity, mount points, free space and writable state before creating paths or starting dependent projects.
 - Generates root-only `.env` files without replacing existing credentials.
+- Generates a root-only `app passwords.txt` inventory in the downloaded folder and `/srv/docker` for selected apps; each app receives its own bootstrap credential.
 - Starts ONLYOFFICE, Jupyter and Stirling PDF at boot as requested, with their dependencies and verified storage ready first; other heavy or scanning applications remain on demand so the host can be tuned.
 - Provides guarded update, backup, restore, storage migration and upgrade tools.
 
@@ -35,6 +36,23 @@ The first-run panel now follows the order a new owner needs:
 3. **Review before install:** app destinations are generated only for the apps selected. The **Install selected package** action stays disabled until both the app selection and reviewed layout exist.
 
 The panel does not pull Docker images while the owner is browsing, choosing storage or reading app details. It never downloads every image to estimate disk usage. Before a pull, it reports the honest planning state: persistent data is either SSD/appdata-only or data-dependent bulk storage; the exact image size becomes known only for an image the owner selected and the installer pulls. Unselected projects are not prepared, pulled or started.
+
+## Release 10 changes
+
+After preparation, the installer writes a root-only `app passwords.txt` file in
+the downloaded package and `/srv/docker`. It lists selected applications,
+private URLs, usernames, generated bootstrap credentials and the required
+first-login action. Each application receives a different random credential;
+there is no shared password across the server. The file is ignored by Git,
+preserved during upgrades, and never returned by the settings API.
+
+Applications do not share a common password-change mechanism. Entries marked
+`FIRST_LOGIN_PASSWORD` must be changed in the application's account settings
+immediately after the first login. Applications with a first-run account wizard
+are marked `NO_GENERATED_PASSWORD` and require account creation there. Database
+passwords, encryption keys and admin tokens are included for recovery context
+but are marked `INTERNAL_SECRET` or `ADMIN_TOKEN`; they are not web-login
+passwords and must not be changed casually.
 
 ## Release 7 changes
 

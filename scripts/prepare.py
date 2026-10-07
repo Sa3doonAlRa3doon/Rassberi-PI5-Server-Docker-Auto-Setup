@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import app_selection
+import app_passwords
 
 BASE = Path('/srv/docker')
 AUTO_START_APPS = ('onlyoffice', 'jupyter', 'stirling-pdf')
@@ -195,6 +196,17 @@ def main(source):
         marker.write_text('Release 5 heavy-app startup migration applied.\n', encoding='utf-8')
         marker.chmod(0o640)
     write_new(BASE/'server.env', f'BIND_IP={ip}\nTZ=Asia/Dubai\n')
+    # Keep a convenient root-only inventory beside the downloaded package and
+    # in the permanent deployment. It is generated from the selected apps'
+    # existing .env files, so reruns preserve credentials while adding newly
+    # selected applications to the inventory.
+    inventory = app_passwords.render_inventory(BASE, manifest, ip)
+    app_passwords.write_inventory(BASE / app_passwords.INVENTORY_NAME, inventory)
+    if source.resolve() != BASE:
+        try:
+            app_passwords.write_inventory(source / app_passwords.INVENTORY_NAME, inventory)
+        except OSError as error:
+            print(f'WARNING: could not update {source / app_passwords.INVENTORY_NAME}: {error}', flush=True)
     # Regenerate only the package-owned storage group; retain all user dashboard cards.
     homepage = BASE / 'configs/homepage/services.yaml'
     try:

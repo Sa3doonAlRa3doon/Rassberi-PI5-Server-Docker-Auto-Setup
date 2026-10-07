@@ -54,15 +54,32 @@ Protected `.env` files are stored in `/srv/docker/compose/<application>/.env`.
 The installer generates the secrets once and preserves existing files on reruns.
 Read them locally with `sudoedit`; never paste them into support logs.
 
+The installer also writes a root-only credential inventory at
+`/srv/docker/app passwords.txt` and, for a fresh download, beside the package
+in the downloaded folder. Read it with:
+
+```bash
+sudo cat '/srv/docker/app passwords.txt'
+```
+
+The inventory contains only selected applications. `FIRST_LOGIN_PASSWORD`
+entries are unique generated bootstrap passwords and must be changed in the
+application's account settings immediately after first login. Apps marked
+`NO_GENERATED_PASSWORD` use their own first-run account wizard. Database
+passwords, encryption keys and admin tokens are labelled separately and are
+not ordinary web-login passwords. The `.env` file remains the Compose source
+of truth; the inventory is a local convenience copy and is never returned by
+the settings API or committed to Git.
+
 | Application | First-run action |
 | --- | --- |
-| Nextcloud | Open `http://PI_ADDRESS:8080`, use `ADMIN_USER` (`saeed`) and `ADMIN_PASSWORD` from its `.env`. |
+| Nextcloud | Open `http://PI_ADDRESS:8080`, use its entry in `app passwords.txt`, then change the password in account security settings. |
 | ONLYOFFICE | It is an editing backend without a user-login portal; integrate it into Nextcloud as described below. |
-| Moodle | Open `http://PI_ADDRESS:8082`, use its generated `ADMIN_USER` and `ADMIN_PASSWORD`; replace the placeholder admin email and configure SMTP. |
+| Moodle | Open `http://PI_ADDRESS:8082`, use its entry in `app passwords.txt`; change the password, replace the placeholder admin email and configure SMTP. |
 | Wiki.js | Open `http://PI_ADDRESS:8084` and create the administrator using the setup wizard. Set the canonical site URL. |
 | Gitea | Open `http://PI_ADDRESS:3001`; confirm prefilled PostgreSQL details and explicitly create `saeed` under Administrator Account Settings. Public self-registration is disabled. SSH uses host port `2222`. |
 | n8n | Open `http://PI_ADDRESS:5678` and create the instance owner. Initial owner creation is not assumed to be automatable through undocumented environment variables. |
-| Paperless-ngx | Open `http://PI_ADDRESS:8087`, use `ADMIN_USER` and `ADMIN_PASSWORD`. Import a small document and verify OCR. |
+| Paperless-ngx | Open `http://PI_ADDRESS:8087`, use its entry in `app passwords.txt`, change the password, then import a small document and verify OCR. |
 | Vaultwarden | Use the HTTPS/tunnel procedure below. Authenticate to `/admin` with `ADMIN_TOKEN`, invite your email, then create the invited account. Public registration is disabled. |
 
 All initial HTTP endpoints are private bootstrap interfaces. Tailscale encrypts
