@@ -26,6 +26,16 @@ Release 8 makes the first download select-only by default:
 
 The storage table below describes the supplied Pi's starting profile. It is a changeable default, not a hardware requirement.
 
+## Release 9 changes
+
+The first-run panel now follows the order a new owner needs:
+
+1. **Storage roles first:** choose the primary SSD/NVMe, bulk-file disk and media disk from the mounted filesystem list. The panel checks UUID, mount state, filesystem and writable status; it never formats a disk or changes `fstab`.
+2. **Applications second:** every app card explains its purpose, declared RAM budget, storage class and declared destinations. Dependencies are shown as part of the saved selection.
+3. **Review before install:** app destinations are generated only for the apps selected. The **Install selected package** action stays disabled until both the app selection and reviewed layout exist.
+
+The panel does not pull Docker images while the owner is browsing, choosing storage or reading app details. It never downloads every image to estimate disk usage. Before a pull, it reports the honest planning state: persistent data is either SSD/appdata-only or data-dependent bulk storage; the exact image size becomes known only for an image the owner selected and the installer pulls. Unselected projects are not prepared, pulled or started.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:
@@ -132,17 +142,21 @@ sudo ./setup-server.sh
    panel is temporary: it shuts down after you finish, press `Ctrl+C`, or remain
    idle for two hours. It does not install Docker services or become the
    permanent settings panel.
-5. Open **Applications**, select only the Docker apps you need, choose which
-   installed apps start at boot, and save the selection. Dependencies are included
-   automatically. An empty boot-start list is valid when you want every app to
-   start manually.
-6. Review each destination, or choose auto-select, then apply the reviewed
+5. Start on **1. Storage & placement**. Choose the mounted filesystem for the
+   primary SSD/NVMe, bulk files and music/videos, then save those storage roles.
+   The available choices are limited to identity-verified mounted filesystems.
+6. Open **2. Applications**. Select only the Docker apps you need, choose which
+   installed apps start at boot, and save the selection. Each card shows its
+   purpose, RAM budget, storage class and destination paths. Dependencies are
+   included automatically. An empty boot-start list is valid when you want every
+   app to start manually. Browsing this page pulls no images.
+7. Return to **Storage & placement**. Review each destination, or choose auto-select, then apply the reviewed
    layout. The storage table now covers only the selected applications. The installer
    refuses a fresh install until both the app selection and `configs/layout.json`
    exist, so a new machine cannot silently use the example profile. Deselecting an
    HDD or microSD app means its example path is not created or required on an
    SSD-only machine.
-7. Run the installer with the Pi's private address:
+8. Run the installer with the Pi's private address:
 
 ```bash
 sudo BIND_IP=192.168.1.50 ./install-all.sh

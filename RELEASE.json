@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 8,
+  "release_id": 9,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 8 opens first-run app and storage selection before Docker pulls, so each owner installs only the apps they choose."
+  "notes": "Release 9 makes storage roles the first setup step and shows each selected app's purpose, planning footprint, storage class and destination before any image pull."
 }

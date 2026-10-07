@@ -192,8 +192,9 @@ def catalog(base=BASE, selected=None):
     return sorted(result, key=lambda r: (r['kind'], r['id']))
 
 
-def auto_select(disks, entries, backup_uuid=None):
+def auto_select(disks, entries, backup_uuid=None, preferences=None):
     """Suggest paths only. Choosing a path does not read/import its contents."""
+    preferences = preferences or {}
     choices = [d for d in disks if d.get('eligible') and d.get('uuid') != backup_uuid]
     root = next((d for d in choices if d['mount'] == '/'), None)
     if not root:
@@ -201,11 +202,14 @@ def auto_select(disks, entries, backup_uuid=None):
     ssds = [d for d in choices if d.get('kind') == 'SSD']
     if not ssds:
         raise RuntimeError('No mounted SSD for databases/appdata. Mount an SSD before auto selection.')
-    fast = next((d for d in ssds if d['mount'] == '/'), max(ssds, key=lambda d: d.get('free_bytes', 0)))
+    def preferred(key, pool):
+        value = preferences.get(key, '')
+        return next((d for d in pool if d.get('uuid') == value), None)
+    fast = preferred('system_uuid', ssds) or next((d for d in ssds if d['mount'] == '/'), max(ssds, key=lambda d: d.get('free_bytes', 0)))
     hdds = [d for d in choices if d.get('kind') == 'HDD']
     cards = [d for d in choices if d.get('kind') == 'microSD']
-    bulk = max(hdds or ssds, key=lambda d: d.get('free_bytes', 0))
-    media = max(cards or [bulk], key=lambda d: d.get('free_bytes', 0))
+    bulk = preferred('bulk_uuid', hdds + ssds) or max(hdds or ssds, key=lambda d: d.get('free_bytes', 0))
+    media = preferred('media_uuid', cards + hdds + ssds) or max(cards or [bulk], key=lambda d: d.get('free_bytes', 0))
     proposed = {}
     # A fresh namespace prevents auto selection from adopting existing server data.
     suffix = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
