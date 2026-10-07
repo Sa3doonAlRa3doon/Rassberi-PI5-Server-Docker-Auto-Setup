@@ -54,6 +54,10 @@ passwords, encryption keys and admin tokens are included for recovery context
 but are marked `INTERNAL_SECRET` or `ADMIN_TOKEN`; they are not web-login
 passwords and must not be changed casually.
 
+## Release 11 changes
+
+The re-verification pass corrected the planning metadata for the eight multi-container applications whose cards previously showed an unknown RAM budget. Their declared values now match the sum of the Compose memory caps (Nextcloud 1,504 MiB, ONLYOFFICE 4,352 MiB, Wiki.js 640 MiB, Moodle 1,280 MiB, Gitea 640 MiB, n8n 1,152 MiB, Paperless 1,376 MiB and Vaultwarden 320 MiB). Every application card now shows a concrete planning value before an image is pulled; this is a cap for scheduling, not a promise of actual runtime usage. The credential inventory now also states clearly that its values are bootstrap values; changing a password inside an app requires updating or removing the old inventory line manually.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:

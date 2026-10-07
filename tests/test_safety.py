@@ -80,6 +80,14 @@ class StorageTests(unittest.TestCase):
                 if '/databases/' in directory['path']:
                     self.assertTrue(directory['path'].startswith('/srv/docker/'))
 
+    def test_every_application_declares_a_ram_planning_value(self):
+        import json
+        manifest = json.loads((ROOT/'manifest.json').read_text())
+        self.assertTrue(manifest)
+        for app in manifest:
+            self.assertIsInstance(app.get('memory_mib'), int, app.get('name'))
+            self.assertGreater(app['memory_mib'], 0, app.get('name'))
+
 class HealthTests(unittest.TestCase):
     def test_unhealthy_is_failure(self):
         c={'Config':{'Labels':{'com.docker.compose.service':'app'}},'State':{'Status':'running','Health':{'Status':'unhealthy'}}}
