@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 12,
+  "release_id": 13,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 12 queues selected storage-dependent startup apps when a drive is absent and resumes them automatically after verified storage returns; Release 11 RAM and credential behavior remains preserved."
+  "notes": "Release 13 adds one-command fresh-install and existing-installation upgrade instructions while preserving Release 12 automatic storage-return startup behavior."
 }

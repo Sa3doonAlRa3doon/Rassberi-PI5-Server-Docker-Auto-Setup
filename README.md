@@ -77,6 +77,13 @@ still has a port, memory or configuration error after its drive returns, the
 attempt is logged for review rather than retried forever; the normal manual
 fallback remains `sudo /srv/docker/start-all.sh APP`.
 
+## Release 13 changes
+
+The README now includes one-command installation paths for both a new Pi and an
+existing installation. The fresh command still opens the storage and app
+selection panel before Docker checks or image pulls, so it remains select-only
+and safe for different SSD, HDD and microSD layouts.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:
@@ -154,6 +161,23 @@ These profiles apply to the complete Docker package, not just the always-on serv
 Storage depends on the applications selected. Databases and application state remain on a writable SSD; bulk data uses the reviewed HDD, SSD or microSD destinations.
 
 ## Choose your install path
+
+### One-command fresh install
+
+On a new Raspberry Pi 5, this single command downloads the current package,
+opens the temporary setup panel, and starts the guarded installer. Replace the
+example address with the Pi's private LAN or Tailscale IPv4 address:
+
+```bash
+cd ~/Downloads && (test -d Rassberi-release13/.git && git -C Rassberi-release13 pull --ff-only || git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-release13) && cd Rassberi-release13 && chmod +x install-all.sh setup-server.sh && sudo BIND_IP=192.168.4.123 ./install-all.sh
+```
+
+If the machine has no saved selection or layout, the command pauses at the
+temporary panel before Docker checks or image pulls. Select the storage roles,
+choose only the applications you want, review the destinations, and press
+**Install package**. It never downloads all application images just to show
+their choices. If `Rassberi-release13` already exists, the command fast-forwards
+that checkout instead of deleting it.
 
 ### New or different hardware
 
@@ -233,6 +257,12 @@ cd ~/Downloads/Rassberi-PI5-Server-Docker-Auto-Setup
 sudo ./upgrade-server.sh --dry-run
 sudo ./upgrade-server.sh --apply
 sudo /srv/docker/install-all.sh
+```
+
+The same existing-installation upgrade as one copy-paste command is:
+
+```bash
+cd ~/Downloads && git clone https://github.com/Sa3doonAlRa3doon/Rassberi-PI5-Server-Docker-Auto-Setup.git Rassberi-release13 && cd Rassberi-release13 && chmod +x upgrade-server.sh && sudo ./upgrade-server.sh --dry-run && sudo ./upgrade-server.sh --apply && sudo /srv/docker/install-all.sh
 ```
 
 The upgrade path preserves existing `.env` files, credentials, application data, databases, bulk files, backup settings, and the complete installed/boot selection state in `configs/app-selection.json` (including a deliberately empty boot list). It does not delete old Nextcloud, Paperless or other application data. After `install-all.sh` finishes, enable the permanent settings panel once on an older installation:
