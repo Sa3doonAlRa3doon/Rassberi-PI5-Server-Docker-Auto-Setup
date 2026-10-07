@@ -283,7 +283,8 @@ def main():
             if name.startswith('/etc/'):
                 host.atomic_write(name, data, backup_dir)
         command(['systemctl', 'daemon-reload'])
-        command(['systemctl', 'enable', 'pi-storage-start.service', 'pi-storage-watch.timer'])
+        command(['systemctl', 'enable', 'pi-storage-start.service', 'pi-storage-watch.timer',
+                 'pi-storage-resume.timer'])
         # No Docker restart and no --now: the guarded boot job takes the same lock.
         for container in affected:
             command(['docker', 'update', '--restart=on-failure:5', container['Id']], stdout=subprocess.DEVNULL)

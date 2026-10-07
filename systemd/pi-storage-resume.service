@@ -1,0 +1,13 @@
+[Unit]
+Description=Resume configured Pi applications after their storage returns
+Wants=pi-storage-watch.service
+Requires=docker.service
+After=pi-storage-watch.service docker.service local-fs.target
+RequiresMountsFor=/srv/docker
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /srv/docker/scripts/storage-resume.py
+User=root
+NoNewPrivileges=true
+TimeoutStartSec=1800

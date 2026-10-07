@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 11,
+  "release_id": 12,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 11 re-verifies the package and fills every application card's RAM planning value from its Compose memory caps; Release 10 credential-inventory behavior remains preserved."
+  "notes": "Release 12 queues selected storage-dependent startup apps when a drive is absent and resumes them automatically after verified storage returns; Release 11 RAM and credential behavior remains preserved."
 }

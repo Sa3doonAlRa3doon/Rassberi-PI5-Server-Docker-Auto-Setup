@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Start configured Compose applications after Docker, with per-drive guards."""
 import fcntl
+import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 BASE = Path('/srv/docker')
+PENDING = BASE / 'configs/storage-start-pending.json'
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(BASE / 'scripts'))
 import app_selection
@@ -23,6 +27,50 @@ def names(path):
             return []
     return [line.strip() for line in path.read_text().splitlines()
             if line.strip() and not line.lstrip().startswith('#')]
+
+
+def pending_names(path=PENDING, desired=None):
+    """Read the guarded startup queue, keeping only currently selected apps."""
+    try:
+        value = json.loads(Path(path).read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        value = []
+    if not isinstance(value, list):
+        value = []
+    result = {item for item in value if isinstance(item, str) and item}
+    return result if desired is None else result & set(desired)
+
+
+def write_pending(path, values):
+    """Atomically persist or remove the root-only startup queue."""
+    path = Path(path)
+    values = sorted({item for item in values if isinstance(item, str) and item})
+    if not values:
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix='.' + path.name + '.', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8', newline='\n') as handle:
+            json.dump(values, handle, indent=2)
+            handle.write('\n')
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, 0o600)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def load_guard():
+    spec = importlib.util.spec_from_file_location('pi_storage_guard_boot', BASE / 'scripts/storage_guard.py')
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    return guard
 
 
 def startup_order(manifest, selected):
@@ -76,6 +124,10 @@ def main():
     known = {app['name'] for app in manifest}
     installed = set(app_selection.installed_names(BASE, manifest))
     desired = set(app_selection.startup_names(BASE, manifest)) & installed
+    pending = pending_names(PENDING, desired)
+    write_pending(PENDING, pending)
+    guard_module = load_guard()
+    storage_config = BASE / 'configs/storage.json'
     # enabled-apps.txt is the explicit current startup selection.
     holds = set(names(BASE / 'configs/storage-review-required.json'))
     report = BASE / 'logs' / 'boot-storage.log'
@@ -87,12 +139,31 @@ def main():
                 continue
             if app in holds:
                 log.write('SKIP review hold: ' + app + '\n')
+                pending.discard(app)
+                write_pending(PENDING, pending)
+                continue
+            app_definition = next(item for item in manifest if item['name'] == app)
+            try:
+                guard_module.check(required=guard_module.app_requirements(app_definition, storage_config),
+                                   manifest=[app_definition], require_dirs=True,
+                                   config=storage_config)
+            except (RuntimeError, OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
+                pending.add(app)
+                write_pending(PENDING, pending)
+                log.write(f'PENDING storage unavailable: {app}: {exc}\n')
                 continue
             result = subprocess.run([sys.executable, str(BASE / 'scripts/manage.py'), 'start', app,
                                      '--report-dir', str(BASE / 'logs' / 'boot')],
                                     stdout=log, stderr=log)
-            log.write(('STARTED ' if result.returncode == 0 else 'SKIPPED/FAILED ') + app +
-                      ' rc=' + str(result.returncode) + '\n')
+            if result.returncode == 0:
+                pending.discard(app)
+                log.write('STARTED ' + app + ' rc=0\n')
+            else:
+                pending.add(app)
+                log.write('SKIPPED/FAILED; left pending for one guarded retry ' + app +
+                          ' rc=' + str(result.returncode) + '\n')
+            write_pending(PENDING, pending)
+        write_pending(PENDING, pending)
     return 0
 
 

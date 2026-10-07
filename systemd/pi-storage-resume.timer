@@ -1,0 +1,11 @@
+[Unit]
+Description=Retry selected applications after missing storage returns
+
+[Timer]
+OnBootSec=90
+OnUnitActiveSec=60
+AccuracySec=5
+Unit=pi-storage-resume.service
+
+[Install]
+WantedBy=timers.target
