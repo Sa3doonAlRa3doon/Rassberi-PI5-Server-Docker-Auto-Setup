@@ -32,6 +32,7 @@ class AppPasswordInventoryTests(unittest.TestCase):
             self.assertIn('Credential: db-secret', output)
             self.assertIn('Policy: INTERNAL_SECRET', output)
             self.assertIn('Generated (UTC): test-time', output)
+            self.assertIn('bootstrap values', output)
 
     def test_no_login_app_is_explicit(self):
         manifest = [{'name': 'frontend', 'order': 1, 'secrets': [], 'ports': []}]

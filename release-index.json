@@ -1,8 +1,8 @@
 {
   "format": 1,
-  "from": "release-9",
-  "to": "release-10",
-  "release_id": 10,
+  "from": "release-10",
+  "to": "release-11",
+  "release_id": 11,
   "files": {
     ".gitignore": {
       "sha256": "41738d9c72b2afaf760f9678d6550b5f7c66dfeb3de7acf478197f1e486c0bbe",
@@ -33,7 +33,7 @@
       "previous_sha256": "1112ec4dda536950bdfbd40e20f7cbb9867374291422f04de939e91f92e72be9"
     },
     "README.md": {
-      "sha256": "bf5356186f24496163827f4c7d0bf356643753b62ff73fb5fd746c2009ff13ed",
+      "sha256": "52f53782b8a2da120a6ec69701e6d531f9c627d3362f27ca3b1918314c11866b",
       "accepted_sha256": [
         "13c9dabad36218b00c7a39e3d7a2134fc4aa7485bcf86dc9753554f784bfc54a",
         "1ad237f211839380f38db670fd1e64d018f7f4ac753130d8c779942223a8ac84",
@@ -59,12 +59,14 @@
         "d4d97234b21c0869d126804a6c22592a0ff35128295dad1fc70aaaad15cd3c22",
         "df2f999d68dbd989d956a9a259fe2be85d4e1189c277238737fc1c04608783a4",
         "896a5606a9facea13ee667ea0e1857805df378b298cf935da73c0bab20afd577",
-        "bf5356186f24496163827f4c7d0bf356643753b62ff73fb5fd746c2009ff13ed"
+        "bf5356186f24496163827f4c7d0bf356643753b62ff73fb5fd746c2009ff13ed",
+        "09eb6b4dce8f26b3b0e1f1d42d0793d75c43d2d5949a1329db0262589231ea00",
+        "52f53782b8a2da120a6ec69701e6d531f9c627d3362f27ca3b1918314c11866b"
       ],
-      "previous_sha256": "7aa5c74b1a36a4da93463f5c11a58aef4b6f54e68572102a5d8b448b31fe8310"
+      "previous_sha256": "09eb6b4dce8f26b3b0e1f1d42d0793d75c43d2d5949a1329db0262589231ea00"
     },
     "RELEASE.json": {
-      "sha256": "88d1d0ede83bdba7c6428ffc08fd5178ced606889ea23420dfacf5cacfa0ab0c",
+      "sha256": "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356",
       "accepted_sha256": [
         "032da0d86532e4f583eab419853f586695cb0c5708d66e499ea519d58b6803a7",
         "1b74a2bafe5d75cb6511c2633b8cace329496d542804b316d2c133883f52198b",
@@ -77,9 +79,10 @@
         "c5a968bc0828211662c435a7efed3b44dd1ec53ac46a357bd79e2fd371ee98f1",
         "f5c9638b278c4b45861e73261014573fb4a8c278924b9a007ffc8b1f4fc6b0bf",
         "27e88dcea8609e989f62f5ba62e37887b10d80e360dab1da84dcb1dc2e5f3bbe",
-        "88d1d0ede83bdba7c6428ffc08fd5178ced606889ea23420dfacf5cacfa0ab0c"
+        "88d1d0ede83bdba7c6428ffc08fd5178ced606889ea23420dfacf5cacfa0ab0c",
+        "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356"
       ],
-      "previous_sha256": "032da0d86532e4f583eab419853f586695cb0c5708d66e499ea519d58b6803a7"
+      "previous_sha256": "12a1f030188cef4e4b1f0c9c23b0fb5da561097894fb9e77397a0aae41da3356"
     },
     "STORAGE.md": {
       "sha256": "15089bf710235c670d3f4d94c4e5e0cd185237a901ec00564113456c4a8ebff1",
@@ -1470,15 +1473,17 @@
       "previous_sha256": "5f77d48ef596aaff3a504579fd350743f0a00e1f6813c8b9ac7a393a76f3253d"
     },
     "manifest.json": {
-      "sha256": "8be62cb2dafc2d34008a1c44752e67ded8f49ced5df0cc72c51f2a34d3166711",
+      "sha256": "7597619f7f59b6a82b7e285fa0c8bedd9ec071abfed20dcfb8145e36ee347250",
       "accepted_sha256": [
         "34d89a8354dd37453a32223406c2c24520f9cc89f54c9d89e488582bf519fc96",
         "44ef77eba80e63df2d4b2eb32c8439c5d1791fc8d2355ba85c5796d4340d6754",
         "4f04fc493dc861dbb0aff43b4cd86f06f07a9059088be3bd7b9a190e4585c7e1",
         "8be62cb2dafc2d34008a1c44752e67ded8f49ced5df0cc72c51f2a34d3166711",
         "a6a61abb923156f77439b6b128ae9538d3b6646beed4e929cf16e86c32d362bf",
-        "ef459a408fbe48700af6e03d73d61edc60a53b78b57f6aca7f80a18a88bb68bb"
-      ]
+        "ef459a408fbe48700af6e03d73d61edc60a53b78b57f6aca7f80a18a88bb68bb",
+        "7597619f7f59b6a82b7e285fa0c8bedd9ec071abfed20dcfb8145e36ee347250"
+      ],
+      "previous_sha256": "7597619f7f59b6a82b7e285fa0c8bedd9ec071abfed20dcfb8145e36ee347250"
     },
     "portable-backup.sh": {
       "sha256": "2589e5082428b8cc66d3e9ec23ba0513af50a6ec68693e2da119777a8b09c33b",
@@ -1489,12 +1494,13 @@
       "previous_sha256": "69b2ef9daf5fbf6e38c4ca6bacf4ff5a23795448babe86214e1765d558e6f595"
     },
     "scripts/app_passwords.py": {
-      "sha256": "82aa234ccf61505640179d968554355019cb50152960bf847a6d0a567ed66867",
+      "sha256": "29ac0a217f71cd5f8877c9e47c0ec57ace1b3b01122472394d08adefa4e1f747",
       "accepted_sha256": [
         "1ee30f011ca918fc9a44209f2a6070b7d76bb24e01cf5fa3c2957fc868e7941c",
-        "82aa234ccf61505640179d968554355019cb50152960bf847a6d0a567ed66867"
+        "82aa234ccf61505640179d968554355019cb50152960bf847a6d0a567ed66867",
+        "29ac0a217f71cd5f8877c9e47c0ec57ace1b3b01122472394d08adefa4e1f747"
       ],
-      "previous_sha256": null
+      "previous_sha256": "82aa234ccf61505640179d968554355019cb50152960bf847a6d0a567ed66867"
     },
     "scripts/app_selection.py": {
       "sha256": "e386797e89e4daf173b49ef84e96077bc1026f416f2fb494b3fd9d8997e36b7c",

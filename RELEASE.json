@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 10,
+  "release_id": 11,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 10 adds a root-only app passwords inventory with unique bootstrap credentials and first-login change instructions for selected applications."
+  "notes": "Release 11 re-verifies the package and fills every application card's RAM planning value from its Compose memory caps; Release 10 credential-inventory behavior remains preserved."
 }

@@ -438,6 +438,7 @@
   {
     "name": "nextcloud",
     "order": 30,
+    "memory_mib": 1504,
     "mounts": [
       "hdd"
     ],
@@ -665,6 +666,7 @@
   {
     "name": "onlyoffice",
     "order": 40,
+    "memory_mib": 4352,
     "boot_priority": 10,
     "mounts": [],
     "ports": [
@@ -830,6 +832,7 @@
   {
     "name": "wikijs",
     "order": 45,
+    "memory_mib": 640,
     "mounts": [],
     "ports": [
       {
@@ -987,6 +990,7 @@
   {
     "name": "moodle",
     "order": 50,
+    "memory_mib": 1280,
     "mounts": [
       "hdd"
     ],
@@ -1162,6 +1166,7 @@
   {
     "name": "gitea",
     "order": 55,
+    "memory_mib": 640,
     "mounts": [],
     "ports": [
       {
@@ -1485,6 +1490,7 @@
   {
     "name": "n8n",
     "order": 65,
+    "memory_mib": 1152,
     "mounts": [],
     "ports": [
       {
@@ -1614,6 +1620,7 @@
   {
     "name": "paperless",
     "order": 70,
+    "memory_mib": 1376,
     "mounts": [
       "hdd"
     ],
@@ -1966,6 +1973,7 @@
   {
     "name": "vaultwarden",
     "order": 75,
+    "memory_mib": 320,
     "mounts": [],
     "ports": [
       {

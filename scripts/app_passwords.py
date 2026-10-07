@@ -95,6 +95,7 @@ def render_inventory(base, manifest, bind_ip, generated_at=None):
         'This file is root-only and is not a public package file.',
         'Each selected application has its own generated credential; there is no shared default password.',
         'Change every FIRST_LOGIN_PASSWORD entry during the first login before normal use.',
+        'Credential values here are installer bootstrap values. After changing a web password in an app, update or remove the old line yourself; applications do not write new passwords back to this inventory.',
         'The per-app .env file is the source of truth. Do not paste this file into support logs or GitHub.',
         '',
     ]
