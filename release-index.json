@@ -1,8 +1,8 @@
 {
   "format": 1,
-  "from": "release-15",
-  "to": "release-16",
-  "release_id": 16,
+  "from": "release-16",
+  "to": "release-17",
+  "release_id": 17,
   "files": {
     ".gitignore": {
       "sha256": "e7cb817fc2ae35f6c36f6e6b9daae2a5f916421c28706c64bec68b743215e1ef",
@@ -35,7 +35,7 @@
       "previous_sha256": "1112ec4dda536950bdfbd40e20f7cbb9867374291422f04de939e91f92e72be9"
     },
     "README.md": {
-      "sha256": "86ccc29269ffcb5bcb7a5e12fd25209ac6eeda8c866996c1cc38ddf75d045f36",
+      "sha256": "1b04040a4b0c7615b8070add098f68320ed32492d297c37a3f4ffae2afbdf929",
       "accepted_sha256": [
         "13c9dabad36218b00c7a39e3d7a2134fc4aa7485bcf86dc9753554f784bfc54a",
         "1ad237f211839380f38db670fd1e64d018f7f4ac753130d8c779942223a8ac84",
@@ -72,10 +72,10 @@
         "0e93f951bcb70b4eb49e1bf47ad164764b3d6bbbc198526e98700f92dfe3c9fb",
         "86ccc29269ffcb5bcb7a5e12fd25209ac6eeda8c866996c1cc38ddf75d045f36"
       ],
-      "previous_sha256": "9fd5299115c3d9dddfc354b0f5ebec88ec5de3311421616f79a7489ba388ebc1"
+      "previous_sha256": "86ccc29269ffcb5bcb7a5e12fd25209ac6eeda8c866996c1cc38ddf75d045f36"
     },
     "RELEASE.json": {
-      "sha256": "10a7497fb1a0af672040aa0709da105c9f6b43f50e01976e0c9ee6a4c729c593",
+      "sha256": "a8615c1b8f0ca4512b6cdf8d28e823d9e911043efd2ad3dcf2747f54012e43ec",
       "accepted_sha256": [
         "032da0d86532e4f583eab419853f586695cb0c5708d66e499ea519d58b6803a7",
         "1b74a2bafe5d75cb6511c2633b8cace329496d542804b316d2c133883f52198b",
@@ -96,7 +96,7 @@
         "8cef02dc9b59e4faaca01697c206472ff9b44195ab5d43ff007a4bd0b10d1993",
         "10a7497fb1a0af672040aa0709da105c9f6b43f50e01976e0c9ee6a4c729c593"
       ],
-      "previous_sha256": "7298438e06f274ec418b2461b03538af93ac00b40002c1c75cc80647f34add00"
+      "previous_sha256": "10a7497fb1a0af672040aa0709da105c9f6b43f50e01976e0c9ee6a4c729c593"
     },
     "STORAGE.md": {
       "sha256": "1d4989813c5670a28c578af443130e927f26fbb5123b34f4d057f6808862ed6a",
@@ -1417,7 +1417,7 @@
       "previous_sha256": "abe75814f69ba0cbc8ac0e925bb0a40f0ea770567af78f13191c137d15a27751"
     },
     "docs/UPGRADE.md": {
-      "sha256": "4c3a2e4b0dd59ec90472605ecfba64a1f7e940fdf7da5118b968230a79054a6c",
+      "sha256": "3e03415f441a5c452d5916eba9d51444005ddd92689dc8317405bdedaddd7b16",
       "accepted_sha256": [
         "42e94c039f37b690e29d07c44ae1ba5b1471b8cd6de08ecd60b49833c53465c7",
         "4e5c7424b8ccde7e94a0706b433f126586cb6fd513148ce39f5c737f9f4c5dd8",
@@ -1429,7 +1429,7 @@
         "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5",
         "4c3a2e4b0dd59ec90472605ecfba64a1f7e940fdf7da5118b968230a79054a6c"
       ],
-      "previous_sha256": "e30f7abc4fd4ab13d5f6fd2214a52f6cba086605fdcc17da271d313c1be581a5"
+      "previous_sha256": "4c3a2e4b0dd59ec90472605ecfba64a1f7e940fdf7da5118b968230a79054a6c"
     },
     "docs/UTILITIES-IMAGE-EVIDENCE.json": {
       "sha256": "8fb027baebebe2d10651876347c7390f164043d104a9bfe72f0d6236bf7e8dd2",
@@ -1471,7 +1471,7 @@
       "previous_sha256": "1aa86b3c5b83a7e8f29c63942da5dfe93c58bd0444251c1b5246dd93e067a938"
     },
     "install-all.sh": {
-      "sha256": "53754c8620ac877b0d0d4c349bbc8022efabe2a26119c00cdee250833fc976de",
+      "sha256": "95e72e46b89837c9676778d527327015f9ab4e7d112a6cff52368aba055b019a",
       "accepted_sha256": [
         "001ec9b98c5f8cd564649a625c903f66147f55187dadd932bc56077264f0758a",
         "332e2f4f84a415463e594e60517651ee155cd408dd9a1e009bfed83a51fcc57f",
@@ -1484,7 +1484,7 @@
         "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be",
         "53754c8620ac877b0d0d4c349bbc8022efabe2a26119c00cdee250833fc976de"
       ],
-      "previous_sha256": "9a8dd0359e0e1608aca1e060547d0b7200d7c8b567588c0b8ffc00c8be05e4be"
+      "previous_sha256": "53754c8620ac877b0d0d4c349bbc8022efabe2a26119c00cdee250833fc976de"
     },
     "install-server.sh": {
       "sha256": "d9ac503cb5abdf5d4229a591b238a508cab108e169c77f1dc7801a6f10930aa8",
@@ -1631,7 +1631,7 @@
       "previous_sha256": "4c6e6b6991a22b3cf4cd5f9bdd62bac13fae84639d45d399ebcbacbedd29d644"
     },
     "scripts/manage.py": {
-      "sha256": "a86a8850506a3afec09c5f3d59cac8916e1dd4a795728bca7f09b76f5b0705ea",
+      "sha256": "a0f62696e2d9a709c70b4703e445c360c943b8b0d3e31df28751f3bbe3bf9c20",
       "accepted_sha256": [
         "604eabdda787c6839b601a919611486a91eb9ba9d39aec6c5f43bfef4a4f40d5",
         "7b8a2a5fb87e3280cbd4307e7ec2595561c34d01df5a95f7e9d51e6640c14ef4",
@@ -1645,7 +1645,7 @@
         "94a81205f32cf6ec456aa64b22d190965a28ed1ecbfc10183c61e17ba7e741c2",
         "a86a8850506a3afec09c5f3d59cac8916e1dd4a795728bca7f09b76f5b0705ea"
       ],
-      "previous_sha256": "9af8adb02aad42d5f7cc39ef80e53b46f940f7dca93b45d85459c09dc0a9269c"
+      "previous_sha256": "a86a8850506a3afec09c5f3d59cac8916e1dd4a795728bca7f09b76f5b0705ea"
     },
     "scripts/monitoring_devices.py": {
       "sha256": "a683a70d74879e00f28bbb0fd16943ed0a826184e4b630136efbb23e2e3d7dba",
@@ -1775,14 +1775,14 @@
       "previous_sha256": "a018ed70deb395bed4783e9279df8514621fdb653a279c90c2b75390ed659018"
     },
     "scripts/storage_guard.py": {
-      "sha256": "6a0552fc7ea301e38c4379df55ae9e6ef413b70902a590976a0d24973ce0728e",
+      "sha256": "66e614baf8df93a3f84ae4c642b1ed0ca2ce045fba1a7b41019c322e6f949e1e",
       "accepted_sha256": [
         "36c11b6a38d8a64b9cf501c1e675502a1e04263424f77fd5177779778317ecae",
         "6b82b4fe5dd0721f8fcd072f49d8a251187563f918168bcd9605b39db80a15d8",
         "b538221317f223238d77a8748f4695bdf3d84ee672086ccb39af24e95e066263",
         "6a0552fc7ea301e38c4379df55ae9e6ef413b70902a590976a0d24973ce0728e"
       ],
-      "previous_sha256": "36c11b6a38d8a64b9cf501c1e675502a1e04263424f77fd5177779778317ecae"
+      "previous_sha256": "6a0552fc7ea301e38c4379df55ae9e6ef413b70902a590976a0d24973ce0728e"
     },
     "scripts/storage_setup.py": {
       "sha256": "be04c1e08181890f1930017ea16414fc77397053518c6288202f0b5cffc376bd",
@@ -2023,7 +2023,8 @@
       "accepted_sha256": [
         "13c2467c67e827f542ec9deb3853e1ced4877dede070788c6e99a19e7f2c10c9"
       ],
-      "sha256": "13c2467c67e827f542ec9deb3853e1ced4877dede070788c6e99a19e7f2c10c9"
+      "sha256": "5e82b6141242c5b64787b624a35974c694fb696af04960aa8f0f113706d6d188",
+      "previous_sha256": "13c2467c67e827f542ec9deb3853e1ced4877dede070788c6e99a19e7f2c10c9"
     }
   }
 }

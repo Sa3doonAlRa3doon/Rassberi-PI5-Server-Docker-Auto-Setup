@@ -17,6 +17,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(BASE / 'scripts'))
 import app_selection
 
+class StorageCheckError(RuntimeError):
+    """The storage guard could not verify an app's required filesystems."""
+
+
 def now(): return datetime.now(timezone.utc).isoformat()
 
 def compose(app, *args, **kwargs):
@@ -43,7 +47,24 @@ def storage(app=None, write_test=False):
         command += ['--only', 'root']
     if write_test:
         command.append('--write-test')
-    subprocess.run(command, check=True)
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.stdout:
+        print(result.stdout, end='', flush=True)
+    if result.stderr:
+        print(result.stderr, end='', file=sys.stderr, flush=True)
+    if result.returncode:
+        detail = (result.stdout + '\n' + result.stderr).strip()
+        raise StorageCheckError(detail or 'Storage verification failed')
+
+
+def defer_storage(row, name, exc):
+    """Record a missing/unavailable app filesystem without starting the app."""
+    detail = str(exc).strip()
+    row['result'] = 'DEFERRED'
+    row['warnings'] = ['Storage dependency unavailable; application left stopped: ' + detail]
+    row['error'] = detail
+    row['end'] = now()
+    print('DEFERRED: ' + name + ': storage dependency unavailable', flush=True)
 
 
 def selected_apps(manifest, installed, enabled, action, requested=(), all_apps=False):
@@ -237,13 +258,9 @@ def main():
                 # Drive loss is scoped to the application that needs it. Other apps continue.
                 try:
                     storage(app=name)
-                except (RuntimeError, subprocess.SubprocessError, OSError) as exc:
-                    row['result'] = 'ERROR'
-                    row['warnings'] = ['Storage dependency unavailable; application left stopped: ' + str(exc)]
-                    row['error'] = str(exc)
-                    row['end'] = now()
+                except StorageCheckError as exc:
+                    defer_storage(row, name, exc)
                     rows.append(row)
-                    print('SKIPPED: ' + name + ': storage dependency unavailable', flush=True)
                     continue
             cfg=configs.get(name) or config(name)
             with logpath.open('a',encoding='utf-8') as log:
@@ -266,7 +283,12 @@ def main():
                     if (args.action=='install' and name not in enabled) or (args.action=='update' and not previously_running):
                         row['result']='SKIPPED'; row['warnings']=['Prepared and images verified; on demand. Start with sudo /srv/docker/start-all.sh '+name]
                     else:
-                        storage(app=name)
+                        try:
+                            storage(app=name)
+                        except StorageCheckError as exc:
+                            defer_storage(row, name, exc)
+                            rows.append(row)
+                            continue
                         verify_ports(name,cfg)
                         active_cfg={**cfg,'services':{k:v for k,v in cfg['services'].items() if previously_running is None or k in previously_running}}
                         verify_memory(name,active_cfg)
@@ -290,6 +312,7 @@ def main():
         row['end']=now(); rows.append(row)
     successes=sum(r['result']=='SUCCESS' for r in rows)
     failed=sum(r['result']=='ERROR' for r in rows)
+    deferred=sum(r['result']=='DEFERRED' for r in rows)
     skipped=sum(r['result']=='SKIPPED' for r in rows)
     warnings=sum(bool(r['warnings']) for r in rows)
     reportname='installation-report' if args.action=='install' else args.action+'-report'
@@ -300,8 +323,8 @@ def main():
           'Architecture: '+r['architecture'],'Log: '+r['log'],'Error: '+r.get('error','none')])
         lines.extend('WARNING: '+w for w in r['warnings'])
         lines.append('Details: '+json.dumps({k:r.get(k) for k in ['images','ports','persistent_storage','database','containers']}))
-    banner='DONE - BUT RAN INTO ERRORS' if failed else 'DONE - REVIEW WARNINGS / ON-DEMAND SERVICES' if warnings or skipped else 'DONE\nALL SERVICES INSTALLED SUCCESSFULLY'
-    lines += ['='*45,banner,f'SUCCESSFUL SERVICES: {successes}; FAILED SERVICES: {failed}; ON DEMAND: {skipped}; WARNINGS: {warnings}','='*45]
+    banner='DONE - BUT RAN INTO ERRORS' if failed else 'DONE - REVIEW WARNINGS / ON-DEMAND SERVICES' if warnings or skipped or deferred else 'DONE\nALL SERVICES INSTALLED SUCCESSFULLY'
+    lines += ['='*45,banner,f'SUCCESSFUL SERVICES: {successes}; FAILED SERVICES: {failed}; DEFERRED STORAGE SERVICES: {deferred}; ON DEMAND: {skipped}; WARNINGS: {warnings}','='*45]
     if failed:
         lines.append('FAILED SERVICE DETAILS:')
         lines.extend(f"ERROR: {row['application']}: {row.get('error', 'unknown failure')}"

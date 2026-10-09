@@ -5,6 +5,7 @@ import tempfile
 import types
 import unittest
 from unittest.mock import patch
+from subprocess import CompletedProcess
 
 ROOT=Path(__file__).resolve().parents[1]/'outputs/Rassberi-PI5-Codes'
 def module(name):
@@ -111,5 +112,18 @@ class HealthTests(unittest.TestCase):
             p=Path(tmp)/'.env'; p.write_text('SECRET=original\n')
             prepare.write_new(p,'SECRET=new\n')
             self.assertEqual(p.read_text(),'SECRET=original\n')
+
+    def test_storage_guard_failure_is_reported_with_guard_output(self):
+        result = CompletedProcess([], 1, stdout='HDD /mnt/hdd - ERROR\nERROR: /mnt/hdd is NOT MOUNTED\n', stderr='')
+        with patch.object(manager.subprocess, 'run', return_value=result):
+            with self.assertRaises(manager.StorageCheckError) as raised:
+                manager.storage('paperless')
+        self.assertIn('NOT MOUNTED', str(raised.exception))
+
+    def test_deferred_storage_row_is_not_an_installation_failure(self):
+        row = {'application': 'paperless', 'result': 'ERROR', 'warnings': []}
+        manager.defer_storage(row, 'paperless', manager.StorageCheckError('/mnt/hdd is NOT MOUNTED'))
+        self.assertEqual(row['result'], 'DEFERRED')
+        self.assertIn('left stopped', row['warnings'][0])
 
 if __name__=='__main__': unittest.main(verbosity=2)

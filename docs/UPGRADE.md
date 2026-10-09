@@ -37,3 +37,10 @@ If the deployment uses a custom storage layout, incoming Compose bind sources an
 Use `portable-backup.sh` for a configured recovery disk or any custom-layout backup after the upgrade. In Release 7, `backup.sh` routes through that portable workflow and `scripts/restore.sh` only verifies/stages portable snapshots; the restore wrapper refuses old hard-coded tar archives.
 
 The operation does not format, repartition, delete source data, prune backups or restart the Docker daemon. Review `/srv/docker/logs/installation-report.txt`, open the applications, and run `sudo /srv/docker/verify-after-reboot.sh` after the next planned reboot.
+
+If a selected app needs a drive that is unavailable during reconciliation, the
+installer records it as `DEFERRED` and leaves its containers stopped. This is
+expected for a missing HDD or microSD and does not make the whole upgrade fail;
+the report includes the storage-guard reason. Root-only applications continue,
+and the storage-resume service can retry selected boot applications after the
+drive is mounted and passes the UUID, filesystem, writable and directory checks.

@@ -243,7 +243,9 @@ def print_rows(rows):
         for error in row['errors']: print('ERROR: ' + error)
         for warning in row['warnings']: print('WARNING: ' + warning)
         for directory in row['directories_missing']: print('DIRECTORY MISSING: ' + directory)
-    print('\nALL STORAGE OK' if not any(r['errors'] for r in rows) else '\nSTORAGE UNAVAILABLE: DEPENDENT APPLICATIONS MUST STAY STOPPED')
+    checked = ', '.join(row['key'].upper() for row in rows) or 'NONE'
+    print(('\nALL CHECKED STORAGE OK: ' + checked) if not any(r['errors'] for r in rows)
+          else '\nSTORAGE UNAVAILABLE: DEPENDENT APPLICATIONS MUST STAY STOPPED')
 
 
 def main():

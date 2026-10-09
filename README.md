@@ -98,6 +98,23 @@ map, and a fresh install will not pull it. The installer report now prints the
 individual failed application names and error messages at the end of the
 terminal output; the complete per-app logs remain under `/srv/docker/logs`.
 
+## Release 17 changes
+
+An unavailable optional data drive is now handled as a **deferred storage
+service**, not as a failed installation. The installer still checks the NVMe
+root first and continues installing apps that only need the root filesystem.
+If `/mnt/hdd` or `/mnt/media` is missing, has the wrong UUID, is read-only, or
+cannot satisfy an app's required directories, only the dependent app is left
+stopped. The report names the exact guard output and shows a separate
+`DEFERRED STORAGE SERVICES` count; the process returns success when no other
+app failed. When the verified drive returns, the existing storage resume
+service can start selected boot apps again.
+
+The preflight now prints every checked storage role instead of saying
+`ALL STORAGE OK` after checking only `/`. A root-only line is labelled
+`ALL CHECKED STORAGE OK: ROOT`, so a missing HDD or media disk cannot be
+mistaken for a complete storage pass.
+
 ## Release 7 changes
 
 Release 7 closes custom-selection and recovery edge cases without deleting existing server data:

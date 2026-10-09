@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 16,
+  "release_id": 17,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 16 removes the withdrawn ChronoSnap timelapse project and improves installer failure reporting while preserving the selected-app, storage and data-safety model."
+  "notes": "Release 17 keeps optional storage failures scoped to the dependent applications: missing or unsafe HDD/media mounts are reported with exact guard details and deferred without stopping unrelated root-only services. ChronoSnap remains withdrawn."
 }

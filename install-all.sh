@@ -49,7 +49,7 @@ exec 9>/run/lock/pi-server.lock
 flock -n 9 || { echo 'CRITICAL: another Pi server operation is running'; exit 1; }
 python3 "$SOURCE/scripts/storage_guard.py" --installation --manifest "$SOURCE/manifest.json" --only root
 echo 'Storage preflight (HDD/media are reported and gated per application):'
-python3 "$SOURCE/scripts/storage_guard.py" --manifest "$SOURCE/manifest.json" --json --allow-degraded || true
+python3 "$SOURCE/scripts/storage_guard.py" --manifest "$SOURCE/manifest.json" --allow-degraded || true
 python3 "$SOURCE/scripts/preflight.py"
 echo 'Installing host utilities (no Docker Engine replacement).'
 apt-get -o DPkg::Lock::Timeout=300 update
