@@ -348,6 +348,12 @@
         }
       },
       {
+        "ChronoSnap": {
+          "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:8101/",
+          "description": "On demand timelapse capture and video builder"
+        }
+      },
+      {
         "Netalertx": {
           "href": "http://{{HOMEPAGE_VAR_SERVER_IP}}:20211/",
           "description": "On demand"

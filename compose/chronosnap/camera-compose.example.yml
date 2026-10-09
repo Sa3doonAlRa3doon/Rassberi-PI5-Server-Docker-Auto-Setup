@@ -1,0 +1,10 @@
+# Optional local-camera override. RTSP/HTTP sources need no override.
+# Copy this service fragment into a reviewed local override only after
+# identifying the real camera device; never guess a missing /dev/video node.
+services:
+  chronosnap:
+    devices:
+      - /dev/video0:/dev/video0
+      # Raspberry Pi CSI cameras may also need this device and OS-specific
+      # rpicam shared libraries; follow docs/CHRONOSNAP.md.
+      # - /dev/vchiq:/dev/vchiq
