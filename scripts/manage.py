@@ -302,9 +302,13 @@ def main():
         lines.append('Details: '+json.dumps({k:r.get(k) for k in ['images','ports','persistent_storage','database','containers']}))
     banner='DONE - BUT RAN INTO ERRORS' if failed else 'DONE - REVIEW WARNINGS / ON-DEMAND SERVICES' if warnings or skipped else 'DONE\nALL SERVICES INSTALLED SUCCESSFULLY'
     lines += ['='*45,banner,f'SUCCESSFUL SERVICES: {successes}; FAILED SERVICES: {failed}; ON DEMAND: {skipped}; WARNINGS: {warnings}','='*45]
+    if failed:
+        lines.append('FAILED SERVICE DETAILS:')
+        lines.extend(f"ERROR: {row['application']}: {row.get('error', 'unknown failure')}"
+                     for row in rows if row['result'] == 'ERROR')
     (reportdir/(reportname+'.txt')).write_text('\n'.join(lines)+'\n')
     (reportdir/(reportname+'.log')).write_text('\n'.join(lines)+'\n')
-    print('\n'.join(lines[-5:]),flush=True)
+    print('\n'.join(lines[-min(12, len(lines)):]),flush=True)
     return 2 if failed else 0
 
 if __name__=='__main__':

@@ -27,6 +27,10 @@ PROTECTED = {
     'configs/app-selection.json',
 }
 RUNTIME_PARTS = {'appdata', 'databases', 'backups', 'logs', '__pycache__', '.git'}
+# Explicitly withdrawn projects are stopped and moved into the upgrade backup
+# so an older installation cannot keep an unmanaged container running. Their
+# application data is never deleted.
+RETIRED_APPS = {'chronosnap'}
 
 
 def sha256(path):
@@ -362,6 +366,80 @@ def validate_host():
         raise RuntimeError('A systemd-managed docker.service is required for package upgrades.')
 
 
+def retired_app_plan():
+    """Return withdrawn projects still present in the installed state."""
+    target_manifest = json.loads((TARGET / 'manifest.json').read_text())
+    installed_names = {app.get('name') for app in target_manifest if isinstance(app, dict)}
+    state_path = TARGET / 'configs' / 'app-selection.json'
+    state_names = set()
+    if state_path.is_file():
+        value = json.loads(state_path.read_text())
+        state_names = set(value.get('installed', [])) | set(value.get('startup', []))
+    for filename in ('installed-apps.txt', 'enabled-apps.txt'):
+        path = TARGET / filename
+        if path.is_file():
+            state_names.update(line.strip() for line in path.read_text().splitlines() if line.strip())
+    return sorted(name for name in RETIRED_APPS if name in installed_names or name in state_names or
+                  (TARGET / 'compose' / name).exists())
+
+
+def backup_and_stop_retired(name, destination):
+    """Stop and quarantine an explicitly withdrawn app without deleting data."""
+    compose_dir = TARGET / 'compose' / name
+    if not compose_dir.exists():
+        return False
+    destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    shutil.copytree(compose_dir, destination, dirs_exist_ok=True)
+    compose_file = compose_dir / 'compose.yml'
+    env_file = compose_dir / '.env'
+    if compose_file.is_file():
+        command = ['docker', 'compose', '--project-name', 'pi-' + name,
+                   '--project-directory', str(compose_dir)]
+        if env_file.is_file():
+            command += ['--env-file', str(env_file)]
+        command += ['-f', str(compose_file), 'down', '--remove-orphans']
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode:
+            raise RuntimeError('Could not stop withdrawn ' + name + ': ' + (result.stderr or result.stdout).strip())
+    shutil.rmtree(compose_dir)
+    return True
+
+
+def remove_retired_from_selection(name, backup_root):
+    """Remove only the withdrawn name from selection state; preserve all data."""
+    state_path = TARGET / 'configs' / 'app-selection.json'
+    if state_path.is_file():
+        original = state_path.read_bytes()
+        backup = backup_root / 'state' / 'app-selection.json'
+        backup.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        backup.write_bytes(original)
+        value = json.loads(original)
+        value['installed'] = [item for item in value.get('installed', []) if item != name]
+        value['startup'] = [item for item in value.get('startup', []) if item != name]
+        atomic(state_path, (json.dumps(value, indent=2) + '\n').encode(), 0o600)
+    for filename, mode in [('installed-apps.txt', 0o640), ('enabled-apps.txt', 0o640)]:
+        path = TARGET / filename
+        if not path.is_file():
+            continue
+        backup = backup_root / 'state' / filename
+        backup.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        shutil.copy2(path, backup)
+        lines = [line for line in path.read_text().splitlines() if line.strip() != name]
+        atomic(path, ('\n'.join(lines) + ('\n' if lines else '')).encode(), mode)
+
+
+def retire_apps(names, backup):
+    retired = []
+    for name in names:
+        root = backup / 'retired-apps' / name
+        moved = backup_and_stop_retired(name, root / 'compose')
+        remove_retired_from_selection(name, root)
+        retired.append({'name': name, 'compose_quarantined': moved,
+                        'data_preserved': True,
+                        'note': 'Application data and bulk files were not deleted.'})
+    return retired
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--apply', action='store_true', help='Apply the exact dry-run plan')
@@ -379,6 +457,7 @@ def main():
     incoming_release, installed_release = release_gate()
     subprocess.run(['python3', str(TARGET / 'scripts/storage_guard.py'), '--only', 'root'], check=True)
     index = json.loads((SOURCE / 'release-index.json').read_text())['files']
+    retired = retired_app_plan()
     temporary, stage = prepared_source()
     try:
         changes, preserved = plan(stage, index)
@@ -389,6 +468,7 @@ def main():
                   'release_id': incoming_release['release_id'],
                   'release_code': incoming_release['release_code'],
                   'previous_release_id': installed_release['release_id'] if installed_release else None,
+                  'retired_apps': retired,
                   'private_state_preserved': sorted(PROTECTED),
                   'next': 'After apply: sudo /srv/docker/install-all.sh'}
         print(json.dumps(report, indent=2))
@@ -404,6 +484,7 @@ def main():
         stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
         backup = TARGET / 'backups' / ('package-upgrade-' + stamp)
         backup.mkdir(parents=True, mode=0o700)
+        report['retired_apps'] = retire_apps(retired, backup)
         changed = {item['path'] for item in changes}
         for rel in changed:
             destination = TARGET / Path(rel)

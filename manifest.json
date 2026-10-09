@@ -2475,49 +2475,6 @@
     }
   },
   {
-    "name": "chronosnap",
-    "order": 83,
-    "mounts": ["hdd"],
-    "ports": [{"host": 8101, "container": 8080, "protocol": "tcp", "scheme": "http"}],
-    "directories": [
-      {"path": "/srv/docker/appdata/chronosnap", "uid": 1000, "gid": 1000, "mode": "0750"},
-      {"path": "/mnt/hdd/Timelapse/captures", "uid": 1000, "gid": 1000, "mode": "0750"},
-      {"path": "/mnt/hdd/Timelapse/timelapses", "uid": 1000, "gid": 1000, "mode": "0750"},
-      {"path": "/mnt/hdd/Timelapse/imports", "uid": 1000, "gid": 1000, "mode": "0750"}
-    ],
-    "secrets": [],
-    "env": {
-      "BIND_IP": "",
-      "SERVER_IP": "",
-      "TZ": "Asia/Dubai",
-      "PUID": "1000",
-      "PGID": "1000",
-      "LOG_LEVEL": "INFO",
-      "FFMPEG_TIMEOUT": "10",
-      "CHRONOSNAP_CAMERA_DEVICE": ""
-    },
-    "setup": "ChronoSnap timelapse manager. Create scheduled jobs from RTSP/RTSPS, HTTP/HTTPS image sources, or an optional local USB/Raspberry Pi camera; build MP4/GIF videos in the web UI. Database stays on NVMe; captures, videos and optional imports use the reviewed bulk storage.",
-    "images": [{
-      "image": "ghcr.io/kernelkaribou/chronosnap@sha256:4c0039feeb9dad3965f28f56b63e8ca55dc7532e520ac44ecbbad4fd06672808",
-      "arm64_verified": true,
-      "source": "https://ghcr.io/v2/kernelkaribou/chronosnap/manifests/latest",
-      "source_tag": "ghcr.io/kernelkaribou/chronosnap:latest",
-      "evidence": "OCI registry index inspected 2026-10-09; linux/arm64 platform descriptor present; image manifest digest pinned. Source tag: ghcr.io/kernelkaribou/chronosnap:latest"
-    }],
-    "notes": [
-      "The pinned upstream image includes the scheduler, SQLite database, ffmpeg video builder and health endpoint.",
-      "The package does not guess or pass a camera device. RTSP/HTTP sources work immediately; local USB/CSI capture requires the reviewed optional device override documented in docs/CHRONOSNAP.md.",
-      "Keep /app/data on NVMe because SQLite locking requires local storage. Capture and video directories are guarded bulk paths and are never created until the selected bulk filesystem is mounted and identity-verified."
-    ],
-    "memory_mib": 2048,
-    "default_enabled": false,
-    "database": {
-      "kind": "application-embedded",
-      "path": "/srv/docker/appdata/chronosnap",
-      "backup": "Stop ChronoSnap before copying its SQLite database and include the captures, timelapses and imports directories in the same backup run."
-    }
-  },
-  {
     "name": "diun",
     "order": 88,
     "mounts": [],
