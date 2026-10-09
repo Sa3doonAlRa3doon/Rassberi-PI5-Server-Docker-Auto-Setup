@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 15,
+  "release_id": 16,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 15 adds the missing ARM64 ChronoSnap timelapse service with guarded SSD database and bulk capture/video storage, optional reviewed camera passthrough, and on-demand startup."
+  "notes": "Release 16 removes the withdrawn ChronoSnap timelapse project and improves installer failure reporting while preserving the selected-app, storage and data-safety model."
 }

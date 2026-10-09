@@ -11,7 +11,6 @@ These are Linux ARM64 Docker projects integrated with the package lifecycle. Ima
 | Localsendy | 8100 | Enabled when HDD is verified | `/srv/docker/appdata/localsendy` |
 | Home Assistant | 8123 | Enabled | `/srv/docker/appdata/home-assistant` |
 | NetAlertX | 20211 | On demand | `/srv/docker/appdata/netalertx` |
-| ChronoSnap | 8101 | On demand | `/srv/docker/appdata/chronosnap` |
 
 From the installed package on the Pi:
 
@@ -21,7 +20,7 @@ sudo /srv/docker/start-all.sh netalertx
 sudo /srv/docker/stop-all.sh changedetection netalertx
 ```
 
-Installation prepares and downloads only the applications selected in the setup/settings page. ONLYOFFICE, Jupyter and Stirling PDF receive boot priority when retained in the saved boot selection; ChangeDetection.io, NetAlertX and ChronoSnap remain on demand by default. Clearing the boot selection is a valid choice and is preserved. A newly selected app cannot be started from Settings until the installer has prepared its `.env` and guarded paths. ChangeDetection includes a private browser sidecar; the whole project has a 1,152 MiB cap. NetAlertX and Home Assistant each have a 1,024 MiB cap. ChronoSnap has a 2,048 MiB cap because ffmpeg video builds are CPU/RAM intensive. The manager checks the aggregate running-container memory caps and leaves at least 2 GiB for the OS. Stop unused applications if that check declines another start.
+Installation prepares and downloads only the applications selected in the setup/settings page. ONLYOFFICE, Jupyter and Stirling PDF receive boot priority when retained in the saved boot selection; ChangeDetection.io and NetAlertX remain on demand by default. Clearing the boot selection is a valid choice and is preserved. A newly selected app cannot be started from Settings until the installer has prepared its `.env` and guarded paths. ChangeDetection includes a private browser sidecar; the whole project has a 1,152 MiB cap. NetAlertX and Home Assistant each have a 1,024 MiB cap. The manager checks the aggregate running-container memory caps and leaves at least 2 GiB for the OS. Stop unused applications if that check declines another start.
 
 ## Homebox
 

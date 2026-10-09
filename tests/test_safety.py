@@ -88,23 +88,6 @@ class StorageTests(unittest.TestCase):
             self.assertIsInstance(app.get('memory_mib'), int, app.get('name'))
             self.assertGreater(app['memory_mib'], 0, app.get('name'))
 
-    def test_chronosnap_is_guarded_and_optional_camera_safe(self):
-        import json
-        manifest = json.loads((ROOT/'manifest.json').read_text())
-        app = next(item for item in manifest if item['name'] == 'chronosnap')
-        self.assertFalse(app['default_enabled'])
-        self.assertEqual(app['mounts'], ['hdd'])
-        self.assertTrue(app['database']['path'].startswith('/srv/docker/'))
-        self.assertTrue(all(path.startswith('/mnt/hdd/Timelapse/') or path.startswith('/srv/docker/')
-                            for path in (item['path'] for item in app['directories'])))
-        compose = json.loads((ROOT/'compose/chronosnap/compose.yml').read_text())
-        service = compose['services']['chronosnap']
-        self.assertEqual(service['restart'], 'on-failure:5')
-        self.assertEqual(service['ports'][0]['published'], '8101')
-        self.assertEqual(service['devices'], ['${CHRONOSNAP_CAMERA_DEVICE:-/dev/null}:${CHRONOSNAP_CAMERA_DEVICE:-/dev/null}'])
-        self.assertEqual(app['env']['CHRONOSNAP_CAMERA_DEVICE'], '')
-        self.assertEqual(service['image'], app['images'][0]['image'])
-
 class HealthTests(unittest.TestCase):
     def test_unhealthy_is_failure(self):
         c={'Config':{'Labels':{'com.docker.compose.service':'app'}},'State':{'Status':'running','Health':{'Status':'unhealthy'}}}

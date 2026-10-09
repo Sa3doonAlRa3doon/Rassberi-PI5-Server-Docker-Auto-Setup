@@ -1,6 +1,6 @@
 # Raspberry Pi 5 Server Docker Auto Setup
 
-A storage-aware Docker Compose server package for a Raspberry Pi 5. It offers 42 ARM64 projects, but a new installation pulls and prepares only the apps the owner selects. It also provides guarded storage, generated per-app secrets, monitoring, backups, a private setup wizard, and a permanent settings panel.
+A storage-aware Docker Compose server package for a Raspberry Pi 5. It offers 41 ARM64 projects, but a new installation pulls and prepares only the apps the owner selects. It also provides guarded storage, generated per-app secrets, monitoring, backups, a private setup wizard, and a permanent settings panel.
 
 > **Supported targets:** 64-bit ARM Debian-family Linux with systemd, `apt`, Docker Engine and Docker Compose v2: Raspberry Pi OS, Debian, or Ubuntu. The supplied profile is a Raspberry Pi 5. x86 and non-Debian-family Linux hosts are rejected before installation.
 
@@ -90,20 +90,13 @@ The update instructions now follow the repository's current `main` branch
 instead of a release-specific download folder. The guarded release gate still
 requires a newer published `RELEASE.json` before changing `/srv/docker`.
 
-## Release 15 changes
+## Release 16 changes
 
-Release 15 adds **ChronoSnap**, the missing timelapse workflow. It is an
-optional ARM64 project with a scheduler, camera/source test, capture storage,
-MP4/GIF video building and progress tracking. RTSP/RTSPS and HTTP/HTTPS image
-sources work after the selected app is installed. USB and Raspberry Pi CSI
-cameras are deliberately opt-in: the setup does not guess a `/dev/video*`
-device, and the reviewed override procedure is in
-[docs/CHRONOSNAP.md](docs/CHRONOSNAP.md).
-
-ChronoSnap keeps its SQLite settings on the selected SSD and places captures,
-finished videos and optional imports on the selected bulk filesystem. It is
-2,048 MiB capped and remains on demand by default so a 16 GB Pi does not start
-video encoding at boot without the owner choosing it.
+ChronoSnap has been withdrawn from the package. It is no longer in the
+selection panel, manifest, Compose inventory, Homepage, storage map or port
+map, and a fresh install will not pull it. The installer report now prints the
+individual failed application names and error messages at the end of the
+terminal output; the complete per-app logs remain under `/srv/docker/logs`.
 
 ## Release 7 changes
 
@@ -148,7 +141,7 @@ Release 4 was the first published **FIXED AND IMPROVED** release. The following 
 - **Interrupted-install recovery:** detached root-shell commands, lock checks and idempotent installers are documented for SSH sessions that close while large ARM64 images are downloading. Completed image layers and services are reused on resume.
 - **Replacement and backup-drive handling:** replacement HDD and future backup-drive workflows are guarded, keep backup storage out of active application placement, and provide portable recovery procedures.
 - **16 GB memory behavior:** all requested services can be installed, while heavy applications remain on demand and are started only when needed after the aggregate memory check.
-- **Monitoring and utility additions:** the published manifest includes the second Tailscale Homepage, Autoheal, Beszel, Scrutiny, Docker Socket Proxy, Diun, Localsendy, NetAlertX, Homebox, Linkding, ChangeDetection.io, PairDrop and ChronoSnap.
+- **Monitoring and utility additions:** the published manifest includes the second Tailscale Homepage, Autoheal, Beszel, Scrutiny, Docker Socket Proxy, Diun, Localsendy, NetAlertX, Homebox, Linkding, ChangeDetection.io and PairDrop.
 
 The release marker, upgrade history and source code are committed in this public repository. Runtime credentials, access keys, databases and user files remain on the Pi and are never part of the GitHub package.
 
@@ -167,7 +160,7 @@ Do not expose the installer, settings panel or application ports to the public I
 
 ## Minimum and balanced hardware
 
-These profiles apply to the complete Docker package, not just the always-on services. All 42 projects can be installed, while the app-selection page controls which projects are actually prepared and pulled.
+These profiles apply to the complete Docker package, not just the always-on services. All 41 projects can be installed, while the app-selection page controls which projects are actually prepared and pulled.
 
 | Resource | Minimum for the full package | Balanced for the full package |
 |---|---|---|
@@ -362,13 +355,13 @@ Read [docs/STORAGE-CUSTOMIZATION.md](docs/STORAGE-CUSTOMIZATION.md), [STORAGE.md
 
 ## Included projects
 
-The package contains 42 Compose projects and 60 containers. You can install all of them or select only the projects you need in the setup/settings page. The complete manifest is deliberately not started as one unbounded batch; the manager checks the current memory budget before every start.
+The package contains 41 Compose projects and 59 containers. You can install all of them or select only the projects you need in the setup/settings page. The complete manifest is deliberately not started as one unbounded batch; the manager checks the current memory budget before every start.
 
 | Group | Projects |
 |---|---|
 | Infrastructure and monitoring | Docker Socket Proxy, Portainer, Homepage, Tailscale Homepage, Uptime Kuma, Dozzle, Beszel, Scrutiny, Diun, JourneyDocker Autoheal |
 | Stateful services | Nextcloud, Paperless-ngx, Wiki.js, Gitea, Moodle, n8n, ONLYOFFICE, Vaultwarden, Actual Budget, FreshRSS, Homebox, Linkding |
-| Media and files | Jellyfin, Navidrome, Calibre-Web, Kiwix, File Browser, Syncthing, Localsendy, PairDrop, ChronoSnap |
+| Media and files | Jellyfin, Navidrome, Calibre-Web, Kiwix, File Browser, Syncthing, Localsendy, PairDrop |
 | Home and network | Home Assistant, NetAlertX, Pi-hole, SearXNG |
 | Tools and documents | Code Server, Jupyter, Stirling PDF, IT-Tools, CyberChef, Excalidraw, ChangeDetection.io |
 
@@ -382,7 +375,7 @@ These three requested services receive boot priority after Docker, verified stor
 - Jupyter
 - Stirling PDF
 
-Moodle, ChangeDetection.io, NetAlertX, ChronoSnap and Tailscale Homepage remain on demand by default. You can change both the installed-app list and the boot-start list in the permanent settings page. If you clear the boot-start list, Settings preserves that deliberate choice and no selected application is started automatically.
+Moodle, ChangeDetection.io, NetAlertX and Tailscale Homepage remain on demand by default. You can change both the installed-app list and the boot-start list in the permanent settings page. If you clear the boot-start list, Settings preserves that deliberate choice and no selected application is started automatically.
 
 The manager checks the current aggregate memory budget before starting a project. The app page and select-apps.sh never delete existing data when an application is deselected. Read [docs/APPS-STATEFUL.md](docs/APPS-STATEFUL.md) and [docs/UTILITY-ADDITIONS.md](docs/UTILITY-ADDITIONS.md) for first-login and application-specific notes.
 
@@ -492,13 +485,12 @@ The public repository contains examples and deployment code. Runtime secrets and
 - [Recovery](docs/RECOVERY.md)
 - [Upgrade guide](docs/UPGRADE.md)
 - [Tailscale Homepage](docs/TAILSCALE-HOMEPAGE.md)
-- [ChronoSnap timelapse](docs/CHRONOSNAP.md)
 - [Published ports](PORTS.md)
 - [Validation notes](docs/VALIDATION.md)
 
 ## Validation boundary
 
-Windows-side validation checks the 42 Compose projects and manifest declarations, Bash/Python/JavaScript syntax, 47 unique ports, ARM64 image evidence, resource limits, guarded bind mounts, database isolation, storage-layout safety, backup/recovery behavior, and Docker-socket boundaries.
+Windows-side validation checks the 41 Compose projects and manifest declarations, Bash/Python/JavaScript syntax, 46 unique ports, ARM64 image evidence, resource limits, guarded bind mounts, database isolation, storage-layout safety, backup/recovery behavior, and Docker-socket boundaries.
 
 That is configuration validation. The target Pi still needs live checks for filesystem read/write behavior, SMART passthrough, network discovery, real file transfers, alerts, Home Assistant onboarding, NetAlertX discovery, Tailscale Serve, container health, and reboot recovery.
 
