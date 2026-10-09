@@ -44,6 +44,7 @@ All web ports bind to the private `BIND_IP` address supplied to the installer. D
 | PairDrop | 3004 | 3000 | HTTP | private LAN/Tailscale |
 | Localsendy | 8100 | host network | HTTP | private LAN |
 | Localsendy transfer/discovery | 53317 | host network | TCP/UDP | private LAN |
+| ChronoSnap (on demand) | 8101 | 8080 | HTTP | private LAN/Tailscale |
 | Home Assistant | 8123 | host network | HTTP | private LAN |
 | NetAlertX (on demand) | 20211 | host network | HTTP | private LAN |
 | NetAlertX backend (on demand) | 20212 | host network | HTTP/token | protect with firewall |

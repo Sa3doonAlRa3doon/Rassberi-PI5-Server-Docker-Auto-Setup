@@ -1,9 +1,9 @@
 {
   "format": 1,
-  "release_id": 14,
+  "release_id": 15,
   "release_code": "FIXED AND IMPROVED",
   "state": "published",
   "channel": "stable",
   "update_policy": "manual-release-only",
-  "notes": "Release 14 documents one-command updates from the current main branch and preserves the guarded Release 13 installation and Release 12 storage-return startup behavior."
+  "notes": "Release 15 adds the missing ARM64 ChronoSnap timelapse service with guarded SSD database and bulk capture/video storage, optional reviewed camera passthrough, and on-demand startup."
 }

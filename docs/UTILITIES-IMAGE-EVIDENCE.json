@@ -689,5 +689,24 @@
     "arm64_verified": true,
     "source": "https://registry-1.docker.io/v2/pihole/pihole/manifests/latest",
     "checked_at": "2026-09-22T13:35:29.887319+00:00"
+  },
+  {
+    "requested": "ghcr.io/kernelkaribou/chronosnap:latest",
+    "image": "ghcr.io/kernelkaribou/chronosnap@sha256:4c0039feeb9dad3965f28f56b63e8ca55dc7532e520ac44ecbbad4fd06672808",
+    "digest": "sha256:4c0039feeb9dad3965f28f56b63e8ca55dc7532e520ac44ecbbad4fd06672808",
+    "platforms": [
+      {
+        "architecture": "amd64",
+        "os": "linux"
+      },
+      {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    ],
+    "arm64_verified": true,
+    "source": "https://ghcr.io/v2/kernelkaribou/chronosnap/manifests/latest",
+    "checked_at": "2026-10-09T00:00:00+00:00",
+    "evidence": "OCI registry index inspected; linux/arm64 descriptor present."
   }
 ]

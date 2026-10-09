@@ -1,8 +1,8 @@
 # Validation scope
 
 The Release 7 pre-publish gate validates the generated package on the Windows
-development host. The manifest currently declares 41 Compose projects, 59
-services and 46 unique host-port assignments. The validation suite checks:
+development host. The manifest currently declares 42 Compose projects, 60
+services and 47 unique host-port assignments. The validation suite checks:
 
 - JSON, Bash, Python and browser JavaScript syntax.
 - Compose rendering with non-secret test environments.

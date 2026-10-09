@@ -1,0 +1,47 @@
+{
+  "name": "pi-chronosnap",
+  "services": {
+    "chronosnap": {
+      "image": "ghcr.io/kernelkaribou/chronosnap@sha256:4c0039feeb9dad3965f28f56b63e8ca55dc7532e520ac44ecbbad4fd06672808",
+      "platform": "linux/arm64",
+      "restart": "on-failure:5",
+      "mem_limit": "2048m",
+      "cpus": 2,
+      "stop_grace_period": "60s",
+      "logging": {
+        "driver": "json-file",
+        "options": {"max-size": "10m", "max-file": "3"}
+      },
+      "environment": {
+        "PUID": "${PUID:-1000}",
+        "PGID": "${PGID:-1000}",
+        "TZ": "${TZ:-Asia/Dubai}",
+        "LOG_LEVEL": "${LOG_LEVEL:-INFO}",
+        "FFMPEG_TIMEOUT": "${FFMPEG_TIMEOUT:-10}"
+      },
+      "ports": [{
+        "target": 8080,
+        "published": "8101",
+        "host_ip": "${BIND_IP:?Run installer}",
+        "protocol": "tcp"
+      }],
+      "volumes": [
+        {"type": "bind", "source": "/srv/docker/appdata/chronosnap", "target": "/app/data", "read_only": false, "bind": {"create_host_path": false}},
+        {"type": "bind", "source": "/mnt/hdd/Timelapse/captures", "target": "/captures", "read_only": false, "bind": {"create_host_path": false}},
+        {"type": "bind", "source": "/mnt/hdd/Timelapse/timelapses", "target": "/timelapses", "read_only": false, "bind": {"create_host_path": false}},
+        {"type": "bind", "source": "/mnt/hdd/Timelapse/imports", "target": "/imports", "read_only": false, "bind": {"create_host_path": false}}
+      ],
+      "devices": ["${CHRONOSNAP_CAMERA_DEVICE:-/dev/null}:${CHRONOSNAP_CAMERA_DEVICE:-/dev/null}"],
+      "healthcheck": {
+        "test": ["CMD", "curl", "-f", "http://localhost:8080/health"],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "60s"
+      },
+      "cap_drop": ["ALL"],
+      "cap_add": ["CHOWN", "SETUID", "SETGID"],
+      "security_opt": ["no-new-privileges:true"]
+    }
+  }
+}

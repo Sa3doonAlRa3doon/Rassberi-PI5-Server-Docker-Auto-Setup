@@ -32,7 +32,7 @@ NVMe paths below are relative to `/srv/docker`. All active PostgreSQL databases
 stay under `databases/<app>` on NVMe. This table records the original 28 Compose
 projects and their manifest declarations. Read-only (RO) content mounts are noted.
 
-The current package contains 41 projects. Added application state defaults to
+The current package contains 42 projects. Added application state defaults to
 `/srv/docker/appdata` or `/srv/docker/databases`; Localsendy bulk transfers default
 to guarded HDD uploads. A reviewed custom layout rewrites canonical host paths and
 mount dependencies across the manifest and Compose projects. The setup panel never
@@ -68,9 +68,10 @@ places a database or application-state group on an HDD or microSD.
 | actual | `appdata/actual` | — | — |
 | vaultwarden | `databases/vaultwarden`, `appdata/vaultwarden` | — | — |
 | pihole | `appdata/pihole` | — | — |
+| chronosnap | `appdata/chronosnap` (SQLite) | `/mnt/hdd/Timelapse/{captures,timelapses,imports}` | — |
 
-The **10 HDD-dependent projects** are Nextcloud, Moodle, Paperless, Stirling PDF,
-Code Server, Jupyter, File Browser, Syncthing, Calibre-Web and Kiwix. The **two
+The **11 HDD-dependent projects** are Nextcloud, Moodle, Paperless, Stirling PDF,
+Code Server, Jupyter, File Browser, Syncthing, Calibre-Web, Kiwix and ChronoSnap. The **two
 microSD-dependent projects** are Jellyfin and Navidrome. Their whole Compose
 projects are guarded together, including supporting databases; database files
 remain on NVMe. Other applications gain no unnecessary data-disk dependency.
